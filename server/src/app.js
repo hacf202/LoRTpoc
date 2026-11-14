@@ -59,8 +59,9 @@ app.get('/robots.txt', seoController.getRobots);
 app.get('/preview', seoController.getSocialPreview);
 app.get('/share', seoController.getSocialPreview);
 
-// API Routes
+// API Routes (mounted at both /api/v1 and /v1 for resilient serverless & reverse-proxy routing)
 app.use('/api/v1', apiRouter);
+app.use('/v1', apiRouter);
 
 // 404 & Global Error Handling
 app.use(notFoundHandler);
