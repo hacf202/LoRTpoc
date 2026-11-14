@@ -1,6 +1,26 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://server-bay-six-91.vercel.app/api/$1"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://server-bay-six-91.vercel.app/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "https://server-bay-six-91.vercel.app/robots.txt"
+    },
+    {
+      "source": "/preview",
+      "destination": "https://server-bay-six-91.vercel.app/preview"
+    },
+    {
+      "source": "/share",
+      "destination": "https://server-bay-six-91.vercel.app/share"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
