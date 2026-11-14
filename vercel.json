@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build:client",
+  "outputDirectory": "client/dist",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api"
+    },
+    {
+      "source": "/preview",
+      "destination": "/api"
+    },
+    {
+      "source": "/share",
+      "destination": "/api"
+    },
+    {
+      "source": "/((?!api|sitemap.xml|robots.txt|preview|share).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

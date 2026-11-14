@@ -1,0 +1,143 @@
+/* ==========================================================================
+   DUAL TYPOGRAPHY SYSTEM (CHUYÊN BIỆT CHO GAMING & CẨM NANG TIẾNG VIỆT)
+   1. Montserrat: Font hiển thị (Display/Heading) cho Header, Tiêu đề, Logo, Huy hiệu
+   2. Be Vietnam Pro: Font đọc nội dung (Body/Reading) cho Văn bản cẩm nang, Mô tả chi tiết
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Brand Pastel Palette */
+  --color-palette-cream: #FFF9D2;
+  --color-palette-peach: #FFEBCC;
+  --color-palette-ice: #BFDDF0;
+  --color-palette-sky: #8CC0EB;
+
+  --color-shurima-gold: #FFF9D2;
+  --color-shurima-dark: #FFEBCC;
+  --color-arcane-cyan: #8CC0EB;
+  --color-obsidian: #07090e;
+  --color-obsidian-card: rgba(13, 18, 29, 0.85);
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  width: 100%;
+  min-height: 100%;
+  background-color: #07090e;
+  color: #f8fafc;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 1. Header & Main Heading Elements (Montserrat) */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+}
+
+/* 2. Reading Text, Guide Descriptions & Detailed Explanations (Be Vietnam Pro) */
+p, .font-body, .font-reading {
+  font-family: var(--font-body);
+  letter-spacing: normal;
+}
+
+/* ==========================================================================
+   UNIFIED RUNETERRA FLOATING CAPSULE SCROLLBAR (GLOBAL FOR ENTIRE PROJECT)
+   Applied automatically to all scrollable elements (Window, Dropdowns, Modals, Lists)
+   ========================================================================== */
+
+/* 1. Dimensions for Chromium (Chrome, Edge, Brave, Opera) & Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* 2. Transparent Track with generous spacing */
+*::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px;
+}
+
+/* 3. Floating Capsule Thumb (Padding-box clip prevents touching borders) */
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 4. Hover State: Palette Sky Blue with subtle bloom */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #8CC0EB;
+  box-shadow: 0 0 10px rgba(140, 192, 235, 0.5);
+}
+
+/* 5. Active / Dragging State: Palette Cream */
+*::-webkit-scrollbar-thumb:active {
+  background-color: #FFF9D2;
+  box-shadow: 0 0 14px rgba(255, 249, 210, 0.8);
+}
+
+/* 6. Corner Joint */
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 7. Firefox Native Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+*:hover {
+  scrollbar-color: #8CC0EB transparent;
+}
+
+/* ==========================================================================
+   UTILITY: COMPLETELY HIDE SCROLLBAR (PRESERVING TOUCH & BUTTON SCROLL)
+   ========================================================================== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.custom-scrollbar {
+  scrollbar-gutter: stable;
+}
+
+/* ==========================================================================
+   GENTLE FLOATING BOUNCE ANIMATION FOR SCROLL CTA
+   ========================================================================== */
+@keyframes gentleBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-gentle-bounce {
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+

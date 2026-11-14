@@ -1,0 +1,2877 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import DropDragSidePanel from '../components/admin/DropDragSidePanel';
+import RichMarkupTextarea from '../components/admin/RichMarkupTextarea';
+import ConstellationEditor from '../components/admin/ConstellationEditor';
+import { rankSearchResults } from '../utils/searchUtils';
+import { VALID_ADMIN_MODULES } from '../hooks/useUrlFilters';
+
+const DEFAULT_CHAMPION_TEMPLATE = {
+  championID: '',
+  name: 'Tướng Mới',
+  cardCode: '',
+  regions: ['Runeterra'],
+  cost: 1,
+  tier: 'A',
+  maxStar: 6,
+  optimalStars: '3 Sao',
+  playStyle: 'Combo',
+  tags: [],
+  description: '',
+  descriptionRaw: '',
+  assets: [{ avatar: '', fullAbsolutePath: '', gameAbsolutePath: '' }],
+  coreRelics: {
+    mandatory: [],
+    options: [],
+    description: ''
+  },
+  otherRelicOptions: [],
+  relicSets: [
+    {
+      recommendedStars: 3,
+      items: ['', '', ''],
+      description: '',
+      videoLink: ''
+    }
+  ],
+  ratings: { damage: 7, defense: 7, synergy: 7, difficulty: 5 },
+  constellation: {
+    constellationID: '',
+    championName: '',
+    backgroundImage: '',
+    nodes: []
+  },
+  translations: { en: { name: '', description: '', tier: '' } }
+};
+
+function normalizeAdminCoreRelics(raw) {
+  if (!raw) return { mandatory: [], options: [], description: '' };
+  if (Array.isArray(raw)) {
+    return {
+      mandatory: raw.filter((x) => typeof x === 'string'),
+      options: [],
+      description: ''
+    };
+  }
+  if (typeof raw === 'object') {
+    const mandatory = Array.isArray(raw.mandatory) ? raw.mandatory : (Array.isArray(raw.items) ? raw.items : []);
+    const options = Array.isArray(raw.options)
+      ? raw.options.map((opt) => (Array.isArray(opt) ? opt : (opt?.items || [opt])).filter(Boolean))
+      : [];
+    const description = typeof raw.description === 'string' ? raw.description : '';
+    const translations = raw.translations || {};
+    return { mandatory, options, description, translations };
+  }
+  return { mandatory: [], options: [], description: '', translations: {} };
+}
+
+export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
+  const { isAdmin, loading: authLoading, login, logout, token } = useAuth();
+  const { language } = useLanguage();
+  const isEn = language === 'en';
+
+  // Navigation module state (đồng bộ với hierarchical route /admin/:module)
+  const initialModule =
+    filters?.adminModule && VALID_ADMIN_MODULES.includes(filters.adminModule)
+      ? filters.adminModule
+      : 'overview';
+  const [activeModule, setActiveModule] = useState(initialModule);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Login form state
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+
+  // Datasets states
+  const [champions, setChampions] = useState([]);
+  const [loadingChampions, setLoadingChampions] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [regionFilter, setRegionFilter] = useState('all');
+
+  const [relics, setRelics] = useState([]);
+  const [loadingRelics, setLoadingRelics] = useState(false);
+  const [relicSearch, setRelicSearch] = useState('');
+
+  const [powers, setPowers] = useState([]);
+  const [loadingPowers, setLoadingPowers] = useState(false);
+  const [powerSearch, setPowerSearch] = useState('');
+
+  const [items, setItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [itemSearch, setItemSearch] = useState('');
+
+  const [cards, setCards] = useState([]);
+  const [loadingCards, setLoadingCards] = useState(false);
+  const [cardSearch, setCardSearch] = useState('');
+
+  const [maps, setMaps] = useState([]);
+  const [loadingMaps, setLoadingMaps] = useState(false);
+
+  const [bonusStars, setBonusStars] = useState([]);
+  const [loadingBonusStars, setLoadingBonusStars] = useState(false);
+
+  // Server Logs state
+  const [serverLogs, setServerLogs] = useState([]);
+  const [logsLoading, setLogsLoading] = useState(false);
+
+  // Full-Page Champion Editor state (NO MODAL)
+  const [editingChampion, setEditingChampion] = useState(null);
+  const [isNewChampion, setIsNewChampion] = useState(false);
+  const [editorTab, setEditorTab] = useState('basic'); // 'basic' | 'core' | 'builds' | 'ratings' | 'assets' | 'constellation'
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
+
+  // Drop & Drag Side Panel state
+  const [isDropPanelOpen, setIsDropPanelOpen] = useState(false);
+
+  // Raw inputs state: Sửa triệt để lỗi không nhập được dấu cách " " và dấu phẩy ","
+  const [rawInputs, setRawInputs] = useState({
+    regions: '',
+    tags: '',
+    tagsEn: '',
+    coreMandatory: '',
+    coreDescription: '',
+    otherRelicOptions: '',
+    setItems: {}
+  });
+
+  // Đồng bộ rawInputs từ champion object
+  const syncRawInputsFromChampion = useCallback((champ) => {
+    if (!champ) return;
+    const parsedCore = normalizeAdminCoreRelics(champ.coreRelics);
+    setRawInputs({
+      regions: Array.isArray(champ.regions) ? champ.regions.join(', ') : (champ.region || ''),
+      tags: Array.isArray(champ.tags) ? champ.tags.join(', ') : '',
+      tagsEn: Array.isArray(champ.translations?.en?.tags) ? champ.translations.en.tags.join(', ') : '',
+      coreMandatory: (parsedCore.mandatory || []).join(', '),
+      coreDescription: parsedCore.description || '',
+      otherRelicOptions: Array.isArray(champ.otherRelicOptions) ? champ.otherRelicOptions.join(', ') : '',
+      setItems: (champ.relicSets || []).reduce((acc, set, idx) => {
+        acc[idx] = Array.isArray(set.items) ? set.items.join(', ') : '';
+        return acc;
+      }, {})
+    });
+  }, []);
+
+  // Centralized Authenticated No-Cache Fetch Helper (Ngăn chặn triệt để load dữ liệu cũ do Browser HTTP Cache)
+  const adminFetch = useCallback(async (endpoint, options = {}) => {
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const noCacheUrl = `${endpoint}${separator}_t=${Date.now()}`;
+    const headers = {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {})
+    };
+    return fetch(noCacheUrl, {
+      ...options,
+      cache: 'no-store',
+      headers
+    });
+  }, [token]);
+
+  // Fetch all champions
+  const fetchChampions = useCallback(async () => {
+    try {
+      setLoadingChampions(true);
+      const res = await adminFetch('/api/v1/champions?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setChampions(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load champions:', err);
+    } finally {
+      setLoadingChampions(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Relics
+  const fetchRelics = useCallback(async () => {
+    try {
+      setLoadingRelics(true);
+      const res = await adminFetch('/api/v1/relics?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setRelics(data.data);
+    } catch (err) {
+      console.error('Failed to load relics:', err);
+    } finally {
+      setLoadingRelics(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Powers
+  const fetchPowers = useCallback(async () => {
+    try {
+      setLoadingPowers(true);
+      const res = await adminFetch('/api/v1/powers?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setPowers(data.data);
+    } catch (err) {
+      console.error('Failed to load powers:', err);
+    } finally {
+      setLoadingPowers(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Items
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoadingItems(true);
+      const res = await adminFetch('/api/v1/items?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setItems(data.data);
+    } catch (err) {
+      console.error('Failed to load items:', err);
+    } finally {
+      setLoadingItems(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Cards
+  const fetchCards = useCallback(async () => {
+    try {
+      setLoadingCards(true);
+      const res = await adminFetch('/api/v1/cards?limit=all&includeVariants=true');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setCards(data.data);
+    } catch (err) {
+      console.error('Failed to load cards:', err);
+    } finally {
+      setLoadingCards(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Maps
+  const fetchMaps = useCallback(async () => {
+    try {
+      setLoadingMaps(true);
+      const res = await adminFetch('/api/v1/maps?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setMaps(data.data);
+    } catch (err) {
+      console.error('Failed to load maps:', err);
+    } finally {
+      setLoadingMaps(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch BonusStars (Chòm Sao)
+  const fetchBonusStars = useCallback(async () => {
+    try {
+      setLoadingBonusStars(true);
+      const res = await adminFetch('/api/v1/bonus-stars?limit=all');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setBonusStars(data.data);
+    } catch (err) {
+      console.error('Failed to load bonus stars:', err);
+    } finally {
+      setLoadingBonusStars(false);
+    }
+  }, [adminFetch]);
+
+  // Fetch Server Logs
+  const fetchServerLogs = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLogsLoading(true);
+      const res = await adminFetch('/api/v1/auth/logs?limit=200');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setServerLogs(data.data);
+    } catch (err) {
+      console.error('Failed to load logs:', err);
+    } finally {
+      setLogsLoading(false);
+    }
+  }, [token, adminFetch]);
+
+  // Clear Server Logs
+  const handleClearLogs = async () => {
+    if (!token) return;
+    if (!window.confirm('Bạn có chắc muốn xóa lịch sử nhật ký máy chủ gần đây?')) return;
+    try {
+      await fetch('/api/v1/auth/logs', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setServerLogs([]);
+    } catch (err) {
+      alert('Lỗi: ' + err.message);
+    }
+  };
+
+  // Lazy load datasets based on active module
+  useEffect(() => {
+    if (!isAdmin) return;
+    if (activeModule === 'champions') {
+      fetchChampions();
+      fetchBonusStars();
+    }
+    if (activeModule === 'relics') fetchRelics();
+    if (activeModule === 'powers') fetchPowers();
+    if (activeModule === 'items') fetchItems();
+    if (activeModule === 'cards') fetchCards();
+    if (activeModule === 'maps') fetchMaps();
+    if (activeModule === 'logs') {
+      fetchServerLogs();
+      const interval = setInterval(fetchServerLogs, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin, activeModule, fetchChampions, fetchBonusStars, fetchRelics, fetchPowers, fetchItems, fetchCards, fetchMaps, fetchServerLogs]);
+
+  // Handle Login
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsSubmittingLogin(true);
+    const result = await login(password);
+    setIsSubmittingLogin(false);
+    if (!result.success) {
+      setLoginError(result.message || 'Mật khẩu quản trị viên không chính xác.');
+    }
+  };
+
+  // Open Full-Page Edit Form
+  const handleOpenEdit = useCallback((champ) => {
+    setIsNewChampion(false);
+    setSaveSuccessMsg('');
+    const cloned = JSON.parse(JSON.stringify(champ));
+
+    // Chuẩn hóa \n cho các trường văn bản mô tả
+    if (typeof cloned.description === 'string') {
+      cloned.description = cloned.description.replace(/\\n/g, '\n');
+    }
+    if (typeof cloned.descriptionRaw === 'string') {
+      cloned.descriptionRaw = cloned.descriptionRaw.replace(/\\n/g, '\n');
+    }
+    if (cloned.translations?.en?.description) {
+      cloned.translations.en.description = cloned.translations.en.description.replace(/\\n/g, '\n');
+    }
+    if (Array.isArray(cloned.relicSets)) {
+      cloned.relicSets = cloned.relicSets.map((set) => {
+        const tr = set.translations || {};
+        const enTr = tr.en || {};
+        return {
+          ...set,
+          description: typeof set.description === 'string' ? set.description.replace(/\\n/g, '\n') : '',
+          translations: {
+            ...tr,
+            en: {
+              ...enTr,
+              description: typeof enTr.description === 'string' ? enTr.description.replace(/\\n/g, '\n') : ''
+            }
+          }
+        };
+      });
+    }
+
+    // Chuẩn hóa cấu trúc coreRelics linh hoạt
+    cloned.coreRelics = normalizeAdminCoreRelics(cloned.coreRelics);
+    if (cloned.coreRelics?.translations?.en?.description) {
+      cloned.coreRelics.translations.en.description = cloned.coreRelics.translations.en.description.replace(/\\n/g, '\n');
+    }
+
+    setEditingChampion(cloned);
+    setEditorTab('basic');
+    syncRawInputsFromChampion(cloned);
+    if (relics.length === 0) fetchRelics();
+    if (powers.length === 0) fetchPowers();
+    if (bonusStars.length === 0) fetchBonusStars();
+    if (cards.length === 0) fetchCards();
+    if (items.length === 0) fetchItems();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [relics.length, powers.length, bonusStars.length, cards.length, items.length, fetchRelics, fetchPowers, fetchBonusStars, fetchCards, fetchItems, syncRawInputsFromChampion]);
+
+  // Open Full-Page Create Form
+  const handleOpenCreate = useCallback(() => {
+    setIsNewChampion(true);
+    setSaveSuccessMsg('');
+    const newId = `C${String(champions.length + 1).padStart(3, '0')}`;
+    const newChamp = {
+      ...DEFAULT_CHAMPION_TEMPLATE,
+      championID: newId
+    };
+    setEditingChampion(newChamp);
+    setEditorTab('basic');
+    syncRawInputsFromChampion(newChamp);
+    if (relics.length === 0) fetchRelics();
+    if (powers.length === 0) fetchPowers();
+    if (bonusStars.length === 0) fetchBonusStars();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [champions.length, relics.length, powers.length, bonusStars.length, fetchRelics, fetchPowers, fetchBonusStars, syncRawInputsFromChampion]);
+
+  // Điều hướng chuyển đổi module trong Admin (/admin/:module)
+  const goToModule = useCallback((mod) => {
+    setEditingChampion(null);
+    setIsNewChampion(false);
+    setSaveSuccessMsg('');
+    setIsDropPanelOpen(false);
+    setActiveModule(mod);
+    updateFilters?.({
+      tab: 'admin',
+      adminModule: mod,
+      adminChampion: ''
+    });
+  }, [updateFilters]);
+
+  // Điều hướng mở form chỉnh sửa tướng (/admin/champion/:name)
+  const goToChampionEdit = useCallback((champ) => {
+    handleOpenEdit(champ);
+    const champTarget = champ.name || champ.championID || '';
+    updateFilters?.({
+      tab: 'admin',
+      adminModule: 'champions',
+      adminChampion: champTarget
+    });
+  }, [handleOpenEdit, updateFilters]);
+
+  // Điều hướng mở form thêm tướng mới (/admin/champion/new)
+  const goToChampionCreate = useCallback(() => {
+    handleOpenCreate();
+    updateFilters?.({
+      tab: 'admin',
+      adminModule: 'champions',
+      adminChampion: 'new'
+    });
+  }, [handleOpenCreate, updateFilters]);
+
+  // Hủy chỉnh sửa / Đóng form quay về danh sách tướng (/admin/champions)
+  const handleCancelEdit = useCallback(() => {
+    if (editingChampion) {
+      if (!window.confirm(isEn ? 'Discard unsaved changes?' : 'Bạn có chắc muốn hủy các thay đổi chưa lưu?')) {
+        return;
+      }
+    }
+    setEditingChampion(null);
+    setIsNewChampion(false);
+    setSaveSuccessMsg('');
+    setIsDropPanelOpen(false);
+    updateFilters?.({
+      tab: 'admin',
+      adminModule: 'champions',
+      adminChampion: ''
+    });
+  }, [editingChampion, isEn, updateFilters]);
+
+  // Đồng bộ hai chiều giữa URL (History API) và State Admin (Back/Forward, Direct Link)
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    // 1. Đồng bộ module active từ URL
+    if (filters?.adminModule && VALID_ADMIN_MODULES.includes(filters.adminModule)) {
+      if (filters.adminModule !== activeModule) {
+        setActiveModule(filters.adminModule);
+      }
+    }
+
+    // 2. Đồng bộ chỉnh sửa tướng từ route /admin/champion/:name
+    const targetParam = filters?.adminChampion ? filters.adminChampion.trim() : '';
+    if (!targetParam) {
+      if (editingChampion) {
+        setEditingChampion(null);
+        setIsNewChampion(false);
+      }
+      return;
+    }
+
+    if (targetParam === 'new') {
+      if (!editingChampion || !isNewChampion) {
+        handleOpenCreate();
+      }
+      return;
+    }
+
+    const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const targetNorm = norm(targetParam);
+    const targetLower = targetParam.toLowerCase();
+
+    // Nếu đã và đang mở đúng tướng này thì giữ nguyên state form (tránh mất dữ liệu đang gõ)
+    if (
+      editingChampion &&
+      !isNewChampion &&
+      (
+        (editingChampion.championID && editingChampion.championID.toLowerCase() === targetLower) ||
+        (editingChampion.name && editingChampion.name.toLowerCase() === targetLower) ||
+        (editingChampion.translations?.en?.name && editingChampion.translations.en.name.toLowerCase() === targetLower) ||
+        (targetNorm && (
+          norm(editingChampion.name) === targetNorm ||
+          norm(editingChampion.translations?.en?.name) === targetNorm ||
+          norm(editingChampion.championID) === targetNorm
+        ))
+      )
+    ) {
+      return;
+    }
+
+    // Tìm kiếm trong danh sách tướng đã tải
+    const found = champions.find(
+      (c) =>
+        (c.championID && c.championID.toLowerCase() === targetLower) ||
+        (c.name && c.name.toLowerCase() === targetLower) ||
+        (c.translations?.en?.name && c.translations.en.name.toLowerCase() === targetLower) ||
+        (targetNorm && (
+          norm(c.name) === targetNorm ||
+          norm(c.translations?.en?.name) === targetNorm ||
+          norm(c.championID) === targetNorm
+        ))
+    );
+
+    if (found) {
+      handleOpenEdit(found);
+    } else if (!loadingChampions) {
+      // Khi người dùng gõ URL trực tiếp hoặc F5 từ route /admin/champion/:name
+      adminFetch(`/api/v1/champions/${encodeURIComponent(targetParam)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.success && data?.data) {
+            handleOpenEdit(data.data);
+          }
+        })
+        .catch((err) => console.error('Failed to load champion from URL:', err));
+    }
+  }, [
+    filters?.adminModule,
+    filters?.adminChampion,
+    champions,
+    isAdmin,
+    loadingChampions,
+    activeModule,
+    editingChampion,
+    isNewChampion,
+    handleOpenCreate,
+    handleOpenEdit,
+    adminFetch
+  ]);
+
+  // Kéo thả vào 1 ô Slot cụ thể của Bộ Cổ Vật
+  const handleDropToSlot = (sIdx, slotIdx, e) => {
+    e.preventDefault();
+    let code = e.dataTransfer.getData('text/plain');
+    if (!code) {
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
+        code = payload.code;
+      } catch (err) {}
+    }
+    if (!code) return;
+    code = code.trim().toUpperCase();
+
+    const copy = [...editingChampion.relicSets];
+    const targetSet = copy[sIdx] || { items: [] };
+    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items] : ['', '', ''];
+    while (currentItems.length < 3) currentItems.push('');
+    currentItems[slotIdx] = code;
+    copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
+
+    setEditingChampion({ ...editingChampion, relicSets: copy });
+    setRawInputs((p) => ({
+      ...p,
+      setItems: { ...p.setItems, [sIdx]: currentItems.filter(Boolean).join(', ') }
+    }));
+  };
+
+  // Gỡ bỏ cổ vật khỏi slot
+  const handleRemoveSlotItem = (sIdx, slotIdx) => {
+    const copy = [...editingChampion.relicSets];
+    const targetSet = copy[sIdx] || { items: [] };
+    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items] : ['', '', ''];
+    while (currentItems.length < 3) currentItems.push('');
+    currentItems[slotIdx] = '';
+    copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
+
+    setEditingChampion({ ...editingChampion, relicSets: copy });
+    setRawInputs((p) => ({
+      ...p,
+      setItems: { ...p.setItems, [sIdx]: currentItems.filter(Boolean).join(', ') }
+    }));
+  };
+
+  // Kéo thả vào Mandatory Core Relics Box
+  const handleDropToCore = (e) => {
+    e.preventDefault();
+    let code = e.dataTransfer.getData('text/plain');
+    if (!code) {
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
+        code = payload.code;
+      } catch (err) {}
+    }
+    if (!code) return;
+    code = code.trim().toUpperCase();
+
+    const curMandatory = [...(editingChampion.coreRelics?.mandatory || [])];
+    if (!curMandatory.includes(code)) {
+      curMandatory.push(code);
+      setEditingChampion({
+        ...editingChampion,
+        coreRelics: {
+          ...(editingChampion.coreRelics || {}),
+          mandatory: curMandatory
+        }
+      });
+      setRawInputs((p) => ({ ...p, coreMandatory: curMandatory.join(', ') }));
+    }
+  };
+
+  // Xóa 1 cổ vật khỏi Mandatory Core Relics
+  const handleRemoveCoreRelic = (codeToRemove) => {
+    const curMandatory = (editingChampion.coreRelics?.mandatory || []).filter((c) => c !== codeToRemove);
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        mandatory: curMandatory
+      }
+    });
+    setRawInputs((p) => ({ ...p, coreMandatory: curMandatory.join(', ') }));
+  };
+
+  // Thêm 1 phương án tùy chọn đi kèm (Option)
+  const handleAddCoreOption = () => {
+    const curOptions = [...(editingChampion.coreRelics?.options || [])];
+    curOptions.push([]);
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        options: curOptions
+      }
+    });
+  };
+
+  // Xóa 1 phương án tùy chọn
+  const handleRemoveCoreOption = (optIdx) => {
+    const curOptions = (editingChampion.coreRelics?.options || []).filter((_, idx) => idx !== optIdx);
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        options: curOptions
+      }
+    });
+  };
+
+  // Kéo thả cổ vật vào 1 Option cụ thể
+  const handleDropToOption = (optIdx, e) => {
+    e.preventDefault();
+    let code = e.dataTransfer.getData('text/plain');
+    if (!code) {
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
+        code = payload.code;
+      } catch (err) {}
+    }
+    if (!code) return;
+    code = code.trim().toUpperCase();
+
+    const curOptions = [...(editingChampion.coreRelics?.options || [])];
+    const targetOpt = [...(curOptions[optIdx] || [])];
+    if (!targetOpt.includes(code)) {
+      targetOpt.push(code);
+      curOptions[optIdx] = targetOpt;
+      setEditingChampion({
+        ...editingChampion,
+        coreRelics: {
+          ...(editingChampion.coreRelics || {}),
+          options: curOptions
+        }
+      });
+    }
+  };
+
+  // Xóa 1 cổ vật khỏi Option
+  const handleRemoveOptionRelic = (optIdx, codeToRemove) => {
+    const curOptions = [...(editingChampion.coreRelics?.options || [])];
+    const targetOpt = (curOptions[optIdx] || []).filter((c) => c !== codeToRemove);
+    curOptions[optIdx] = targetOpt;
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        options: curOptions
+      }
+    });
+  };
+
+  // Nhập text cho Option
+  const handleOptionTextInputChange = (optIdx, val) => {
+    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+    const curOptions = [...(editingChampion.coreRelics?.options || [])];
+    curOptions[optIdx] = list;
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        options: curOptions
+      }
+    });
+  };
+
+  // Thay đổi mô tả phân tích
+  const handleCoreDescriptionChange = (val) => {
+    setEditingChampion({
+      ...editingChampion,
+      coreRelics: {
+        ...(editingChampion.coreRelics || {}),
+        description: val
+      }
+    });
+    setRawInputs((p) => ({ ...p, coreDescription: val }));
+  };
+
+  // Kéo thả vào Other Relic Options Box
+  const handleDropToOther = (e) => {
+    e.preventDefault();
+    let code = e.dataTransfer.getData('text/plain');
+    if (!code) {
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
+        code = payload.code;
+      } catch (err) {}
+    }
+    if (!code) return;
+    code = code.trim().toUpperCase();
+
+    const current = Array.isArray(editingChampion.otherRelicOptions) ? [...editingChampion.otherRelicOptions] : [];
+    if (!current.includes(code)) {
+      current.push(code);
+      setEditingChampion({ ...editingChampion, otherRelicOptions: current });
+      setRawInputs((p) => ({ ...p, otherRelicOptions: current.join(', ') }));
+    }
+  };
+
+  // Xóa 1 cổ vật khỏi Other Relic Options
+  const handleRemoveOtherRelic = (codeToRemove) => {
+    const current = (editingChampion.otherRelicOptions || []).filter((c) => c !== codeToRemove);
+    setEditingChampion({ ...editingChampion, otherRelicOptions: current });
+    setRawInputs((p) => ({ ...p, otherRelicOptions: current.join(', ') }));
+  };
+
+  // Nút (+) gán nhanh từ Menu Kéo Thả vào slot trống đầu tiên
+  const handleQuickAssignRelic = (code) => {
+    if (!editingChampion || !Array.isArray(editingChampion.relicSets) || editingChampion.relicSets.length === 0) return;
+    const copy = [...editingChampion.relicSets];
+    let assigned = false;
+    for (let sIdx = 0; sIdx < copy.length; sIdx++) {
+      const items = Array.isArray(copy[sIdx].items) ? [...copy[sIdx].items] : ['', '', ''];
+      while (items.length < 3) items.push('');
+      const emptySlotIdx = items.findIndex((it) => !it);
+      if (emptySlotIdx !== -1) {
+        items[emptySlotIdx] = code;
+        copy[sIdx] = { ...copy[sIdx], items: items.slice(0, 3) };
+        assigned = true;
+        setEditingChampion({ ...editingChampion, relicSets: copy });
+        setRawInputs((p) => ({
+          ...p,
+          setItems: { ...p.setItems, [sIdx]: items.filter(Boolean).join(', ') }
+        }));
+        break;
+      }
+    }
+    if (!assigned) {
+      alert('Các bộ hiện tại đã đầy 3 slot! Bạn có thể kéo thả đè lên slot muốn thay thế hoặc bấm "+ Thêm Bộ Cổ Vật Mới".');
+    }
+  };
+
+  // Save Champion Full-Page
+  const handleSaveChampion = async () => {
+    if (!editingChampion || !editingChampion.name?.trim()) {
+      alert('Vui lòng nhập tên tướng!');
+      return;
+    }
+
+    try {
+      setSaveLoading(true);
+      setSaveSuccessMsg('');
+
+      // Parse chính xác từ rawInputs đảm bảo không sót dữ liệu khi lưu
+      const regions = (rawInputs.regions || '').split(',').map((s) => s.trim()).filter(Boolean);
+      const tags = (rawInputs.tags || '').split(',').map((s) => s.trim()).filter(Boolean);
+      const tagsEn = (rawInputs.tagsEn || '').split(',').map((s) => s.trim()).filter(Boolean);
+      const otherRelicOptions = (rawInputs.otherRelicOptions || '').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+
+      // Chuẩn hóa cấu trúc coreRelics linh hoạt
+      const coreMandatory = (rawInputs.coreMandatory !== undefined ? rawInputs.coreMandatory : (editingChampion.coreRelics?.mandatory || []).join(', '))
+        .split(',')
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean);
+
+      const rawOptions = editingChampion.coreRelics?.options || [];
+      const coreOptions = rawOptions
+        .map((opt) => (Array.isArray(opt) ? opt : [opt]).map((s) => String(s).trim().toUpperCase()).filter(Boolean))
+        .filter((opt) => opt.length > 0);
+
+      const coreDescription = (rawInputs.coreDescription !== undefined ? rawInputs.coreDescription : (editingChampion.coreRelics?.description || '')).trim();
+
+      const finalCoreRelics = {
+        mandatory: coreMandatory,
+        options: coreOptions,
+        description: coreDescription
+      };
+      if (editingChampion.coreRelics?.translations?.en?.description) {
+        finalCoreRelics.translations = {
+          en: {
+            description: editingChampion.coreRelics.translations.en.description.trim()
+          }
+        };
+      }
+
+      // Chuẩn hóa relicSets (không lưu title, hệ thống tự hiển thị Bộ #1, Bộ #2...)
+      const cleanRelicSets = (editingChampion.relicSets || []).map((set, idx) => {
+        const rawItemsStr = rawInputs.setItems?.[idx] !== undefined ? rawInputs.setItems[idx] : (Array.isArray(set.items) ? set.items.join(', ') : '');
+        const items = rawItemsStr.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean).slice(0, 3);
+        const cleanSet = {
+          recommendedStars: Number(set.recommendedStars) || 1,
+          items,
+          description: set.description || '',
+          videoLink: set.videoLink || ''
+        };
+        const enDesc = set.translations?.en?.description?.trim();
+        if (enDesc) {
+          cleanSet.translations = {
+            en: {
+              ...(set.translations?.en || {}),
+              description: enDesc
+            }
+          };
+        }
+        return cleanSet;
+      });
+
+      // Chuẩn hóa ratings (hỗ trợ bước nhảy 0.5)
+      const rawRatings = editingChampion.ratings || {};
+      const cleanRatings = {
+        damage: rawRatings.damage !== '' && rawRatings.damage !== undefined ? Math.round(Number(rawRatings.damage) * 10) / 10 : 7,
+        defense: rawRatings.defense !== '' && rawRatings.defense !== undefined ? Math.round(Number(rawRatings.defense) * 10) / 10 : 7,
+        synergy: rawRatings.synergy !== '' && rawRatings.synergy !== undefined ? Math.round(Number(rawRatings.synergy) * 10) / 10 : 7,
+        difficulty: rawRatings.difficulty !== '' && rawRatings.difficulty !== undefined ? Math.round(Number(rawRatings.difficulty) * 10) / 10 : 5,
+        ...(rawRatings.playstyleNote ? { playstyleNote: rawRatings.playstyleNote } : {})
+      };
+
+      // Chuẩn hóa assets
+      const cleanAssets = Array.isArray(editingChampion.assets) && editingChampion.assets.length > 0
+        ? [{
+            avatar: (editingChampion.assets[0]?.avatar || '').trim(),
+            fullAbsolutePath: (editingChampion.assets[0]?.fullAbsolutePath || '').trim(),
+            gameAbsolutePath: (editingChampion.assets[0]?.gameAbsolutePath || '').trim()
+          }]
+        : [{ avatar: '', fullAbsolutePath: '', gameAbsolutePath: '' }];
+
+      // Chuẩn hóa constellation
+      const rawConst = editingChampion.constellation || {};
+      const cleanConstellation = {
+        constellationID: rawConst.constellationID || editingChampion.championID,
+        championName: rawConst.championName || editingChampion.name,
+        backgroundImage: (rawConst.backgroundImage || '').trim(),
+        nodes: Array.isArray(rawConst.nodes) ? rawConst.nodes : []
+      };
+
+      const payload = {
+        ...editingChampion,
+        regions: regions.length > 0 ? regions : editingChampion.regions || ['Runeterra'],
+        tags,
+        coreRelics: finalCoreRelics,
+        otherRelicOptions,
+        relicSets: cleanRelicSets,
+        ratings: cleanRatings,
+        assets: cleanAssets,
+        constellation: cleanConstellation,
+        translations: {
+          ...(editingChampion.translations || {}),
+          en: {
+            ...((editingChampion.translations || {}).en || {}),
+            tags: tagsEn
+          }
+        }
+      };
+
+      // Xóa triệt để comboSteps & proTips nếu có
+      delete payload.comboSteps;
+      delete payload.proTips;
+
+      const targetId = payload.championID || payload.name;
+      const url = isNewChampion ? '/api/v1/champions' : `/api/v1/champions/${encodeURIComponent(targetId)}`;
+      const method = isNewChampion ? 'POST' : 'PUT';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setSaveSuccessMsg(isNewChampion ? 'Tạo mới tướng thành công!' : 'Cập nhật dữ liệu tướng thành công!');
+        await fetchChampions();
+        window.dispatchEvent(new CustomEvent('poc-data-updated', { detail: { type: 'champions', data: json.data } }));
+        setTimeout(() => {
+          setEditingChampion(null);
+          setSaveSuccessMsg('');
+          setIsDropPanelOpen(false);
+          updateFilters?.({
+            tab: 'admin',
+            adminModule: 'champions',
+            adminChampion: ''
+          });
+        }, 1200);
+      } else {
+        alert(json.message || 'Lỗi khi lưu dữ liệu tướng');
+      }
+    } catch (err) {
+      alert('Lỗi kết nối máy chủ: ' + err.message);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  // Delete Champion
+  const handleDeleteChampion = async (champ) => {
+    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa vị tướng "${champ.name}" (${champ.championID}) không?`);
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/v1/champions/${encodeURIComponent(champ.championID)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        alert('Đã xóa tướng thành công!');
+        await fetchChampions();
+        window.dispatchEvent(new CustomEvent('poc-data-updated', { detail: { type: 'champions' } }));
+        if (editingChampion && (editingChampion.championID === champ.championID || editingChampion.name === champ.name)) {
+          setEditingChampion(null);
+          setIsDropPanelOpen(false);
+          updateFilters?.({
+            tab: 'admin',
+            adminModule: 'champions',
+            adminChampion: ''
+          });
+        }
+      } else {
+        const json = await res.json();
+        alert(json.message || 'Không thể xóa tướng');
+      }
+    } catch (err) {
+      alert('Lỗi: ' + err.message);
+    }
+  };
+
+  // Filtered champions (Tìm kiếm không dấu, đa ngữ Việt - Anh, ưu tiên ngắn nhất & tương thích cao)
+  const filteredChampions = useMemo(() => {
+    let list = champions;
+    if (regionFilter !== 'all') {
+      list = list.filter(
+        (c) => Array.isArray(c.regions) && c.regions.some((r) => r.toLowerCase() === regionFilter.toLowerCase())
+      );
+    }
+    const q = searchQuery.trim();
+    if (!q) return list;
+
+    return rankSearchResults(list, q, (c) => ({
+      nameVi: c.name || '',
+      nameEn: c.translations?.en?.name || '',
+      code: `${c.championID || ''} ${c.cardCode || ''}`,
+      desc: c.descriptionRaw || c.description || ''
+    }));
+  }, [champions, searchQuery, regionFilter]);
+
+  // Filtered relics (Tìm kiếm không dấu, đa ngữ Việt - Anh, ưu tiên ngắn nhất)
+  const filteredRelics = useMemo(() => {
+    const q = relicSearch.trim();
+    if (!q) return relics;
+    return rankSearchResults(relics, q, (r) => ({
+      nameVi: r.name || '',
+      nameEn: r.translations?.en?.name || '',
+      code: r.relicCode || '',
+      desc: r.descriptionRaw || r.description || ''
+    }));
+  }, [relics, relicSearch]);
+
+  // Filtered powers (Tìm kiếm không dấu, đa ngữ Việt - Anh, ưu tiên ngắn nhất)
+  const filteredPowers = useMemo(() => {
+    const q = powerSearch.trim();
+    if (!q) return powers;
+    return rankSearchResults(powers, q, (p) => ({
+      nameVi: p.name || '',
+      nameEn: p.translations?.en?.name || '',
+      code: p.powerCode || '',
+      desc: p.descriptionRaw || p.description || ''
+    }));
+  }, [powers, powerSearch]);
+
+  // Loading auth spinner
+  if (authLoading) {
+    return (
+      <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center gap-4 text-white">
+        <div className="w-10 h-10 border-3 border-[#8CC0EB] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-slate-400">Đang xác thực quyền quản trị...</span>
+      </div>
+    );
+  }
+
+  // 1. LOGIN SCREEN IF NOT AUTHENTICATED
+  if (!isAdmin) {
+    return (
+      <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center p-4 bg-[#07090e]">
+        <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#131b2e] via-[#0d1320] to-[#080c14] border-2 border-[#8CC0EB] shadow-[0_0_60px_rgba(140, 192, 235,0.25)] space-y-7">
+          <div className="text-center space-y-3">
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#1c2942] to-[#0c1322] border-2 border-[#8CC0EB] flex items-center justify-center text-3xl shadow-[0_0_25px_rgba(140, 192, 235,0.4)]">
+              🛡️
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black font-heading text-white tracking-wide uppercase">
+              {isEn ? 'Admin Portal' : 'Cổng Quản Trị Hệ Thống'}
+            </h2>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-xs mx-auto">
+              {isEn
+                ? 'Authenticate to unlock full management across champions, relics, powers and system logs.'
+                : 'Nhập mật khẩu quản trị để mở khóa bảng điều khiển quản lý tướng, cổ vật, sức mạnh và nhật ký máy chủ.'}
+            </p>
+          </div>
+
+          <form onSubmit={handleLoginSubmit} className="space-y-5">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#8CC0EB] font-heading">
+                  {isEn ? 'Admin Password' : 'Mật Khẩu Quản Trị'}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setPassword('admin123')}
+                  className="text-[11px] text-amber-300/80 hover:text-amber-300 underline cursor-pointer font-mono"
+                  title="Điền nhanh mật khẩu mặc định"
+                >
+                  (Mặc định: admin123)
+                </button>
+              </div>
+
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoFocus
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Nhập mật khẩu quản trị..."
+                  className="w-full px-4 py-3.5 pr-12 rounded-xl bg-[#06080d] border border-white/30 text-white text-sm focus:outline-none focus:border-[#8CC0EB] focus:ring-1 focus:ring-[#8CC0EB] transition-all placeholder:text-slate-500 font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors cursor-pointer text-sm select-none"
+                  title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+
+            {loginError && (
+              <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/60 text-rose-300 text-xs font-semibold flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmittingLogin}
+              className="w-full py-3.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black text-sm font-heading uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(140, 192, 235,0.3)] hover:shadow-[0_6px_25px_rgba(140, 192, 235,0.5)] cursor-pointer disabled:opacity-50 transform hover:-translate-y-0.5"
+            >
+              {isSubmittingLogin ? 'Đang xác thực...' : (isEn ? 'Log In to Admin' : 'Đăng Nhập Quản Trị')}
+            </button>
+          </form>
+
+          <div className="text-center pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => onNavigate?.('home')}
+              className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 font-semibold"
+            >
+              <span>←</span>
+              <span>{isEn ? 'Return to Home Page' : 'Quay lại Trang Chủ'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. FULL-PAGE ADMIN PORTAL (SIDEBAR + MAIN CONTENT)
+  const navModules = [
+    { id: 'overview', icon: '📊', label: isEn ? 'Overview' : 'Tổng Quan' },
+    { id: 'champions', icon: '🛡️', label: isEn ? 'Champions' : 'Quản Lý Tướng', count: champions.length },
+    { id: 'relics', icon: '💎', label: isEn ? 'Relics' : 'Quản Lý Cổ Vật', count: relics.length || 155 },
+    { id: 'powers', icon: '⚡', label: isEn ? 'Powers' : 'Quản Lý Sức Mạnh', count: powers.length || 380 },
+    { id: 'items', icon: '📦', label: isEn ? 'Items' : 'Quản Lý Vật Phẩm' },
+    { id: 'cards', icon: '🃏', label: isEn ? 'Cards' : 'Quản Lý Thẻ Bài' },
+    { id: 'maps', icon: '🗺️', label: isEn ? 'Maps' : 'Bản Đồ Phiêu Lưu' },
+    { id: 'logs', icon: '📜', label: isEn ? 'Server Logs' : 'Nhật Ký Máy Chủ (Winston)' }
+  ];
+
+  return (
+    <div className="relative z-10 w-full h-[calc(100vh-72px)] sm:h-[calc(100vh-76px)] flex flex-col md:flex-row font-sans text-slate-100 select-text overflow-hidden">
+      {/* 2.1 Fixed/Collapsible Sidebar Navigation */}
+      <aside
+        className={`bg-[#0a0e17] border-r border-white/10 flex flex-col shrink-0 h-full transition-all duration-300 overflow-hidden ${
+          isSidebarCollapsed ? 'w-20' : 'w-64 xl:w-72'
+        }`}
+      >
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          {!isSidebarCollapsed && (
+            <div className="flex items-center gap-2.5">
+              <span className="w-8 h-8 rounded-lg bg-[#8CC0EB] text-[#07090e] font-black flex items-center justify-center text-sm shadow-md">
+                P
+              </span>
+              <div>
+                <span className="font-heading font-extrabold text-sm text-white block uppercase tracking-wider">
+                  PoC CMS V2
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono font-bold">● System Online</span>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer mx-auto"
+            title="Thu gọn / Mở rộng"
+          >
+            {isSidebarCollapsed ? '→' : '←'}
+          </button>
+        </div>
+
+        {/* Sidebar Menu Modules */}
+        <nav className="p-3 space-y-1.5 flex-1 overflow-y-auto">
+          {navModules.map((mod) => {
+            const isActive = activeModule === mod.id && !editingChampion;
+            const targetHref = mod.id === 'overview' ? '/admin' : `/admin/${mod.id}`;
+            return (
+              <a
+                key={mod.id}
+                href={targetHref}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToModule(mod.id);
+                }}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-heading font-bold text-xs transition-all cursor-pointer text-left ${
+                  isActive
+                    ? 'bg-[#8CC0EB] text-[#07090e] shadow-md shadow-amber-500/20'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="text-base shrink-0">{mod.icon}</span>
+                {!isSidebarCollapsed && (
+                  <span className="flex-1 truncate tracking-wide">{mod.label}</span>
+                )}
+                {!isSidebarCollapsed && mod.count !== undefined && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                      isActive ? 'bg-black/30 text-[#07090e]' : 'bg-[#141b2a] text-slate-400'
+                    }`}
+                  >
+                    {mod.count}
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar Footer Account & Actions */}
+        <div className="p-4 border-t border-white/10 space-y-2 bg-[#080c14]">
+          {!isSidebarCollapsed && (
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-semibold text-white">Quản Trị Viên</span>
+              <span className="font-mono text-[10px] bg-[#141b2a] px-2 py-0.5 rounded text-amber-300 border border-amber-400/30">
+                Admin
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onNavigate?.('home')}
+              className="flex-1 py-2 px-2.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all text-center cursor-pointer truncate"
+              title="Xem trang web"
+            >
+              {isSidebarCollapsed ? '🏠' : 'Trang Chủ'}
+            </button>
+            <button
+              type="button"
+              onClick={logout}
+              className="py-2 px-2.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer truncate"
+              title="Đăng xuất"
+            >
+              {isSidebarCollapsed ? '🚪' : 'Đăng Xuất'}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* 2.2 Main Dynamic Content Area */}
+      <main className="flex-1 min-w-0 h-full flex flex-col overflow-hidden">
+        {/* ============================================================ */}
+        {/* MODULE 1: FULL-PAGE CHAMPION EDITOR VIEW (REPLACING MODAL)   */}
+        {/* ============================================================ */}
+        {editingChampion ? (
+          <div className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
+            {/* Header Toolbar cố định phía trên: Breadcrumbs, Title, Buttons, Tabs */}
+            <div className="shrink-0 p-3 sm:p-4 bg-[#0e1320] border-b border-white/15 space-y-2.5 z-10 shadow-lg">
+              {/* 1. Breadcrumb Phân Cấp Chi Tiết Cho Editor */}
+              <nav aria-label="Admin Editor Breadcrumb" className="w-full flex items-center gap-2 text-xs font-semibold text-slate-400 pb-2.5 border-b border-white/10 flex-wrap">
+                <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate?.('home');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Về Trang Chủ"
+                >
+                  <span>🏠</span>
+                  <span>{isEn ? 'Home' : 'Trang Chủ'}</span>
+                </a>
+                <span className="text-slate-600">/</span>
+                <a
+                  href="/admin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToModule('overview');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Về Tổng Quan Quản Trị"
+                >
+                  <span>🛡️</span>
+                  <span>{isEn ? 'Admin Portal' : 'Quản Trị Hệ Thống'}</span>
+                </a>
+                <span className="text-slate-600">/</span>
+                <a
+                  href="/admin/champions"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleCancelEdit();
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Về Danh Sách Tướng"
+                >
+                  <span>⚔️</span>
+                  <span>{isEn ? 'Champions' : 'Quản Lý Tướng'}</span>
+                </a>
+                <span className="text-slate-600">/</span>
+                <span className="text-[#8CC0EB] font-bold truncate max-w-[280px]">
+                  {isNewChampion ? (isEn ? 'Create New' : 'Thêm Tướng Mới') : `${editingChampion.name} (${editingChampion.championID})`}
+                </span>
+              </nav>
+
+              {/* 2. Tiêu Đề & Các Nút Hành Động */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer border border-white/10"
+                  >
+                    ← {isEn ? 'Back to Champions' : 'Quay Lại Danh Sách'}
+                  </button>
+                  <div className="h-5 w-px bg-white/15 hidden sm:block" />
+                  <h2 className="text-lg sm:text-xl font-black font-heading text-white">
+                    {isNewChampion ? 'Thêm Vị Tướng Mới' : `Chỉnh Sửa Tướng: ${editingChampion.name}`}
+                  </h2>
+                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-[#0b2545] text-sky-200 border border-sky-400">
+                    {editingChampion.championID}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropPanelOpen(!isDropPanelOpen)}
+                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border font-bold text-xs transition-all cursor-pointer shadow-md ${
+                      isDropPanelOpen
+                        ? 'bg-[#8CC0EB] text-[#07090e] border-[#8CC0EB] shadow-[0_0_15px_rgba(140, 192, 235,0.4)]'
+                        : 'bg-[#0b2545] hover:bg-sky-600 text-sky-200 border-sky-400 hover:text-white'
+                    }`}
+                    title="Bật/Tắt Menu kéo thả Cổ vật và Sức mạnh"
+                  >
+                    <span className="text-sm">🧲</span>
+                    <span>{isDropPanelOpen ? 'Đóng Menu Kéo Thả' : 'Mở Menu Kéo Thả'}</span>
+                    <span className="px-1.5 py-0.2 rounded text-[10px] bg-black/30 font-mono font-bold">
+                      {relics.length || 155}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-4 py-2 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    Hủy Bỏ
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saveLoading}
+                    onClick={handleSaveChampion}
+                    className="px-6 py-2 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black font-heading text-xs uppercase tracking-wide transition-all shadow-lg cursor-pointer disabled:opacity-50"
+                  >
+                    {saveLoading ? 'Đang Lưu...' : 'Lưu Thay Đổi (Save)'}
+                  </button>
+                </div>
+              </div>
+
+              {/* 3. Navigation Tabs Bar (Chuyển dạng tab trực quan như trang chi tiết tướng) */}
+              <div className="w-full flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-white/10">
+                {[
+                  { id: 'basic', label: isEn ? 'Basic Info' : 'Định Danh & Thuộc Tính' },
+                  {
+                    id: 'core',
+                    label: isEn ? 'Core Relics' : 'Cổ Vật Cốt Lõi',
+                    badge: (editingChampion.coreRelics?.mandatory || []).length + (editingChampion.coreRelics?.options || []).length
+                  },
+                  {
+                    id: 'builds',
+                    label: isEn ? 'Relic Builds' : 'Các Bộ Cổ Vật',
+                    badge: (editingChampion.relicSets || []).length
+                  },
+                  { id: 'ratings', label: isEn ? 'Ratings & Overview' : 'Đánh Giá & Vận Hành' },
+                  { id: 'assets', label: isEn ? 'Assets & Art' : 'Hình Ảnh & Asset' },
+                  {
+                    id: 'constellation',
+                    label: isEn ? 'Constellation' : 'Chòm Sao',
+                    badge: (editingChampion.constellation?.nodes || []).length
+                  }
+                ].map((tab) => {
+                  const isActive = editorTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setEditorTab(tab.id)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 shrink-0 ${
+                        isActive
+                          ? 'bg-[#8CC0EB] text-[#07090e] shadow-md shadow-sky-500/20'
+                          : 'bg-[#070a10] text-slate-300 hover:text-white border border-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      {tab.badge !== undefined && tab.badge > 0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                            isActive
+                              ? 'bg-black/25 text-[#07090e]'
+                              : 'bg-[#141b2a] text-sky-300 border border-sky-500/30'
+                          }`}
+                        >
+                          {tab.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {saveSuccessMsg && (
+              <div className="mx-4 sm:mx-6 mt-2 p-2.5 rounded-xl bg-emerald-950/70 border border-emerald-500/60 text-emerald-200 text-xs font-bold text-center shadow-lg shrink-0">
+                ✓ {saveSuccessMsg}
+              </div>
+            )}
+
+            {/* BỐ CỤC KHUNG LÀM VIỆC: CỘT TRÁI (FORM SOẠN THẢO) & CỘT PHẢI (MENU KÉO THẢ) */}
+            <div className="flex-1 min-h-0 flex flex-col xl:flex-row items-stretch gap-6 p-4 sm:p-6 overflow-hidden">
+              {/* CỘT TRÁI: FORM CHÍNH DẠNG TAB (KHUNG CUỘN CHÍNH) */}
+              <div className="flex-1 min-w-0 h-full overflow-y-auto space-y-6 pr-2 sm:pr-4">
+
+            {/* TAB 1: THÔNG TIN CƠ BẢN */}
+            {editorTab === 'basic' && (
+            <div id="admin-sec-basic" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
+              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
+                <span>1.</span> Thông Tin Định Danh & Thuộc Tính Cơ Bản
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Tên Tướng (VI)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.name || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs font-semibold focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Tên Tiếng Anh (EN)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.translations?.en?.name || ''}
+                    onChange={(e) => {
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), name: e.target.value } }
+                      });
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs font-semibold focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Mã Tướng (championID)</label>
+                  <input
+                    type="text"
+                    disabled={!isNewChampion}
+                    value={editingChampion.championID || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, championID: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-slate-400 font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Mã Thẻ (cardCode)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.cardCode || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, cardCode: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Giá Mana (Cost)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={editingChampion.cost ?? 1}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, cost: Number(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-sky-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Bậc Sức Mạnh VI (Tier VI)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.tier || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, tier: e.target.value })}
+                    placeholder="VD: B Tier // Tạm được"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Bậc Sức Mạnh EN (Tier EN)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.translations?.en?.tier || ''}
+                    onChange={(e) => {
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), tier: e.target.value } }
+                      });
+                    }}
+                    placeholder="VD: B Tier // Average"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Chuẩn (VI)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.optimalStars || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, optimalStars: e.target.value })}
+                    placeholder="VD: 4 - 5 Sao"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Chuẩn (EN)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.translations?.en?.optimalStars || ''}
+                    onChange={(e) => {
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), optimalStars: e.target.value } }
+                      });
+                    }}
+                    placeholder="VD: 4 - 5 Stars"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Lối Chơi VI (PlayStyle VI)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.playStyle || ''}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, playStyle: e.target.value })}
+                    placeholder="VD: Cân Bằng / Chỉ Số"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Lối Chơi EN (PlayStyle EN)</label>
+                  <input
+                    type="text"
+                    value={editingChampion.translations?.en?.playStyle || ''}
+                    onChange={(e) => {
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), playStyle: e.target.value } }
+                      });
+                    }}
+                    placeholder="VD: Midrange / Body Builder"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Khu Vực (cách nhau dấu phẩy)</label>
+                  <input
+                    type="text"
+                    value={rawInputs.regions}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRawInputs((p) => ({ ...p, regions: val }));
+                      const list = val.split(',').map((s) => s.trim()).filter(Boolean);
+                      setEditingChampion({ ...editingChampion, regions: list });
+                    }}
+                    placeholder="VD: Runeterra, Ionia"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Tags VI (cách nhau dấu phẩy)</label>
+                  <input
+                    type="text"
+                    value={rawInputs.tags}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRawInputs((p) => ({ ...p, tags: val }));
+                      const list = val.split(',').map((s) => s.trim()).filter(Boolean);
+                      setEditingChampion({ ...editingChampion, tags: list });
+                    }}
+                    placeholder="VD: Setup, High Stat, Midrange, Solo Carry"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Tags EN (cách nhau dấu phẩy)</label>
+                  <input
+                    type="text"
+                    value={rawInputs.tagsEn}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRawInputs((p) => ({ ...p, tagsEn: val }));
+                      const list = val.split(',').map((s) => s.trim()).filter(Boolean);
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), tags: list } }
+                      });
+                    }}
+                    placeholder="VD: Setup, High Stat, Midrange, Solo Carry"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* TAB 2: CÁC CỔ VẬT PHÙ HỢP (SUITABLE RELICS - CẤU TRÚC LINH HOẠT) & TÙY CHỌN KHÁC */}
+            {editorTab === 'core' && (
+            <div id="admin-sec-core" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
+              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-2">
+                  <span>2.</span> Các Cổ Vật Phù Hợp (Suitable Relics) & Tùy Chọn Khác (Other Options)
+                </span>
+                <span className="text-xs font-mono font-normal text-amber-300/80">
+                  🧲 Kéo cổ vật từ Menu bên phải vào các khung bên dưới
+                </span>
+              </h3>
+
+              {/* 2.1 CỔ VẬT BẮT BUỘC (MANDATORY CORE) */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'copy';
+                }}
+                onDrop={handleDropToCore}
+                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-[#8CC0EB]/50 hover:border-[#8CC0EB] hover:bg-[#8CC0EB]/5 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-[#8CC0EB] uppercase font-heading flex items-center gap-2">
+                    <span>🛡️</span> 1. Cổ Vật Bắt Buộc / Cốt Lõi (Mandatory Relics)
+                  </h4>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#452600] text-amber-200">
+                    {(editingChampion.coreRelics?.mandatory || []).length} Món
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Kéo thả cổ vật vào đây hoặc nhập mã phân cách bằng dấu phẩy (VD: R0080, R0040 hoặc chỉ R0031).
+                </p>
+                <input
+                  type="text"
+                  value={rawInputs.coreMandatory !== undefined ? rawInputs.coreMandatory : (editingChampion.coreRelics?.mandatory || []).join(', ')}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setRawInputs((p) => ({ ...p, coreMandatory: val }));
+                    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                    setEditingChampion({
+                      ...editingChampion,
+                      coreRelics: {
+                        ...(editingChampion.coreRelics || {}),
+                        mandatory: list
+                      }
+                    });
+                  }}
+                  placeholder="VD: R0080, R0040"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                />
+
+                {/* Visual preview with delete button */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
+                  {(editingChampion.coreRelics?.mandatory || []).length === 0 ? (
+                    <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật bắt buộc (Kéo thả cổ vật vào đây)</span>
+                  ) : (
+                    (editingChampion.coreRelics?.mandatory || []).map((code) => (
+                      <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-[#8CC0EB]/50 shadow-sm">
+                        <img
+                          src={`https://images.lortpoc.com/relics/${code}.webp`}
+                          alt={code}
+                          className="w-6 h-6 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <span className="text-xs font-mono font-bold text-amber-200">{code}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCoreRelic(code)}
+                          className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                          title="Xóa món này"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* 2.2 CÁC PHƯƠNG ÁN TÙY CHỌN ĐI KÈM (FLEXIBLE OPTIONS) */}
+              <div className="p-5 rounded-xl bg-[#070a10] border border-sky-400/30 space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10 flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
+                      <span>🔀</span> 2. Các Phương Án Tùy Chọn Đi Kèm (Flexible Options)
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Nếu bắt buộc có 2 món → mỗi phương án là 1 món (+C hoặc +D). Nếu bắt buộc có 1 món → mỗi phương án là 2 món (+B +C hoặc +E +F).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddCoreOption}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0b2545] hover:bg-sky-900/60 text-sky-200 border border-sky-400 cursor-pointer flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>+</span> Thêm Phương Án
+                  </button>
+                </div>
+
+                {(editingChampion.coreRelics?.options || []).length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-500 italic bg-[#0e1320] rounded-xl border border-white/5">
+                    Chưa có phương án tùy chọn nào. Nhấn "+ Thêm Phương Án" để tạo lựa chọn thay thế (ví dụ: +C hoặc +D).
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {(editingChampion.coreRelics?.options || []).map((optArr, optIdx) => (
+                      <div
+                        key={optIdx}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'copy';
+                        }}
+                        onDrop={(e) => handleDropToOption(optIdx, e)}
+                        className="p-3.5 rounded-xl bg-[#0e1320] border border-sky-500/20 hover:border-sky-400/50 transition-all space-y-2.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-sky-400" />
+                            Phương Án {optIdx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCoreOption(optIdx)}
+                            className="text-xs text-slate-400 hover:text-rose-400 font-bold cursor-pointer transition-colors"
+                          >
+                            ✕ Xóa phương án này
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          value={Array.isArray(optArr) ? optArr.join(', ') : optArr}
+                          onChange={(e) => handleOptionTextInputChange(optIdx, e.target.value)}
+                          placeholder="VD: R0025 hoặc R0040, R0025 (kéo thả hoặc nhập mã)"
+                          className="w-full px-3 py-2 rounded-lg bg-[#070a10] border border-white/10 text-white font-mono text-xs focus:border-sky-400 focus:outline-none"
+                        />
+
+                        {/* Visual preview of relics inside this option */}
+                        <div className="flex items-center gap-2 flex-wrap min-h-[32px]">
+                          {(Array.isArray(optArr) ? optArr : []).length === 0 ? (
+                            <span className="text-[11px] text-slate-500 italic">Kéo thả cổ vật vào đây hoặc nhập mã</span>
+                          ) : (
+                            (Array.isArray(optArr) ? optArr : []).map((code) => (
+                              <div key={code} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#070a10] border border-sky-400/30">
+                                <img
+                                  src={`https://images.lortpoc.com/relics/${code}.webp`}
+                                  alt={code}
+                                  className="w-5 h-5 object-contain"
+                                  onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                                <span className="text-[11px] font-mono font-bold text-sky-200">{code}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveOptionRelic(optIdx, code)}
+                                  className="text-slate-400 hover:text-rose-400 text-[10px] ml-0.5 cursor-pointer font-bold"
+                                  title="Xóa món"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 2.3 MÔ TẢ PHÂN TÍCH (DESCRIPTION) */}
+              <div className="p-5 rounded-xl bg-[#070a10] border border-[#8CC0EB]/25 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-amber-300 uppercase font-heading flex items-center gap-2">
+                    <span>💡</span> 3. Mô Tả Phân Tích & Hướng Dẫn Chọn Cổ Vật (Description)
+                  </h4>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    Hỗ trợ LorMarkup & Gợi ý (@)
+                  </span>
+                </div>
+                <RichMarkupTextarea
+                  label="Mô Tả Phân Tích Cổ Vật Cốt Lõi (VI)"
+                  rows={4}
+                  value={rawInputs.coreDescription !== undefined ? rawInputs.coreDescription : (editingChampion.coreRelics?.description || '')}
+                  onChange={handleCoreDescriptionChange}
+                  placeholder="Nhập mô tả giải thích tại sao chọn các món bắt buộc và khi nào nên chọn phương án thay thế... (Gõ @ để chèn Cổ vật, Sức mạnh, Tướng)"
+                  relics={relics}
+                  powers={powers}
+                  champions={champions}
+                  items={items}
+                  cards={cards}
+                />
+                <RichMarkupTextarea
+                  label="Core Relics Analysis & Strategy (EN)"
+                  rows={4}
+                  value={editingChampion.coreRelics?.translations?.en?.description || ''}
+                  onChange={(val) => {
+                    const curCore = editingChampion.coreRelics || {};
+                    const curTr = curCore.translations || {};
+                    setEditingChampion({
+                      ...editingChampion,
+                      coreRelics: {
+                        ...curCore,
+                        translations: {
+                          ...curTr,
+                          en: { ...(curTr.en || {}), description: val }
+                        }
+                      }
+                    });
+                  }}
+                  placeholder="Explain why core relics are mandatory and alternative choices in English... (Type @ to mention)"
+                  relics={relics}
+                  powers={powers}
+                  champions={champions}
+                  items={items}
+                  cards={cards}
+                />
+              </div>
+
+              {/* 2.4 TÙY CHỌN CỔ VẬT KHÁC (OTHER RELIC OPTIONS) */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'copy';
+                }}
+                onDrop={handleDropToOther}
+                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-white/20 hover:border-sky-400 hover:bg-sky-950/10 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-slate-200 uppercase font-heading flex items-center gap-2">
+                    4. Tùy Chọn Cổ Vật Khác (Other Relic Options)
+                  </h4>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#141b2a] text-slate-300">
+                    {(editingChampion.otherRelicOptions || []).length} Tùy chọn
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Kéo thả cổ vật vào đây hoặc nhập mã (phân cách bằng dấu phẩy).
+                </p>
+                <input
+                  type="text"
+                  value={rawInputs.otherRelicOptions}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setRawInputs((p) => ({ ...p, otherRelicOptions: val }));
+                    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                    setEditingChampion({ ...editingChampion, otherRelicOptions: list });
+                  }}
+                  placeholder="VD: R0060, R0020, R0114"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                />
+
+                {/* Visual preview with delete button */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
+                  {(editingChampion.otherRelicOptions || []).length === 0 ? (
+                    <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật tùy chọn (Thả cổ vật vào đây)</span>
+                  ) : (
+                    (editingChampion.otherRelicOptions || []).map((code) => (
+                      <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-white/15 shadow-sm">
+                        <img
+                          src={`https://images.lortpoc.com/relics/${code}.webp`}
+                          alt={code}
+                          className="w-6 h-6 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <span className="text-xs font-mono text-slate-300">{code}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveOtherRelic(code)}
+                          className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                          title="Xóa món này"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* TAB 3: BỘ CỔ VẬT ĐỀ XUẤT (RELIC SETS) */}
+            {editorTab === 'builds' && (
+            <div id="admin-sec-builds" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+                <div>
+                  <h3 className="text-base font-bold font-heading text-[#8CC0EB] uppercase tracking-wider flex items-center gap-2">
+                    <span>3.</span> Danh Sách Các Bộ Cổ Vật Đề Xuất ({ (editingChampion.relicSets || []).length } Bộ)
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Mỗi bộ trang bị gồm tiêu đề, 3 ô cổ vật, sao khuyên dùng và phân tích chiến thuật chi tiết.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cur = editingChampion.relicSets || [];
+                    const newSet = {
+                      recommendedStars: 3,
+                      items: ['', '', ''],
+                      description: '',
+                      videoLink: ''
+                    };
+                    setEditingChampion({ ...editingChampion, relicSets: [...cur, newSet] });
+                  }}
+                  className="px-4 py-2 rounded-xl bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer font-heading"
+                >
+                  + Thêm Bộ Cổ Vật Mới
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {(editingChampion.relicSets || []).map((set, sIdx) => {
+                  const isArr = Array.isArray(set);
+                  const setObj = isArr ? { items: set } : set;
+
+                  return (
+                    <div
+                      key={sIdx}
+                      className="p-5 rounded-2xl bg-[#070a10] border-2 border-white/10 hover:border-white/25 transition-all space-y-4"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+                        <span className="font-bold font-heading text-sm text-[#8CC0EB]">
+                          Bộ #{sIdx + 1}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Bạn có chắc muốn xóa Bộ #${sIdx + 1}?`)) {
+                              const updated = editingChampion.relicSets.filter((_, i) => i !== sIdx);
+                              setEditingChampion({ ...editingChampion, relicSets: updated });
+                            }
+                          }}
+                          className="px-3 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Xóa bộ này
+                        </button>
+                      </div>
+
+                      <div className="max-w-xs">
+                        <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Khuyên Dùng (1 - 6)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="6"
+                          value={setObj.recommendedStars ?? 3}
+                          onChange={(e) => {
+                            const copy = [...editingChampion.relicSets];
+                            copy[sIdx] = { ...setObj, recommendedStars: Number(e.target.value) || 1 };
+                            setEditingChampion({ ...editingChampion, relicSets: copy });
+                          }}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                        />
+                      </div>
+
+                      {/* 3 Relic Slots Inputs with DROP ZONE */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                          <label className="block text-xs font-bold text-slate-300">
+                            3 Ô Cổ Vật (Kéo thả từ Menu bên phải hoặc nhập mã, phân cách bằng dấu phẩy)
+                          </label>
+                          <span className="text-[11px] text-[#8CC0EB] font-bold">
+                            Tối đa 3 món (Hỗ trợ kéo thả)
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          value={rawInputs.setItems?.[sIdx] !== undefined ? rawInputs.setItems[sIdx] : (Array.isArray(setObj.items) ? setObj.items.join(', ') : '')}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setRawInputs((p) => ({
+                              ...p,
+                              setItems: { ...p.setItems, [sIdx]: val }
+                            }));
+                            const items = val
+                              .split(',')
+                              .map((s) => s.trim().toUpperCase())
+                              .filter(Boolean)
+                              .slice(0, 3);
+                            const copy = [...editingChampion.relicSets];
+                            copy[sIdx] = { ...setObj, items };
+                            setEditingChampion({ ...editingChampion, relicSets: copy });
+                          }}
+                          placeholder="VD: R0080, R0040, R0118"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs font-bold focus:border-[#8CC0EB] focus:outline-none"
+                        />
+
+                        {/* Visual 3 slots preview with DROP ZONE */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                          {[0, 1, 2].map((slotIdx) => {
+                            const code = (setObj.items || [])[slotIdx];
+                            return (
+                              <div
+                                key={slotIdx}
+                                onDragOver={(e) => {
+                                  e.preventDefault();
+                                  e.dataTransfer.dropEffect = 'copy';
+                                }}
+                                onDrop={(e) => handleDropToSlot(sIdx, slotIdx, e)}
+                                className={`group/slot relative flex items-center justify-between gap-3 p-3 rounded-xl border-2 transition-all ${
+                                  code
+                                    ? 'bg-[#0e1320] border-[#8CC0EB]/50 shadow-md hover:border-[#8CC0EB]'
+                                    : 'bg-[#080c14] border-dashed border-white/20 hover:border-[#8CC0EB]/70 hover:bg-[#8CC0EB]/5'
+                                }`}
+                                title="Kéo thả cổ vật vào đây để trang bị"
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-11 h-11 rounded-lg bg-black border border-white/20 p-1 flex items-center justify-center shrink-0">
+                                    {code ? (
+                                      <img
+                                        src={`https://images.lortpoc.com/relics/${code}.webp`}
+                                        alt={code}
+                                        className="w-full h-full object-contain"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                      />
+                                    ) : (
+                                      <span className="text-[10px] text-slate-500 font-bold">Ô {slotIdx + 1}</span>
+                                    )}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <span className="text-[10px] font-mono text-slate-400 block">Slot {slotIdx + 1}</span>
+                                    <span className="text-xs font-mono font-bold text-white truncate block">
+                                      {code || 'Thả cổ vật vào đây'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {code && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveSlotItem(sIdx, slotIdx)}
+                                    className="p-1 rounded-full bg-rose-950/80 text-rose-300 hover:text-white border border-rose-500/40 text-[10px] transition-all cursor-pointer opacity-70 group-hover/slot:opacity-100 hover:scale-110 shrink-0"
+                                    title="Gỡ cổ vật này"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Strategy Description (VI) with Rich Markup & @ */}
+                      <RichMarkupTextarea
+                        label="Phân Tích Chiến Thuật & Tương Tác (VI)"
+                        rows={4}
+                        value={setObj.description || ''}
+                        onChange={(val) => {
+                          const copy = [...editingChampion.relicSets];
+                          copy[sIdx] = { ...setObj, description: val };
+                          setEditingChampion({ ...editingChampion, relicSets: copy });
+                        }}
+                        placeholder="Chi tiết cách bộ trang bị này vận hành... (Gõ @ để chèn Cổ vật, Sức mạnh, Tướng)"
+                        relics={relics}
+                        powers={powers}
+                        champions={champions}
+                        items={items}
+                        cards={cards}
+                      />
+
+                      {/* Strategy Description (EN) with Rich Markup & @ */}
+                      <RichMarkupTextarea
+                        label="Strategy & Synergies Description (EN)"
+                        rows={4}
+                        value={setObj.translations?.en?.description || ''}
+                        onChange={(val) => {
+                          const copy = [...editingChampion.relicSets];
+                          const curTr = setObj.translations || {};
+                          copy[sIdx] = {
+                            ...setObj,
+                            translations: {
+                              ...curTr,
+                              en: { ...(curTr.en || {}), description: val }
+                            }
+                          };
+                          setEditingChampion({ ...editingChampion, relicSets: copy });
+                        }}
+                        placeholder="Strategy and gameplay synergies in English... (Type @ to mention)"
+                        relics={relics}
+                        powers={powers}
+                        champions={champions}
+                        items={items}
+                        cards={cards}
+                      />
+
+                      {/* Video Link */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-300 mb-1">
+                          Link Video Hướng Dẫn (Tùy chọn)
+                        </label>
+                        <input
+                          type="text"
+                          value={setObj.videoLink || ''}
+                          onChange={(e) => {
+                            const copy = [...editingChampion.relicSets];
+                            copy[sIdx] = { ...setObj, videoLink: e.target.value };
+                            setEditingChampion({ ...editingChampion, relicSets: copy });
+                          }}
+                          placeholder="https://www.youtube.com/embed/..."
+                          className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-slate-300 text-xs font-mono"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            )}
+
+            {/* TAB 4: CHỈ SỐ ĐÁNH GIÁ (RATINGS) & MÔ TẢ TỔNG QUAN */}
+            {editorTab === 'ratings' && (
+            <div id="admin-sec-ratings" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
+              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
+                <span>4.</span> Chỉ Số Sức Mạnh & Mô Tả Chi Tiết
+              </h3>
+
+              {/* Ratings Grid */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-3 uppercase tracking-wider font-heading">
+                  Thang Điểm Năng Lực (1 - 10)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[
+                    { key: 'damage', label: 'Sát Thương (Damage)', color: 'text-rose-400', barColor: 'bg-rose-500' },
+                    { key: 'defense', label: 'Phòng Thủ (Defense)', color: 'text-sky-400', barColor: 'bg-sky-500' },
+                    { key: 'synergy', label: 'Tương Tác (Synergy)', color: 'text-purple-400', barColor: 'bg-purple-500' },
+                    { key: 'difficulty', label: 'Độ Khó (Difficulty)', color: 'text-amber-400', barColor: 'bg-amber-500' }
+                  ].map((rate) => {
+                    const currentVal = editingChampion.ratings?.[rate.key] !== undefined && editingChampion.ratings?.[rate.key] !== ''
+                      ? editingChampion.ratings[rate.key]
+                      : 7;
+                    const numVal = Number(currentVal) || 0;
+
+                    return (
+                      <div key={rate.key} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className={`text-xs font-bold block ${rate.color}`}>{rate.label}</span>
+                          <span className="text-xs font-mono font-bold text-white">{numVal}/10</span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const cur = Number(editingChampion.ratings?.[rate.key] ?? 7);
+                              const next = Math.max(0, Math.round((cur - 0.5) * 10) / 10);
+                              setEditingChampion({
+                                ...editingChampion,
+                                ratings: { ...(editingChampion.ratings || {}), [rate.key]: next }
+                              });
+                            }}
+                            className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-mono font-bold text-xs cursor-pointer border border-white/10 transition-colors"
+                            title="Giảm 0.5"
+                          >
+                            -0.5
+                          </button>
+
+                          <input
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.5"
+                            value={editingChampion.ratings?.[rate.key] ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const curRatings = editingChampion.ratings || {};
+                              setEditingChampion({
+                                ...editingChampion,
+                                ratings: { ...curRatings, [rate.key]: val === '' ? '' : parseFloat(val) }
+                              });
+                            }}
+                            className="w-full px-2 py-1.5 rounded-lg bg-[#0e1320] border border-white/15 text-white font-mono font-bold text-sm text-center focus:border-[#8CC0EB] focus:outline-none"
+                          />
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const cur = Number(editingChampion.ratings?.[rate.key] ?? 7);
+                              const next = Math.min(10, Math.round((cur + 0.5) * 10) / 10);
+                              setEditingChampion({
+                                ...editingChampion,
+                                ratings: { ...(editingChampion.ratings || {}), [rate.key]: next }
+                              });
+                            }}
+                            className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-mono font-bold text-xs cursor-pointer border border-white/10 transition-colors"
+                            title="Tăng 0.5"
+                          >
+                            +0.5
+                          </button>
+                        </div>
+
+                        {/* Mini bar preview */}
+                        <div className="w-full h-1.5 rounded-full bg-[#141b29] border border-white/10 overflow-hidden">
+                          <div
+                            className={`h-full ${rate.barColor} rounded-full transition-all`}
+                            style={{ width: `${Math.min(100, Math.max(0, (numVal / 10) * 100))}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Descriptions VI & EN with Rich Markup & @ */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <RichMarkupTextarea
+                    label="Mô Tả Tổng Quan Về Tướng (VI)"
+                    rows={6}
+                    value={editingChampion.description || ''}
+                    onChange={(val) => setEditingChampion({ ...editingChampion, description: val })}
+                    placeholder="Mô tả chi tiết phong cách, điểm mạnh và cách vận hành... (Gõ @ để gắn thẻ)"
+                    relics={relics}
+                    powers={powers}
+                    champions={champions}
+                    items={items}
+                    cards={cards}
+                  />
+                </div>
+
+                <div>
+                  <RichMarkupTextarea
+                    label="Overview Description (EN)"
+                    rows={6}
+                    value={editingChampion.translations?.en?.description || ''}
+                    onChange={(val) => {
+                      const tr = editingChampion.translations || {};
+                      setEditingChampion({
+                        ...editingChampion,
+                        translations: { ...tr, en: { ...(tr.en || {}), description: val } }
+                      });
+                    }}
+                    placeholder="Champion overview guide in English... (Type @ to mention)"
+                    relics={relics}
+                    powers={powers}
+                    champions={champions}
+                    items={items}
+                    cards={cards}
+                  />
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* TAB 5: ARTWORK ASSETS */}
+            {editorTab === 'assets' && (
+            <div id="admin-sec-assets" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
+              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
+                <span>5.</span> Hình Ảnh & Splash Art (Assets)
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {/* 1. URL Avatar Artwork */}
+                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-300">URL Avatar Artwork (avatar)</label>
+                    <input
+                      type="text"
+                      value={editingChampion.assets?.[0]?.avatar || ''}
+                      onChange={(e) => {
+                        const curAssets = Array.isArray(editingChampion.assets) && editingChampion.assets.length > 0
+                          ? [...editingChampion.assets]
+                          : [{}];
+                        curAssets[0] = { ...curAssets[0], avatar: e.target.value };
+                        setEditingChampion({ ...editingChampion, assets: curAssets });
+                      }}
+                      placeholder="https://images.lortpoc.com/avatarChampions/..."
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                    />
+                    <p className="text-[11px] text-slate-400">Ảnh đại diện hiển thị trong danh sách và thẻ tướng</p>
+                  </div>
+                  {/* Live Avatar Preview */}
+                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                      {editingChampion.assets?.[0]?.avatar ? (
+                        <img
+                          src={editingChampion.assets[0].avatar}
+                          alt="Avatar Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-xs text-slate-500 font-mono">No Art</span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-400">Xem trước Avatar (Tỉ lệ 1:1)</span>
+                  </div>
+                </div>
+
+                {/* 2. URL Full Splash Art */}
+                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-300">URL Full Splash Art (fullAbsolutePath)</label>
+                    <input
+                      type="text"
+                      value={editingChampion.assets?.[0]?.fullAbsolutePath || ''}
+                      onChange={(e) => {
+                        const curAssets = Array.isArray(editingChampion.assets) && editingChampion.assets.length > 0
+                          ? [...editingChampion.assets]
+                          : [{}];
+                        curAssets[0] = { ...curAssets[0], fullAbsolutePath: e.target.value };
+                        setEditingChampion({ ...editingChampion, assets: curAssets });
+                      }}
+                      placeholder="https://dd.b.pvp.net/...-full.png"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                    />
+                    <p className="text-[11px] text-slate-400">Ảnh nền toàn cảnh khổ ngang hiển thị ở đầu trang chi tiết</p>
+                  </div>
+                  {/* Live Splash Preview */}
+                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
+                    <div className="w-24 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                      {editingChampion.assets?.[0]?.fullAbsolutePath ? (
+                        <img
+                          src={editingChampion.assets[0].fullAbsolutePath}
+                          alt="Splash Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-xs text-slate-500 font-mono">No Art</span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-400">Xem trước Splash Art (Khổ ngang)</span>
+                  </div>
+                </div>
+
+                {/* 3. URL Card In-Game Art (gameAbsolutePath) */}
+                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-300">URL Ảnh Thẻ Bài In-Game (gameAbsolutePath)</label>
+                    <input
+                      type="text"
+                      value={editingChampion.assets?.[0]?.gameAbsolutePath || ''}
+                      onChange={(e) => {
+                        const curAssets = Array.isArray(editingChampion.assets) && editingChampion.assets.length > 0
+                          ? [...editingChampion.assets]
+                          : [{}];
+                        curAssets[0] = { ...curAssets[0], gameAbsolutePath: e.target.value };
+                        setEditingChampion({ ...editingChampion, assets: curAssets });
+                      }}
+                      placeholder="https://dd.b.pvp.net/.../cards/06RU026.png"
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                    />
+                    <p className="text-[11px] text-slate-400">Ảnh thẻ bài dọc in-game làm hình minh họa và fallback</p>
+                  </div>
+                  {/* Live Card Preview */}
+                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
+                    <div className="w-12 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                      {editingChampion.assets?.[0]?.gameAbsolutePath ? (
+                        <img
+                          src={editingChampion.assets[0].gameAbsolutePath}
+                          alt="Card Preview"
+                          className="w-full h-full object-contain"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-[10px] text-slate-500 font-mono">No Art</span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-400">Xem trước Thẻ bài (Khổ dọc)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* TAB 6: CHÒM SAO (CONSTELLATION) */}
+            {editorTab === 'constellation' && (
+              <div id="admin-sec-constellation" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-4">
+                <ConstellationEditor
+                  constellation={
+                    editingChampion.constellation || {
+                      constellationID: editingChampion.championID,
+                      championName: editingChampion.name,
+                      backgroundImage: '',
+                      nodes: []
+                    }
+                  }
+                  onChange={(updatedConstellation) => {
+                    setEditingChampion({
+                      ...editingChampion,
+                      constellation: updatedConstellation
+                    });
+                  }}
+                  powers={powers}
+                  bonusStars={bonusStars}
+                  championName={editingChampion.name}
+                  championID={editingChampion.championID}
+                />
+              </div>
+            )}
+
+            {/* Bottom Floating Actions with Tab Switching Controls */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {editorTab !== 'basic' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const tabs = ['basic', 'core', 'builds', 'ratings', 'assets', 'constellation'];
+                      const idx = tabs.indexOf(editorTab);
+                      if (idx > 0) setEditorTab(tabs[idx - 1]);
+                    }}
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer border border-white/10"
+                  >
+                    ← {isEn ? 'Previous Tab' : 'Tab Trước'}
+                  </button>
+                )}
+                {editorTab !== 'constellation' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const tabs = ['basic', 'core', 'builds', 'ratings', 'assets', 'constellation'];
+                      const idx = tabs.indexOf(editorTab);
+                      if (idx < tabs.length - 1) setEditorTab(tabs[idx + 1]);
+                    }}
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    {isEn ? 'Next Tab' : 'Tab Kế Tiếp'} →
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="px-5 py-2.5 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                >
+                  {isEn ? 'Cancel' : 'Hủy Bỏ'}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={saveLoading}
+                  onClick={handleSaveChampion}
+                  className="px-8 py-2.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black font-heading text-xs uppercase tracking-wide transition-all shadow-xl cursor-pointer disabled:opacity-50"
+                >
+                  {saveLoading ? (isEn ? 'Saving...' : 'Đang Lưu...') : (isEn ? 'Save Changes' : 'Lưu Thay Đổi (Save)')}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CỘT PHẢI: MENU KÉO THẢ TÀI NGUYÊN (CỐ ĐỊNH TRONG KHUNG LÀM VIỆC) */}
+          {isDropPanelOpen && (
+            <aside className="fixed bottom-4 right-4 z-40 w-[calc(100vw-32px)] sm:w-96 h-[calc(100vh-140px)] max-h-[640px] xl:static xl:w-88 2xl:w-96 xl:h-full shrink-0 rounded-2xl bg-[#0a0e17] border-2 border-[#8CC0EB]/60 shadow-2xl flex flex-col overflow-hidden">
+              <DropDragSidePanel
+                isOpen={true}
+                onClose={() => setIsDropPanelOpen(false)}
+                relics={relics}
+                powers={powers}
+                bonusStars={bonusStars}
+                items={items}
+                cards={cards}
+                onQuickAssignRelic={handleQuickAssignRelic}
+              />
+            </aside>
+          )}
+        </div>
+      </div>
+    ) : (
+          /* ============================================================ */
+          /* MODULE 2: LIST VIEW FOR CHAMPIONS & OTHER MODULES            */
+          /* ============================================================ */
+          <div className="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div className="space-y-6 max-w-7xl mx-auto">
+            {/* Top Bar with Section Info & Primary Action */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl">
+              <div>
+                {/* Link Phân Cấp (Breadcrumb) Cho Danh Sách Module Quản Trị */}
+                <nav aria-label="Admin Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2 flex-wrap">
+                  <a
+                    href="/"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigate?.('home');
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                    title="Về Trang Chủ"
+                  >
+                    <span>🏠</span>
+                    <span>{isEn ? 'Home' : 'Trang Chủ'}</span>
+                  </a>
+                  <span className="text-slate-600">/</span>
+                  <a
+                    href="/admin"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goToModule('overview');
+                    }}
+                    className={`hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 ${
+                      activeModule === 'overview' ? 'text-[#8CC0EB] font-bold' : ''
+                    }`}
+                    title="Tổng Quan Quản Trị"
+                  >
+                    <span>🛡️</span>
+                    <span>{isEn ? 'Admin Portal' : 'Quản Trị Hệ Thống'}</span>
+                  </a>
+                  {activeModule !== 'overview' && (
+                    <>
+                      <span className="text-slate-600">/</span>
+                      <span className="text-[#8CC0EB] font-bold flex items-center gap-1.5">
+                        <span>{navModules.find((m) => m.id === activeModule)?.icon}</span>
+                        <span>{navModules.find((m) => m.id === activeModule)?.label}</span>
+                      </span>
+                    </>
+                  )}
+                </nav>
+
+                <h1 className="text-2xl font-black font-heading text-white">
+                  {navModules.find((m) => m.id === activeModule)?.icon}{' '}
+                  {navModules.find((m) => m.id === activeModule)?.label}
+                </h1>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Quản lý và cập nhật toàn bộ cơ sở dữ liệu thời gian thực.
+                </p>
+              </div>
+
+              {activeModule === 'champions' && (
+                <a
+                  href="/admin/champion/new"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToChampionCreate();
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-extrabold font-heading text-xs uppercase tracking-wide transition-all shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <span>+</span>
+                  <span>{isEn ? 'Add Champion' : 'Thêm Tướng Mới'}</span>
+                </a>
+              )}
+            </div>
+
+            {/* TAB: OVERVIEW */}
+            {activeModule === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {navModules.filter((m) => m.count !== undefined).map((m) => (
+                    <div
+                      key={m.id}
+                      onClick={() => goToModule(m.id)}
+                      className="p-5 rounded-2xl bg-[#0e1320] border border-white/10 hover:border-[#8CC0EB] transition-all cursor-pointer group shadow-lg"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-2xl">{m.icon}</span>
+                        <span className="text-2xl font-black font-heading text-[#8CC0EB] group-hover:scale-110 transition-transform">
+                          {m.count}
+                        </span>
+                      </div>
+                      <span className="font-heading font-bold text-xs text-white block uppercase tracking-wider">
+                        {m.label}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono block mt-1">Truy cập module →</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: CHAMPIONS LIST */}
+            {activeModule === 'champions' && (
+              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
+                {/* Search & Filter */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-white/10">
+                  <div className="relative w-full sm:w-80">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Tìm theo tên hoặc mã tướng..."
+                      className="w-full px-3.5 py-2 pl-9 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:outline-none focus:border-[#8CC0EB]"
+                    />
+                    <svg className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                  </div>
+
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <select
+                      value={regionFilter}
+                      onChange={(e) => setRegionFilter(e.target.value)}
+                      className="px-3 py-2 rounded-xl bg-[#070a10] border border-white/15 text-slate-300 text-xs focus:outline-none focus:border-[#8CC0EB]"
+                    >
+                      <option value="all">Tất cả khu vực</option>
+                      <option value="runeterra">Runeterra</option>
+                      <option value="demacia">Demacia</option>
+                      <option value="ionia">Ionia</option>
+                      <option value="noxus">Noxus</option>
+                      <option value="freljord">Freljord</option>
+                      <option value="shurima">Shurima</option>
+                      <option value="bilgewater">Bilgewater</option>
+                      <option value="shadowisles">Quần Đảo Bóng Đêm</option>
+                      <option value="bandlecity">Bandle City</option>
+                      <option value="targon">Targon</option>
+                      <option value="piltoverzaun">Piltover & Zaun</option>
+                    </select>
+
+                    <span className="text-xs text-slate-400 font-semibold whitespace-nowrap">
+                      {filteredChampions.length} / {champions.length} Tướng
+                    </span>
+                  </div>
+                </div>
+
+                {/* Champions Table */}
+                <div className="overflow-x-auto rounded-xl border border-white/10">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#070a10] uppercase font-mono text-[11px] text-slate-400 border-b border-white/10">
+                      <tr>
+                        <th className="py-3 px-4">Tướng</th>
+                        <th className="py-3 px-3">Mã ID</th>
+                        <th className="py-3 px-3">Khu Vực</th>
+                        <th className="py-3 px-3">Cost</th>
+                        <th className="py-3 px-3">Tier</th>
+                        <th className="py-3 px-3">Core Relics</th>
+                        <th className="py-3 px-3">Số Bộ Build</th>
+                        <th className="py-3 px-4 text-right">Thao Tác</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 font-sans">
+                      {filteredChampions.map((c) => {
+                        const avatar =
+                          c.assets?.[0]?.avatar ||
+                          c.assets?.[0]?.gameAbsolutePath ||
+                          `https://images.lortpoc.com/avatarChampions/${c.championID}.webp`;
+                        const tierShort = c.tier ? c.tier.split('//')[0].trim() : 'A';
+                        const coreCount = Array.isArray(c.coreRelics)
+                          ? c.coreRelics.length
+                          : (c.coreRelics?.mandatory || []).length;
+                        const optionsCount = Array.isArray(c.coreRelics?.options) ? c.coreRelics.options.length : 0;
+                        const buildsCount = (c.relicSets || []).length;
+
+                        return (
+                          <tr key={c.championID} className="hover:bg-[#141b2a]/60 transition-colors">
+                            <td className="py-3 px-4">
+                              <a
+                                href={`/admin/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  goToChampionEdit(c);
+                                }}
+                                className="flex items-center gap-3 group cursor-pointer"
+                                title={`Chỉnh sửa ${c.name}`}
+                              >
+                                <img
+                                  src={avatar}
+                                  alt={c.name}
+                                  className="w-9 h-9 rounded-lg object-cover bg-black border border-white/20 flex-shrink-0 group-hover:border-[#8CC0EB] group-hover:scale-105 transition-all"
+                                  onError={(e) => { e.target.src = 'https://dd.b.pvp.net/latest/set5/en_us/img/cards/05SH014.png'; }}
+                                />
+                                <div>
+                                  <span className="font-bold text-white block text-sm group-hover:text-[#8CC0EB] transition-colors">{c.name}</span>
+                                  {c.translations?.en?.name && (
+                                    <span className="text-[11px] text-slate-400 block">{c.translations.en.name}</span>
+                                  )}
+                                </div>
+                              </a>
+                            </td>
+
+                            <td className="py-3 px-3 font-mono text-slate-300">
+                              {c.championID}
+                              {c.cardCode && <span className="text-[10px] text-slate-500 block">{c.cardCode}</span>}
+                            </td>
+
+                            <td className="py-3 px-3 text-slate-300 capitalize">
+                              {Array.isArray(c.regions) ? c.regions.join(', ') : c.region || 'Runeterra'}
+                            </td>
+
+                            <td className="py-3 px-3 font-bold text-sky-300">{c.cost ?? 0} Mana</td>
+
+                            <td className="py-3 px-3">
+                              <span className="px-2 py-0.5 rounded font-black text-[11px] bg-[#8CC0EB] text-[#07090e]">
+                                {tierShort}
+                              </span>
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#452600] text-amber-200 border border-amber-400 whitespace-nowrap">
+                                {coreCount} Cốt lõi{optionsCount > 0 ? ` + ${optionsCount} Tùy chọn` : ''}
+                              </span>
+                            </td>
+
+                            <td className="py-3 px-3 text-slate-300 font-semibold">{buildsCount} Bộ</td>
+
+                            <td className="py-3 px-4 text-right space-x-2">
+                              <a
+                                href={`/admin/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  goToChampionEdit(c);
+                                }}
+                                className="inline-block px-3.5 py-1.5 rounded-lg bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer"
+                              >
+                                Chỉnh Sửa
+                              </a>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteChampion(c)}
+                                className="px-2.5 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                              >
+                                Xóa
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: RELICS CATALOG */}
+            {activeModule === 'relics' && (
+              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
+                <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 flex-wrap">
+                  <input
+                    type="text"
+                    value={relicSearch}
+                    onChange={(e) => setRelicSearch(e.target.value)}
+                    placeholder="Tìm cổ vật theo tên hoặc mã..."
+                    className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB]"
+                  />
+                  <span className="text-xs text-slate-400 font-mono">
+                    {filteredRelics.length} Cổ Vật
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {filteredRelics.map((r) => (
+                    <div key={r.relicCode} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 flex items-start gap-3">
+                      <img
+                        src={`https://images.lortpoc.com/relics/${r.relicCode}.webp`}
+                        alt={r.name}
+                        className="w-12 h-12 object-contain bg-black/40 rounded-lg p-1 border border-white/15 shrink-0"
+                        onError={(e) => { e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png'; }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="font-mono text-[10px] text-slate-400">{r.relicCode}</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">
+                            {r.rarity || 'Common'}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-bold text-white truncate">{r.name}</h4>
+                        <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">
+                          {r.descriptionRaw || r.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: POWERS CATALOG */}
+            {activeModule === 'powers' && (
+              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
+                <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 flex-wrap">
+                  <input
+                    type="text"
+                    value={powerSearch}
+                    onChange={(e) => setPowerSearch(e.target.value)}
+                    placeholder="Tìm sức mạnh theo tên hoặc mã..."
+                    className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB]"
+                  />
+                  <span className="text-xs text-slate-400 font-mono">
+                    {filteredPowers.length} Sức Mạnh
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {filteredPowers.slice(0, 90).map((p) => (
+                    <div key={p.powerCode || p.name} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 flex items-start gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="font-mono text-[10px] text-slate-400">{p.powerCode}</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">
+                            {p.rarity || 'Common'}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-bold text-white truncate">{p.name}</h4>
+                        <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">
+                          {p.descriptionRaw || p.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: SERVER LOGS */}
+            {activeModule === 'logs' && (
+              <div className="rounded-2xl bg-[#07090e] border-2 border-white/15 shadow-2xl overflow-hidden font-mono text-xs">
+                <div className="flex items-center justify-between px-4 py-3 bg-[#0d121d] border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
+                    <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
+                    <span className="text-xs font-bold text-slate-300 ml-2 font-heading">
+                      WINSTON LIVE LOGGER • LOCALHOST:5001
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 font-sans">
+                    <button
+                      type="button"
+                      onClick={fetchServerLogs}
+                      disabled={logsLoading}
+                      className="px-3 py-1.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer border border-white/10"
+                    >
+                      {logsLoading ? 'Đang tải...' : 'Làm Mới (Refresh)'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearLogs}
+                      className="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Xóa Log
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 max-h-[600px] overflow-y-auto space-y-1 bg-[#05070a] select-text">
+                  {serverLogs.length === 0 ? (
+                    <div className="py-16 text-center text-slate-500 text-xs">
+                      Chưa có nhật ký máy chủ gần đây.
+                    </div>
+                  ) : (
+                    serverLogs.map((log) => {
+                      const isError = log.level === 'error';
+                      const isWarn = log.level === 'warn';
+                      const isHttp = log.level === 'http';
+                      const levelBadgeClass = isError
+                        ? 'text-rose-400 bg-rose-950/60 border-rose-500/40'
+                        : isWarn
+                        ? 'text-amber-400 bg-amber-950/60 border-amber-500/40'
+                        : isHttp
+                        ? 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
+                        : 'text-sky-300 bg-sky-950/60 border-sky-500/40';
+
+                      return (
+                        <div key={log.id} className="flex items-start gap-2.5 leading-relaxed hover:bg-white/5 px-2 py-1 rounded transition-colors">
+                          <span className="text-slate-500 shrink-0 text-[11px] font-mono">{log.timestamp}</span>
+                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase shrink-0 border ${levelBadgeClass}`}>
+                            {log.level}
+                          </span>
+                          <span className={`break-all ${isError ? 'text-rose-200 font-bold' : 'text-slate-200'}`}>
+                            {log.message}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </main>
+  </div>
+);
+}

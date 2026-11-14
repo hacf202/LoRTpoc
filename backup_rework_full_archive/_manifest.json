@@ -1,0 +1,93 @@
+{
+  "backupDate": "2026-11-09T18:40:03.287Z",
+  "dbName": "guidePoc",
+  "results": [
+    {
+      "collection": "guidePocChampionList",
+      "count": 89,
+      "success": true
+    },
+    {
+      "collection": "guidePocChampionConstellation",
+      "count": 89,
+      "success": true
+    },
+    {
+      "collection": "guidePocPowers",
+      "count": 1196,
+      "success": true
+    },
+    {
+      "collection": "guidePocRelics",
+      "count": 155,
+      "success": true
+    },
+    {
+      "collection": "guidePocItems",
+      "count": 187,
+      "success": true
+    },
+    {
+      "collection": "guidePocRunes",
+      "count": 32,
+      "success": true
+    },
+    {
+      "collection": "guidePocBonusStar",
+      "count": 341,
+      "success": true
+    },
+    {
+      "collection": "guidePocCardList",
+      "count": 2686,
+      "success": true
+    },
+    {
+      "collection": "guidePocBosses",
+      "count": 338,
+      "success": true
+    },
+    {
+      "collection": "guidePocAdventureMap",
+      "count": 48,
+      "success": true
+    },
+    {
+      "collection": "guidePocGuideList",
+      "count": 0,
+      "success": true
+    },
+    {
+      "collection": "guidePocFavoriteBuilds",
+      "count": 42,
+      "success": true
+    },
+    {
+      "collection": "guidePocPlayStyleRating",
+      "count": 21,
+      "success": true
+    },
+    {
+      "collection": "guidePocAuditLogs",
+      "count": 1181,
+      "success": true
+    },
+    {
+      "collection": "guidePocBuilds",
+      "count": 103,
+      "success": true
+    },
+    {
+      "collection": "guidePocComments",
+      "count": 31,
+      "success": true
+    },
+    {
+      "collection": "guidePocSubChampions",
+      "count": 126,
+      "success": true
+    }
+  ],
+  "totalItems": 6665,
+  "duration": "9.0s"
+}
