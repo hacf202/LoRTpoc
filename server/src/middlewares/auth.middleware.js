@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const ADMIN_SECRET = process.env.ADMIN_JWT_SECRET || 'pocguide_v2_ultra_secret_key_2026';
+const ADMIN_SECRET = process.env.ADMIN_JWT_SECRET || 'lortpoc_ultra_secret_jwt_key_2026';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 /**
