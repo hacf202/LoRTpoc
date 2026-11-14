@@ -11,8 +11,33 @@ import { errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();
 
-// Middlewares
-app.use(cors({ origin: config.clientUrl, credentials: true }));
+// Dynamic Multi-Origin CORS (supports Localhost, lortpoc.com, and Vercel preview domains)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://lortpoc.com',
+  'https://www.lortpoc.com'
+];
+if (config.clientUrl && !allowedOrigins.includes(config.clientUrl)) {
+  allowedOrigins.push(config.clientUrl);
+}
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Cho phép Same-Origin, Server-to-Server, mobile apps hoặc cURL (origin is undefined)
+    if (!origin) return callback(null, true);
+
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.lortpoc.com')
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
