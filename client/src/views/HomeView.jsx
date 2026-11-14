@@ -65,8 +65,8 @@ export default function HomeView({
       items: [
         {
           id: 'champions',
-          image: 'https://dd.b.pvp.net/6_3_0/set3/vi_vn/img/cards/03MT087.png',
-          bgImage: 'https://dd.b.pvp.net/6_3_0/set3/vi_vn/img/cards/03MT087T1-full.png',
+          image: 'https://images.lortpoc.com/avatarChampions/AurelionSol.webp',
+          bgImage: 'https://images.lortpoc.com/backgrounds/1920px-01FR008T1-hd-full.webp',
           title: t('home.cards.champions.title'),
           desc: t('home.cards.champions.desc'),
           badge: t('home.cards.champions.badge'),
@@ -128,7 +128,7 @@ export default function HomeView({
         {
           id: 'items',
           image: 'https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0000.png',
-          bgImage: 'https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0000.png',
+          bgImage: 'https://images.lortpoc.com/items/I00001.webp',
           title: t('home.cards.items.title'),
           desc: t('home.cards.items.desc'),
           badge: t('home.cards.items.badge'),
@@ -149,8 +149,8 @@ export default function HomeView({
         },
         {
           id: 'bonusStars',
-          image: '/icons/starIcon.svg',
-          bgImage: 'https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0441.png',
+          image: 'https://images.lortpoc.com/icon/starIcon.webp',
+          bgImage: 'https://images.lortpoc.com/icon/starIcon.webp',
           title: t('home.cards.bonusStars.title'),
           desc: t('home.cards.bonusStars.desc'),
           badge: t('home.cards.bonusStars.badge'),
@@ -167,8 +167,8 @@ export default function HomeView({
       items: [
         {
           id: 'maps',
-          image: 'https://dd.b.pvp.net/6_3_0/set1/vi_vn/img/cards/01PZ008.png',
-          bgImage: 'https://dd.b.pvp.net/6_3_0/set1/vi_vn/img/cards/01PZ008-full.png',
+          image: 'https://images.lortpoc.com/backgrounds/1920px-01PZ008T2-full.webp',
+          bgImage: 'https://images.lortpoc.com/backgrounds/1920px-01PZ008T2-full.webp',
           title: t('home.cards.maps.title'),
           desc: t('home.cards.maps.desc'),
           badge: t('home.cards.maps.badge'),
@@ -178,8 +178,8 @@ export default function HomeView({
         },
         {
           id: 'bosses',
-          image: 'https://dd.b.pvp.net/6_3_0/set1/vi_vn/img/cards/01IO043.png',
-          bgImage: 'https://dd.b.pvp.net/6_3_0/set1/vi_vn/img/cards/01IO043-full.png',
+          image: 'https://images.lortpoc.com/backgrounds/1920px-01IO043-full.webp',
+          bgImage: 'https://images.lortpoc.com/backgrounds/1920px-01IO043-full.webp',
           title: t('home.cards.bosses.title'),
           desc: t('home.cards.bosses.desc'),
           badge: t('home.cards.bosses.badge'),
@@ -196,8 +196,8 @@ export default function HomeView({
       items: [
         {
           id: 'tierlist',
-          image: 'https://dd.b.pvp.net/latest/set1/vi_vn/img/cards/01PZ040.png',
-          bgImage: 'https://dd.b.pvp.net/6_3_0/set3/vi_vn/img/cards/03MT087T1-full.png',
+          image: 'https://images.lortpoc.com/backgrounds/1920px-01FR008T1-hd-full.webp',
+          bgImage: 'https://images.lortpoc.com/backgrounds/1920px-01FR008T1-hd-full.webp',
           title: t('home.cards.tierlist.title'),
           desc: t('home.cards.tierlist.desc'),
           badge: t('home.cards.tierlist.badge'),
@@ -355,7 +355,7 @@ export default function HomeView({
                           className="w-full h-full object-contain object-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-500"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = '/icons/starIcon.svg';
+                            e.target.src = '/favicon.svg';
                           }}
                         />
                       </div>
