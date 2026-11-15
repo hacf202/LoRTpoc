@@ -21,18 +21,18 @@ const DATA_DIR = path.join(__dirname, '../data');
 
 // Collection mapping: [JSON file name] -> [MongoDB Collection name]
 const DATA_COLLECTIONS = [
-  { file: 'champions.json', collection: 'guidePocChampionList' },
-  { file: 'constellations.json', collection: 'guidePocChampionConstellation' },
-  { file: 'relics.json', collection: 'guidePocRelics' },
-  { file: 'powers.json', collection: 'guidePocPowers' },
-  { file: 'items.json', collection: 'guidePocItems' },
-  { file: 'cards.json', collection: 'guidePocCardList' },
-  { file: 'maps.json', collection: 'guidePocAdventureMap' },
-  { file: 'bosses.json', collection: 'guidePocBosses' },
-  { file: 'subChampions.json', collection: 'guidePocSubChampions' },
-  { file: 'runes.json', collection: 'guidePocRunes' },
-  { file: 'bonusStars.json', collection: 'guidePocBonusStar' },
-  { file: 'builds.json', collection: 'guidePocBuilds' },
+  { file: 'champions.json', collection: 'champions' },
+  { file: 'constellations.json', collection: 'constellations' },
+  { file: 'relics.json', collection: 'relics' },
+  { file: 'powers.json', collection: 'powers' },
+  { file: 'items.json', collection: 'items' },
+  { file: 'cards.json', collection: 'cards' },
+  { file: 'maps.json', collection: 'maps' },
+  { file: 'bosses.json', collection: 'bosses' },
+  { file: 'subChampions.json', collection: 'subChampions' },
+  { file: 'runes.json', collection: 'runes' },
+  { file: 'bonusStars.json', collection: 'bonusStars' },
+  { file: 'builds.json', collection: 'builds' },
 ];
 
 async function run() {
