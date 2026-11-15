@@ -3,6 +3,7 @@ import SearchBar from '../components/SearchBar';
 import SearchDropdown from '../components/SearchDropdown';
 import ScrollFab from '../components/ScrollFab';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 /**
  * Enhanced Landing Page / Home View
@@ -353,10 +354,7 @@ export default function HomeView({
                           loading="lazy"
                           decoding="async"
                           className="w-full h-full object-contain object-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-500"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/favicon.svg';
-                          }}
+                          onError={(e) => handleImageError(e, 'default')}
                         />
                       </div>
                       <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#161d2d] text-white border border-white/15 shadow-sm">

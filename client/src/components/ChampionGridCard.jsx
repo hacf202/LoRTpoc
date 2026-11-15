@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
+import { handleImageError } from '../utils/imageFallback';
 
 // Tier badge styling with crisp high contrast using the new pastel palette
 const getTierStyle = (tier) => {
@@ -60,10 +61,7 @@ export default function ChampionGridCard({ champion, onClick }) {
           alt={displayName}
           loading="lazy"
           className="w-full h-full object-cover object-center transition-all duration-500 ease-out group-hover:scale-108 group-hover:brightness-105 block [transform:translateZ(0)]"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = fallbackUrl;
-          }}
+          onError={(e) => handleImageError(e, 'champion', fallbackUrl)}
         />
 
         {/* Seamless dark vignette on bottom of image overlapping seam */}

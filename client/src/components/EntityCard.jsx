@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LorMarkup from './LorMarkup';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 const ADVENTURE_TYPE_EN = {
   'Ác Mộng': 'Nightmare Adventures',
@@ -93,19 +94,13 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
     >
       {/* Entity Icon / Artwork */}
       <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-108">
-        {imageUrl && !imgError ? (
-          <img
-            src={imageUrl}
-            alt={name}
-            loading="lazy"
-            onError={() => setImgError(true)}
-            className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-xs">
-            LoR
-          </div>
-        )}
+        <img
+          src={imageUrl}
+          alt={name}
+          loading="lazy"
+          onError={(e) => handleImageError(e, type)}
+          className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+        />
       </div>
 
       {/* Name & Metadata */}

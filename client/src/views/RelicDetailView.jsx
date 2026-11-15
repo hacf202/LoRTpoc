@@ -6,6 +6,7 @@ import SEOHead from '../components/SEOHead';
 import { getRelicKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
+import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for relic details (Rule 10)
 const relicDetailCache = new Map();
@@ -410,10 +411,7 @@ export default function RelicDetailView({
                     src={`https://images.lortpoc.com/relics/${relic.relicCode}.webp`}
                     alt={relicName}
                     className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                    }}
+                    onError={(e) => handleImageError(e, 'relic')}
                   />
                 </div>
 
@@ -505,11 +503,7 @@ export default function RelicDetailView({
                           src={avatarUrl}
                           alt={champName}
                           className="w-10 h-10 rounded-lg object-cover bg-black/40 border border-white/10 pointer-events-none"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src =
-                              'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                          }}
+                          onError={(e) => handleImageError(e, 'champion')}
                         />
                         {champ.isCore && (
                           <span
@@ -550,11 +544,7 @@ export default function RelicDetailView({
                           }
                           alt={activeChampion.name}
                           className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl object-cover border border-[#8CC0EB]/50 bg-[#070a10] shrink-0 shadow-md"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src =
-                              'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                          }}
+                          onError={(e) => handleImageError(e, 'champion')}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
@@ -708,11 +698,7 @@ export default function RelicDetailView({
                                           src={`https://images.lortpoc.com/relics/${itemCode}.webp`}
                                           alt={compName}
                                           className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
-                                          onError={(e) => {
-                                            e.currentTarget.onerror = null;
-                                            e.currentTarget.src =
-                                              'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                                          }}
+                                          onError={(e) => handleImageError(e, 'relic')}
                                         />
                                         <span
                                           className={`text-[9px] sm:text-[10px] font-bold line-clamp-1 leading-tight ${
@@ -760,11 +746,7 @@ export default function RelicDetailView({
                                   src={`https://images.lortpoc.com/relics/${cCode}.webp`}
                                   alt={cName}
                                   className="w-4 h-4 sm:w-5 sm:h-5 object-contain"
-                                  onError={(e) => {
-                                    e.currentTarget.onerror = null;
-                                    e.currentTarget.src =
-                                      'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                                  }}
+                                  onError={(e) => handleImageError(e, 'relic')}
                                 />
                                 <span>{cName}</span>
                               </button>
@@ -819,11 +801,7 @@ export default function RelicDetailView({
                                       src={`https://images.lortpoc.com/relics/${optCode}.webp`}
                                       alt={optName}
                                       className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow"
-                                      onError={(e) => {
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src =
-                                          'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                                      }}
+                                      onError={(e) => handleImageError(e, 'relic')}
                                     />
                                   </button>
                                 );
@@ -881,11 +859,7 @@ export default function RelicDetailView({
                                 src={avatarUrl}
                                 alt={champName}
                                 className="w-full aspect-square rounded-lg object-cover bg-black/40 border border-white/10 group-hover:scale-105 transition-transform"
-                                onError={(e) => {
-                                  e.currentTarget.onerror = null;
-                                  e.currentTarget.src =
-                                    'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                                }}
+                                onError={(e) => handleImageError(e, 'champion')}
                               />
                               {champ.isCore && (
                                 <span

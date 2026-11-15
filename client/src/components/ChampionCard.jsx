@@ -1,4 +1,5 @@
 import React from 'react';
+import { handleImageError } from '../utils/imageFallback';
 
 /**
  * Reusable Champion Item Card
@@ -24,10 +25,7 @@ export default function ChampionCard({ champion, onClick }) {
           src={avatarUrl}
           alt={champion.name}
           className="w-10 h-10 rounded-full object-cover border border-[#BFDDF0]/50 bg-slate-800 flex-shrink-0"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://dd.b.pvp.net/latest/set5/en_us/img/cards/05SH014.png';
-          }}
+          onError={(e) => handleImageError(e, 'champion')}
         />
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-semibold text-white group-hover:text-[#8CC0EB] transition-colors truncate font-heading">

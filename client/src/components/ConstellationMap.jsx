@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import LorMarkup from './LorMarkup';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 function getRequirementLabel(type, isEn) {
   switch (type) {
@@ -130,10 +131,7 @@ function ConstellationNode({
               src={nodeImage}
               alt={node.name || node.nodeID}
               className="w-full h-full object-contain pointer-events-none"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = fallbackIcon;
-              }}
+              onError={(e) => handleImageError(e, 'power', fallbackIcon)}
             />
 
             {/* Star badge indicator */}

@@ -5,6 +5,7 @@ import DetailSkeleton from '../components/DetailSkeleton';
 import SEOHead from '../components/SEOHead';
 import { getPowerKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for power details (Rule 10)
 const powerDetailCache = new Map();
@@ -303,10 +304,7 @@ export default function PowerDetailView({
                     src={powerImg}
                     alt={powerName}
                     className="w-full h-full object-contain drop-shadow"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0156.png';
-                    }}
+                    onError={(e) => handleImageError(e, 'power')}
                   />
                 </div>
 
@@ -385,11 +383,7 @@ export default function PowerDetailView({
                             src={avatarUrl}
                             alt={champName}
                             className="w-full aspect-square rounded-lg object-cover bg-black/40 border border-white/10 pointer-events-none"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'champion')}
                           />
                           {champ.isStarPower && (
                             <span

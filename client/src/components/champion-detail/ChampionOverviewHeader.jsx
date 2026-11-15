@@ -1,6 +1,7 @@
 import React from 'react';
 import { getRegionIconUrl } from '../../utils/regionIcons';
 import { getTierTheme } from './constants';
+import { handleImageError } from '../../utils/imageFallback';
 
 export default function ChampionOverviewHeader({
   champion,
@@ -27,10 +28,7 @@ export default function ChampionOverviewHeader({
             src={avatarUrl}
             alt={name}
             className="w-full h-full object-cover object-center"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = 'https://dd.b.pvp.net/latest/set5/en_us/img/cards/05SH014.png';
-            }}
+            onError={(e) => handleImageError(e, 'champion')}
           />
           {champion.cost !== undefined && (
             <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-[#0b2545] text-sky-200 border border-sky-400">

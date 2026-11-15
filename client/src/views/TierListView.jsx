@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 const TIER_THEMES = {
   'S+': {
@@ -196,10 +197,7 @@ export default function TierListView({ onSelectChampion }) {
                                   alt={champName}
                                   loading="lazy"
                                   className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.onerror = null;
-                                    e.currentTarget.src = 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
-                                  }}
+                                  onError={(e) => handleImageError(e, 'champion', 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png')}
                                 />
                               </div>
 

@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import LorMarkup from '../LorMarkup';
 import RelicMiniCard from './RelicMiniCard';
 import { getRarityBadgeStyle } from './constants';
+import { handleImageError } from '../../utils/imageFallback';
 
 export default function ChampionRelicBuildsTab({
   champion,
@@ -80,11 +81,7 @@ export default function ChampionRelicBuildsTab({
                             src={`https://images.lortpoc.com/relics/${code}.webp`}
                             alt={relicName}
                             className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                            }}
+                            onError={(e) => handleImageError(e, 'relic')}
                           />
                         </div>
                       </React.Fragment>
@@ -147,11 +144,7 @@ export default function ChampionRelicBuildsTab({
                                     src={`https://images.lortpoc.com/relics/${code}.webp`}
                                     alt={relicName}
                                     className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover/item:scale-110 transition-transform"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src =
-                                        'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                                    }}
+                                    onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
                                   />
                                 </div>
                               </React.Fragment>
@@ -327,10 +320,7 @@ export default function ChampionRelicBuildsTab({
                                 src={`https://images.lortpoc.com/relics/${relicCode}.webp`}
                                 alt={relicName}
                                 className="w-full h-full object-contain drop-shadow-sm"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                                }}
+                                onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
                               />
                             </div>
                           );
@@ -385,10 +375,7 @@ export default function ChampionRelicBuildsTab({
                               src={`https://images.lortpoc.com/relics/${relicCode}.webp`}
                               alt={relicName}
                               className="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-                              }}
+                              onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
                             />
                           </div>
                           <div className="min-w-0 flex-1">

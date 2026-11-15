@@ -7,6 +7,7 @@ import SEOHead from '../components/SEOHead';
 import { getMapKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
+import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for map details (Rule 10)
 const mapDetailCache = new Map();
@@ -252,6 +253,7 @@ export default function MapDetailView({
                     src={bgImage}
                     alt=""
                     aria-hidden="true"
+                    onError={(e) => handleImageError(e, 'map')}
                     className="w-full h-full object-cover object-center opacity-30 filter blur-sm scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0e1320] via-[#0e1320]/80 to-transparent" />
@@ -265,6 +267,7 @@ export default function MapDetailView({
                     <img
                       src={bgImage}
                       alt={mapName}
+                      onError={(e) => handleImageError(e, 'map')}
                       className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -591,10 +594,7 @@ export default function MapDetailView({
                                     src={c.avatar}
                                     alt={cName}
                                     className="w-7 h-7 rounded-lg object-cover bg-black/40 border border-white/10"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = 'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                                    }}
+                                    onError={(e) => handleImageError(e, 'champion')}
                                   />
                                 )}
                                 <span className="text-xs font-bold text-slate-300 group-hover:text-white pr-1">

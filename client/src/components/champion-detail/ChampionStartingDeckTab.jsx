@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { handleImageError } from '../../utils/imageFallback';
 
 export default function ChampionStartingDeckTab({
   champion,
@@ -73,10 +74,7 @@ export default function ChampionStartingDeckTab({
                     alt={cardName}
                     loading="lazy"
                     className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)]"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://images.lortpoc.com/icon/cardBack.webp';
-                    }}
+                    onError={(e) => handleImageError(e, 'card', 'https://images.lortpoc.com/icon/cardBack.webp')}
                   />
                 </div>
 
@@ -101,10 +99,7 @@ export default function ChampionStartingDeckTab({
                             src={itemIcon}
                             alt={itemName}
                             className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.lortpoc.com/icon/itemIcon.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'item', 'https://images.lortpoc.com/icon/itemIcon.webp')}
                           />
                         </div>
                       );

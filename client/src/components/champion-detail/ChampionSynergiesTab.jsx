@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LorMarkup from '../LorMarkup';
 import { getRarityBadgeStyle } from './constants';
+import { handleImageError } from '../../utils/imageFallback';
 
 export default function ChampionSynergiesTab({ champion, powerMap, itemMap, isEn, navigateTo }) {
   const [synergySubTab, setSynergySubTab] = useState('powers');
@@ -64,10 +65,7 @@ export default function ChampionSynergiesTab({ champion, powerMap, itemMap, isEn
                         alt={pName}
                         loading="lazy"
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
-                        }}
+                        onError={(e) => handleImageError(e, 'power', 'https://images.lortpoc.com/icon/starIcon.webp')}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -123,10 +121,7 @@ export default function ChampionSynergiesTab({ champion, powerMap, itemMap, isEn
                         alt={iName}
                         loading="lazy"
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://images.lortpoc.com/icon/itemIcon.webp';
-                        }}
+                        onError={(e) => handleImageError(e, 'item', 'https://images.lortpoc.com/icon/itemIcon.webp')}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121826" />
+      <stop offset="50%" stop-color="#0b0f19" />
+      <stop offset="100%" stop-color="#06090e" />
+    </linearGradient>
+
+    <!-- Metallic Gold/Bronze Gradient for LoR Border -->
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#785a28" />
+      <stop offset="30%" stop-color="#c59b27" />
+      <stop offset="70%" stop-color="#93732c" />
+      <stop offset="100%" stop-color="#463414" />
+    </linearGradient>
+
+    <!-- Subtle Center Glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="300" height="400" rx="12" fill="url(#bgGrad)" />
+
+  <!-- Outer Border Frame -->
+  <rect x="6" y="6" width="288" height="388" rx="8" fill="none" stroke="url(#goldBorder)" stroke-width="1.5" stroke-opacity="0.4" />
+  <rect x="12" y="12" width="276" height="376" rx="6" fill="none" stroke="#1e293b" stroke-width="1" />
+
+  <!-- Corner Runes / Accents -->
+  <g stroke="url(#goldBorder)" stroke-width="1.5" fill="none" opacity="0.6">
+    <!-- Top-Left -->
+    <path d="M16 28 L28 16 M16 20 L20 16" />
+    <!-- Top-Right -->
+    <path d="M284 28 L272 16 M284 20 L280 16" />
+    <!-- Bottom-Left -->
+    <path d="M16 372 L28 384 M16 380 L20 384" />
+    <!-- Bottom-Right -->
+    <path d="M284 372 L272 384 M284 380 L280 384" />
+  </g>
+
+  <!-- Center Ambient Glow -->
+  <circle cx="150" cy="180" r="110" fill="url(#centerGlow)" />
+
+  <!-- Center Hextech / Card Crest -->
+  <g transform="translate(150, 180)">
+    <!-- Outer Octagon/Hextech ring -->
+    <polygon points="0,-48 34,-34 48,0 34,34 0,48 -34,34 -48,0 -34,-34" fill="#0f172a" stroke="url(#goldBorder)" stroke-width="2" stroke-opacity="0.8" />
+
+    <!-- Inner Diamond Core -->
+    <polygon points="0,-32 24,0 0,32 -24,0" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.7" />
+
+    <!-- Center Gem Accent -->
+    <polygon points="0,-16 12,0 0,16 -12,0" fill="#0284c7" opacity="0.6" />
+    <circle cx="0" cy="0" r="3" fill="#e0f2fe" />
+
+    <!-- Stylized Card/Shield silhouette lines -->
+    <path d="M-60 65 L60 65" stroke="#334155" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M-30 75 L30 75" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round" />
+  </g>
+
+  <!-- Bottom Subtle Brand Label -->
+  <text x="150" y="320" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" letter-spacing="2">PATH OF CHAMPIONS</text>
+  <text x="150" y="340" text-anchor="middle" fill="#475569" font-family="system-ui, -apple-system, sans-serif" font-size="9" letter-spacing="1">IMAGE UNAVAILABLE</text>
+</svg>

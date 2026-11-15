@@ -1,6 +1,7 @@
 import React from 'react';
 import LorMarkup from '../LorMarkup';
 import { getRarityBadgeStyle } from './constants';
+import { handleImageError } from '../../utils/imageFallback';
 
 /**
  * Compact Relic Card for Core Relics and Other Relic Options
@@ -32,10 +33,7 @@ export default function RelicMiniCard({ relicCode, relicInfo, isEn, isCore, onCl
               src={`https://images.lortpoc.com/relics/${relicCode}.webp`}
               alt={name}
               className="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png';
-              }}
+              onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
             />
           </div>
 

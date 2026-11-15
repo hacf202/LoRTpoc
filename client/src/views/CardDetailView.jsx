@@ -6,6 +6,7 @@ import SEOHead from '../components/SEOHead';
 import { getCardKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
+import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for card details (Rule 10)
 const cardDetailCache = new Map();
@@ -292,10 +293,7 @@ export default function CardDetailView({
                     src={cardImg}
                     alt={cardName}
                     className="w-full h-auto object-contain rounded-xl drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
-                    }}
+                    onError={(e) => handleImageError(e, 'card')}
                   />
                 </div>
 
@@ -428,10 +426,7 @@ export default function CardDetailView({
                             alt={assocName}
                             loading="lazy"
                             className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
-                            }}
+                            onError={(e) => handleImageError(e, 'card')}
                           />
                         </div>
 
@@ -521,11 +516,7 @@ export default function CardDetailView({
                             src={avatarUrl}
                             alt={champName}
                             className="w-full aspect-square rounded-lg object-cover bg-black/40 border border-white/10 pointer-events-none"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                'https://images.lortpoc.com/avatarChampions/Aatrox.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'champion')}
                           />
                           {champ.isChampionCard && (
                             <span

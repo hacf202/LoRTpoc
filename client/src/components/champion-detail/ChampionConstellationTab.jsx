@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LorMarkup from '../LorMarkup';
 import ConstellationMap from '../ConstellationMap';
+import { handleImageError } from '../../utils/imageFallback';
 
 export default function ChampionConstellationTab({
   champion,
@@ -119,10 +120,7 @@ export default function ChampionConstellationTab({
                           src={nodeImage}
                           alt={nodeName}
                           className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
-                          }}
+                          onError={(e) => handleImageError(e, 'power', 'https://images.lortpoc.com/icon/starIcon.webp')}
                         />
                       </div>
 
@@ -195,10 +193,7 @@ export default function ChampionConstellationTab({
                             src={bImage}
                             alt={bName}
                             className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'power', 'https://images.lortpoc.com/icon/starIcon.webp')}
                           />
                         </div>
 

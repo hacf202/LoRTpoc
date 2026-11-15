@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { getEntityPreview, getCachedEntityPreview } from '../utils/entityPreviewService';
 import { formatKeywordEn } from '../utils/lorMarkupParser';
+import { handleImageError } from '../utils/imageFallback';
 
 const TYPE_CONFIG = {
   cd: { label: 'Thẻ Bài', labelEn: 'Card', color: 'text-sky-400' },
@@ -81,7 +82,8 @@ export default function LorMarkupPreviewTooltip({ token, position }) {
                 alt={displayName}
                 className={`w-full h-full ${tagType === 'c' ? 'rounded-full object-cover' : 'object-contain'}`}
                 onError={(e) => {
-                  e.target.style.display = 'none';
+                  const fallbackType = tagType === 'c' ? 'champion' : tagType === 'r' ? 'relic' : tagType === 'p' ? 'power' : tagType === 'i' ? 'item' : tagType === 'cd' ? 'card' : 'default';
+                  handleImageError(e, fallbackType);
                 }}
               />
             ) : (

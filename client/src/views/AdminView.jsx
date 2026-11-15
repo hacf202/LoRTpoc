@@ -6,6 +6,7 @@ import RichMarkupTextarea from '../components/admin/RichMarkupTextarea';
 import ConstellationEditor from '../components/admin/ConstellationEditor';
 import { rankSearchResults } from '../utils/searchUtils';
 import { VALID_ADMIN_MODULES } from '../hooks/useUrlFilters';
+import { handleImageError } from '../utils/imageFallback';
 
 const DEFAULT_CHAMPION_TEMPLATE = {
   championID: '',
@@ -2435,10 +2436,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                 src={pImage}
                                 alt={pName}
                                 className="w-full h-full object-contain"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
-                                }}
+                                onError={(e) => handleImageError(e, 'power')}
                               />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -2548,10 +2546,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             src={pImage}
                             alt={pName}
                             className="w-6 h-6 object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'power')}
                           />
                           <div className="flex flex-col">
                             <span className="text-xs font-bold text-white max-w-[140px] truncate" title={pName}>
@@ -2638,10 +2633,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             src={itImage}
                             alt={itName}
                             className="w-6 h-6 object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.lortpoc.com/icon/itemIcon.webp';
-                            }}
+                            onError={(e) => handleImageError(e, 'item')}
                           />
                           <div className="flex flex-col">
                             <span className="text-xs font-bold text-white max-w-[140px] truncate" title={itName}>
@@ -3209,7 +3201,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                   src={avatar}
                                   alt={c.name}
                                   className="w-9 h-9 rounded-lg object-cover bg-black border border-white/20 flex-shrink-0 group-hover:border-[#8CC0EB] group-hover:scale-105 transition-all"
-                                  onError={(e) => { e.target.src = 'https://dd.b.pvp.net/latest/set5/en_us/img/cards/05SH014.png'; }}
+                                  onError={(e) => handleImageError(e, 'champion')}
                                 />
                                 <div>
                                   <span className="font-bold text-white block text-sm group-hover:text-[#8CC0EB] transition-colors">{c.name}</span>
@@ -3297,7 +3289,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         src={`https://images.lortpoc.com/relics/${r.relicCode}.webp`}
                         alt={r.name}
                         className="w-12 h-12 object-contain bg-black/40 rounded-lg p-1 border border-white/15 shrink-0"
-                        onError={(e) => { e.target.src = 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png'; }}
+                        onError={(e) => handleImageError(e, 'relic')}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1 mb-0.5">

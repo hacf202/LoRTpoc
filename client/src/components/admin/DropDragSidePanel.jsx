@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { rankSearchResults } from '../../utils/searchUtils';
+import { handleImageError } from '../../utils/imageFallback';
 
 /**
  * DropDragSidePanel - Menu kéo thả tài nguyên cho Admin Panel
@@ -284,9 +285,7 @@ export default function DropDragSidePanel({
                       alt={name}
                       className="w-full h-full object-contain"
                       loading="lazy"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
+                      onError={(e) => handleImageError(e, activeTab === 'relics' ? 'relic' : activeTab === 'powers' ? 'power' : activeTab === 'items' ? 'item' : 'card')}
                     />
                   ) : (
                     <span className="text-lg">{activeTab === 'relics' ? '💎' : activeTab === 'powers' ? '⚡' : activeTab === 'bonusStars' ? '⭐' : '📦'}</span>

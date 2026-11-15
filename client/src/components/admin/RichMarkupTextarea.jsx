@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import LorMarkup from '../LorMarkup';
 import { removeVietnameseTones, calculateFieldScore } from '../../utils/searchUtils';
+import { handleImageError } from '../../utils/imageFallback';
 
 /**
  * Tính điểm độ tương thích (Relevance Score) giữa từ khóa và thực thể:
@@ -479,9 +480,7 @@ export default function RichMarkupTextarea({
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
+                        onError={(e) => handleImageError(e, 'default')}
                       />
                     ) : (
                       <span className="text-xs">{item.icon}</span>

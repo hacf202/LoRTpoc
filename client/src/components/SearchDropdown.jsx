@@ -1,6 +1,7 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
 import { stripLorMarkup } from '../utils/lorMarkupParser';
 import { useLanguage } from '../context/LanguageContext';
+import { handleImageError } from '../utils/imageFallback';
 
 /**
  * Omnisearch Dropdown for Legends of Runeterra: The Path of Champions
@@ -245,9 +246,7 @@ const SearchDropdown = forwardRef(function SearchDropdown(
                         src={img}
                         alt={name}
                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
+                        onError={(e) => handleImageError(e, item.type)}
                       />
                     ) : (
                       <span className="text-[10px] font-bold text-slate-500">LoR</span>

@@ -5,6 +5,7 @@ import ListLoadingBar from '../components/ListLoadingBar';
 import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
+import { handleImageError } from '../utils/imageFallback';
 
 /**
  * Modern LoR Cards Vault View (/cards)
@@ -530,11 +531,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
                       alt={cardName}
                       loading="lazy"
                       className="w-full h-full object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
-                      }}
+                      onError={(e) => handleImageError(e, 'card')}
                     />
                   </button>
                 );
