@@ -1,73 +1,75 @@
-/**
- * High-Performance Server-Side In-Memory Cache + HTTP Cache-Control Middleware
- * - Caches computed JSON payloads in server RAM for O(1) response times (<1ms)
- * - Bypasses cache for authenticated admin requests, explicit no-cache headers, and cache-busting queries
- * - Auto-invalidates matching cache entries when mutations (POST, PUT, PATCH, DELETE) occur
- */
-
-const serverCache = new Map();
-const MAX_CACHE_ENTRIES = 1000;
+import { redisClient, isRedisConnected } from '../config/redis.js';
 
 /**
- * Remove expired entries or evict oldest when exceeding max capacity
+ * High-Performance Distributed Redis + In-Memory Fallback Cache Middleware
+ * - Caches computed JSON responses in Redis (L2) with memory fallback (L1)
+ * - Auto-invalidates matching entries upon mutations (POST, PUT, PATCH, DELETE)
+ * - Bypasses cache for admin requests, explicit no-cache headers, and cache-busting queries
  */
-function pruneCache() {
+
+const memoryCache = new Map();
+const MAX_MEMORY_ENTRIES = 1000;
+
+function pruneMemoryCache() {
   const now = Date.now();
-  for (const [key, entry] of serverCache.entries()) {
+  for (const [key, entry] of memoryCache.entries()) {
     if (entry.expiresAt <= now) {
-      serverCache.delete(key);
+      memoryCache.delete(key);
     }
   }
-
-  // If still too large, evict oldest entries
-  if (serverCache.size > MAX_CACHE_ENTRIES) {
-    const toRemove = serverCache.size - MAX_CACHE_ENTRIES;
+  if (memoryCache.size > MAX_MEMORY_ENTRIES) {
+    const toRemove = memoryCache.size - MAX_MEMORY_ENTRIES;
     let count = 0;
-    for (const key of serverCache.keys()) {
-      serverCache.delete(key);
+    for (const key of memoryCache.keys()) {
+      memoryCache.delete(key);
       count++;
       if (count >= toRemove) break;
     }
   }
 }
 
-// Periodic cleanup every 60 seconds
-const pruneInterval = setInterval(pruneCache, 60 * 1000);
-if (pruneInterval.unref) {
-  pruneInterval.unref();
-}
-
 /**
- * Invalidate cache entries by URL prefix or pattern
- * @param {string} [prefix] Optional prefix (e.g. '/api/v1/champions'). If omitted, clears all cache.
+ * Invalidate cache entries by URL prefix or pattern across Redis & Memory
+ * @param {string} [prefix] Optional route/path prefix (e.g. '/api/v1/champions')
  */
-export function invalidateServerCache(prefix = null) {
+export async function invalidateServerCache(prefix = null) {
+  // 1. Clear Memory Cache
   if (!prefix) {
-    serverCache.clear();
-    return;
+    memoryCache.clear();
+  } else {
+    const cleanPrefix = prefix.toLowerCase();
+    for (const key of memoryCache.keys()) {
+      if (key.toLowerCase().includes(cleanPrefix)) {
+        memoryCache.delete(key);
+      }
+    }
   }
-  const cleanPrefix = prefix.toLowerCase();
-  for (const key of serverCache.keys()) {
-    if (key.toLowerCase().includes(cleanPrefix)) {
-      serverCache.delete(key);
+
+  // 2. Clear Redis Cache
+  if (isRedisConnected && redisClient) {
+    try {
+      const pattern = prefix ? `poc:cache:*${prefix}*` : 'poc:cache:*';
+      const keys = await redisClient.keys(pattern);
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to invalidate Redis cache:', err.message);
     }
   }
 }
 
-/**
- * Clear the entire server-side memory cache
- */
 export function clearServerCache() {
-  serverCache.clear();
+  return invalidateServerCache(null);
 }
 
 /**
- * Middleware factory for server in-memory caching and HTTP caching
+ * HTTP Cache Middleware
  * @param {number} durationSeconds TTL in seconds (default: 60)
  */
 export const httpCache = (durationSeconds = 60) => {
-  return (req, res, next) => {
-    // 1. Invalidation on mutations (POST, PUT, PATCH, DELETE)
+  return async (req, res, next) => {
+    // 1. Mutation: invalidate matching cache
     if (req.method !== 'GET') {
       res.on('finish', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -81,7 +83,7 @@ export const httpCache = (durationSeconds = 60) => {
     }
 
     // 2. Bypass check: Admin token, explicit no-cache, or cache-busting query
-    const hasAuth = Boolean(req.headers.authorization || req.cookies?.token);
+    const hasAuth = Boolean(req.headers.authorization || req.cookies?.token || req.headers['x-admin-token']);
     const isNoCache =
       req.headers['cache-control']?.includes('no-cache') ||
       req.headers['pragma'] === 'no-cache';
@@ -98,22 +100,42 @@ export const httpCache = (durationSeconds = 60) => {
       return next();
     }
 
-    // 3. Cache key & Lookup
     const cacheKey = req.originalUrl || req.url;
-    const cached = serverCache.get(cacheKey);
-    const now = Date.now();
+    const redisKey = `poc:cache:${cacheKey}`;
 
-    if (cached && cached.expiresAt > now) {
-      res.set({
-        'Content-Type': cached.contentType || 'application/json; charset=utf-8',
-        'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
-        'Vary': 'Accept-Encoding, Authorization',
-        'X-Server-Cache': 'HIT'
-      });
-      return res.status(cached.statusCode).send(cached.data);
+    // 3. Try Redis Cache
+    if (isRedisConnected && redisClient) {
+      try {
+        const cachedRaw = await redisClient.get(redisKey);
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          res.set({
+            'Content-Type': cached.contentType || 'application/json; charset=utf-8',
+            'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
+            'Vary': 'Accept-Encoding, Authorization',
+            'X-Server-Cache': 'HIT (Redis)'
+          });
+          return res.status(cached.statusCode || 200).send(cached.data);
+        }
+      } catch (err) {
+        // Redis read failure: fail-safe to memory
+      }
     }
 
-    // 4. Cache MISS: intercept response
+    // 4. Try Memory Cache Fallback
+    const memCached = memoryCache.get(cacheKey);
+    const now = Date.now();
+    if (memCached && memCached.expiresAt > now) {
+      res.set({
+        'Content-Type': memCached.contentType || 'application/json; charset=utf-8',
+        'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
+        'Vary': 'Accept-Encoding, Authorization',
+        'X-Server-Cache': 'HIT (Memory)'
+      });
+      return res.status(memCached.statusCode).send(memCached.data);
+    }
+
+    // 5. Cache MISS: intercept response
     res.set({
       'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
       'Vary': 'Accept-Encoding, Authorization',
@@ -123,15 +145,24 @@ export const httpCache = (durationSeconds = 60) => {
     const originalSend = res.send.bind(res);
 
     res.send = (body) => {
-      // Only cache successful 2xx responses
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        if (serverCache.size >= MAX_CACHE_ENTRIES) {
-          pruneCache();
-        }
-        serverCache.set(cacheKey, {
+        const payload = {
           data: body,
           contentType: res.get('Content-Type') || 'application/json; charset=utf-8',
-          statusCode: res.statusCode,
+          statusCode: res.statusCode
+        };
+
+        // Save to Redis if available
+        if (isRedisConnected && redisClient) {
+          redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
+        }
+
+        // Save to Memory
+        if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
+          pruneMemoryCache();
+        }
+        memoryCache.set(cacheKey, {
+          ...payload,
           expiresAt: Date.now() + durationSeconds * 1000
         });
       }

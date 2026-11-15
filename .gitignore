@@ -18,3 +18,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Database Backups
+server/src/data/backup_mongo/
+
