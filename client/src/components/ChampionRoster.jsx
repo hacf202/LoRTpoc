@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ChampionGridCard from './ChampionGridCard';
 import ChampionFiltersSidebar from './ChampionFiltersSidebar';
 import Pagination from './Pagination';
+import ListLoadingBar from './ListLoadingBar';
+import ListSkeleton from './ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl, getTagLabel } from '../utils/regionIcons';
 
@@ -32,6 +34,7 @@ export default function ChampionRoster({
   // Champion data and loading state
   const [champions, setChampions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [pagination, setPagination] = useState({
     page: filters.page || 1,
     limit: filters.limit || 24,
@@ -112,7 +115,10 @@ export default function ChampionRoster({
     const abortController = new AbortController();
 
     const fetchChampions = async () => {
-      setLoading(true);
+      setIsTransitioning(true);
+      if (champions.length === 0) {
+        setLoading(true);
+      }
       const startTime = performance.now();
 
       try {
@@ -144,9 +150,9 @@ export default function ChampionRoster({
           signal: abortController.signal
         });
 
-        // Enforce smooth minimum 380ms duration (0.3s - 0.5s) to eliminate jarring instant flash
+        // Enforce smooth minimum 320ms duration to eliminate jarring instant flash (Rule 9)
         const elapsed = performance.now() - startTime;
-        const remainingDelay = Math.max(0, 380 - elapsed);
+        const remainingDelay = Math.max(0, 320 - elapsed);
         if (remainingDelay > 0) {
           await new Promise((resolve) => setTimeout(resolve, remainingDelay));
         }
@@ -165,7 +171,10 @@ export default function ChampionRoster({
           console.error('Failed to fetch champions:', err);
         }
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          setIsTransitioning(false);
+        }
       }
     };
 
@@ -177,20 +186,32 @@ export default function ChampionRoster({
     };
   }, [localSearch, filters.regions, filters.region, filters.costs, filters.stars, filters.tags, sortBy, currentPage, currentLimit]);
 
+  // Synchronize local search when filters.q changes externally (e.g. browser navigation)
+  useEffect(() => {
+    setLocalSearch(filters.q || '');
+  }, [filters.q]);
+
   // Sync local search with debounce (350ms - Rule 9) to URL
   useEffect(() => {
+    const currentQuery = (filters.q || '').trim();
+    if (localSearch.trim() !== currentQuery) {
+      setIsTransitioning(true);
+    }
     const timer = setTimeout(() => {
-      if (localSearch !== (filters.q || '')) {
-        updateFilters?.({ q: localSearch, page: 1 });
+      if (localSearch.trim() !== currentQuery) {
+        updateFilters?.({ q: localSearch.trim(), page: 1 });
+      } else {
+        setIsTransitioning(false);
       }
     }, 350);
 
     return () => clearTimeout(timer);
   }, [localSearch, filters.q, updateFilters]);
 
-  // Handlers for toggling multi-select filter items
+  // Handlers for toggling multi-select filter items with immediate transition feedback
   const handleToggleRegion = useCallback(
     (regKey) => {
+      setIsTransitioning(true);
       const cleanKey = regKey.toLowerCase().trim();
       const next = selectedRegions.includes(cleanKey)
         ? selectedRegions.filter((r) => r !== cleanKey)
@@ -207,6 +228,7 @@ export default function ChampionRoster({
 
   const handleToggleCost = useCallback(
     (costVal) => {
+      setIsTransitioning(true);
       const next = selectedCosts.includes(costVal)
         ? selectedCosts.filter((c) => c !== costVal)
         : [...selectedCosts, costVal];
@@ -218,6 +240,7 @@ export default function ChampionRoster({
 
   const handleToggleStar = useCallback(
     (starVal) => {
+      setIsTransitioning(true);
       const numVal = parseInt(starVal, 10);
       const next = selectedStars.includes(numVal)
         ? selectedStars.filter((s) => s !== numVal)
@@ -233,6 +256,7 @@ export default function ChampionRoster({
 
   const handleToggleTag = useCallback(
     (tagVal) => {
+      setIsTransitioning(true);
       const next = selectedTags.includes(tagVal)
         ? selectedTags.filter((t) => t !== tagVal)
         : [...selectedTags, tagVal];
@@ -244,6 +268,7 @@ export default function ChampionRoster({
 
   const handleSortChange = useCallback(
     (newSort) => {
+      setIsTransitioning(true);
       updateFilters?.({ sort: newSort, page: 1 });
     },
     [updateFilters]
@@ -251,6 +276,7 @@ export default function ChampionRoster({
 
   const handlePageChange = useCallback(
     (newPage) => {
+      setIsTransitioning(true);
       updateFilters?.({ page: newPage });
       if (rosterTopRef.current) {
         rosterTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -260,6 +286,7 @@ export default function ChampionRoster({
   );
 
   const handleResetFilters = useCallback(() => {
+    setIsTransitioning(true);
     setLocalSearch('');
     updateFilters?.({
       q: '',
@@ -454,31 +481,15 @@ export default function ChampionRoster({
             </div>
           )}
 
+          {/* Standardized Subtle Loading Progress Line (Rule 9) */}
+          <ListLoadingBar isTransitioning={isTransitioning} />
+
           {/* Cards Grid / Skeleton / Empty State */}
-          <div className="flex-1 flex flex-col">
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-in fade-in duration-200">
-                {Array.from({ length: 8 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0e1320] animate-pulse select-none"
-                  >
-                    <div className="w-full aspect-[4/3] bg-white/5 relative">
-                      <div className="absolute top-2 left-2 w-8 h-5 rounded-md bg-white/10" />
-                      <div className="absolute top-2 right-2 w-10 h-5 rounded-md bg-white/10" />
-                    </div>
-                    <div className="p-3 sm:p-3.5 flex flex-col gap-2">
-                      <div className="h-4 bg-white/10 rounded-md w-3/4" />
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="w-4 h-4 rounded-full bg-white/10" />
-                        <div className="h-3 bg-white/10 rounded w-16" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className={`flex-1 flex flex-col transition-opacity duration-200 ${isTransitioning ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            {loading && champions.length === 0 ? (
+              <ListSkeleton type="champion" count={8} />
             ) : champions.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-in fade-in duration-200">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-5 animate-in fade-in duration-200">
                 {champions.map((champion) => (
                   <ChampionGridCard
                     key={champion.championID || champion.cardCode || champion.name}

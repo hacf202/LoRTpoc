@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CardFiltersSidebar, { TYPE_OPTIONS, RARITY_OPTIONS } from '../components/CardFiltersSidebar';
 import Pagination from '../components/Pagination';
+import ListLoadingBar from '../components/ListLoadingBar';
+import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 
@@ -133,6 +135,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
         if (queryType) params.append('type', queryType);
         if (queryRarity) params.append('rarity', queryRarity);
         if (sortBy) params.append('sort', sortBy);
+        params.append('fields', 'cardCode,name,cost,regions,rarity,type,gameAbsolutePath,descriptionRaw,description,translations');
         params.append('page', String(currentPage));
         params.append('limit', String(itemsPerPage));
 
@@ -151,7 +154,11 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
             const resultTotal = json.total || 0;
             const resultTotalPages = json.pagination?.totalPages || 1;
 
-            // Store in cache
+            // Store in cache with 50-item LRU cap to prevent memory bloat
+            if (queryCache.current.size >= 50) {
+              const oldestKey = queryCache.current.keys().next().value;
+              queryCache.current.delete(oldestKey);
+            }
             queryCache.current.set(cacheKey, {
               data: resultData,
               total: resultTotal,
@@ -194,6 +201,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
 
   // Filter Toggles (Multi-Select)
   const handleToggleRegion = useCallback((val) => {
+    setIsTransitioning(true);
     const next = selectedRegions.includes(val)
       ? selectedRegions.filter((r) => r !== val)
       : [...selectedRegions, val];
@@ -201,6 +209,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedRegions, updateFilters]);
 
   const handleToggleCost = useCallback((val) => {
+    setIsTransitioning(true);
     const next = selectedCosts.includes(val)
       ? selectedCosts.filter((c) => c !== val)
       : [...selectedCosts, val];
@@ -208,6 +217,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedCosts, updateFilters]);
 
   const handleToggleType = useCallback((val) => {
+    setIsTransitioning(true);
     const cleanVal = val.toLowerCase();
     const next = selectedTypes.includes(cleanVal)
       ? selectedTypes.filter((t) => t !== cleanVal)
@@ -216,6 +226,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedTypes, updateFilters]);
 
   const handleToggleRarity = useCallback((val) => {
+    setIsTransitioning(true);
     const cleanVal = val.toLowerCase();
     const next = selectedRarities.includes(cleanVal)
       ? selectedRarities.filter((r) => r !== cleanVal)
@@ -224,10 +235,12 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedRarities, updateFilters]);
 
   const handleSortChange = useCallback((val) => {
+    setIsTransitioning(true);
     updateFilters?.({ sort: val, page: 1 });
   }, [updateFilters]);
 
   const handleResetFilters = useCallback(() => {
+    setIsTransitioning(true);
     setSearchInput('');
     updateFilters?.({
       q: '',
@@ -243,6 +256,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [updateFilters]);
 
   const handlePageChange = useCallback((page) => {
+    setIsTransitioning(true);
     updateFilters?.({ page });
     if (rosterTopRef.current) {
       rosterTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -461,53 +475,36 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
             </div>
           )}
 
-          {/* Rule 9: Subtle Loading Transition Progress Line */}
-          {isTransitioning && (
-            <div className="h-0.5 w-full bg-[#8CC0EB]/20 overflow-hidden rounded-full mb-3">
-              <div className="h-full bg-[#8CC0EB] animate-pulse w-full" />
-            </div>
-          )}
+          {/* Standardized Subtle Loading Progress Line (Rule 9) */}
+          <ListLoadingBar isTransitioning={isTransitioning} />
 
           {/* Cards Grid with Subtle Loading Opacity (4 Columns Portrait Grid) */}
-          {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-              {Array.from({ length: 12 }).map((_, idx) => (
-                <div
-                  key={idx}
-                  className="relative w-full aspect-[680/1024] rounded-xl sm:rounded-2xl bg-[#0e1320] border border-white/5 animate-pulse overflow-hidden p-3 flex flex-col justify-end"
-                >
-                  <div className="h-4 w-3/4 bg-white/10 rounded mb-2" />
-                  <div className="h-3 w-1/2 bg-white/5 rounded" />
-                </div>
-              ))}
-            </div>
-          ) : cards.length === 0 ? (
-            <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
-              <h3 className="text-base font-bold text-white mb-1">
-                {isEn ? 'No cards found' : 'Không tìm thấy lá bài nào'}
-              </h3>
-              <p className="text-xs text-slate-400 mb-4 max-w-sm mx-auto">
-                {isEn
-                  ? 'Try adjusting your search keyword or filters.'
-                  : 'Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc.'}
-              </p>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="px-4 py-2 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase cursor-pointer"
-                >
-                  {isEn ? 'Reset Filters' : 'Đặt lại bộ lọc'}
-                </button>
-              )}
-            </div>
-          ) : (
-            <div
-              className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 transition-opacity duration-200 ${
-                isTransitioning ? 'opacity-60' : 'opacity-100'
-              }`}
-            >
-              {cards.map((card) => {
+          <div className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            {loading && cards.length === 0 ? (
+              <ListSkeleton type="card" count={12} />
+            ) : cards.length === 0 ? (
+              <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
+                <h3 className="text-base font-bold text-white mb-1">
+                  {isEn ? 'No cards found' : 'Không tìm thấy lá bài nào'}
+                </h3>
+                <p className="text-xs text-slate-400 mb-4 max-w-sm mx-auto">
+                  {isEn
+                    ? 'Try adjusting your search keyword or filters.'
+                    : 'Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc.'}
+                </p>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="px-4 py-2 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase cursor-pointer"
+                  >
+                    {isEn ? 'Reset Filters' : 'Đặt lại bộ lọc'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                {cards.map((card) => {
                 const cardName =
                   isEn && card.translations?.en?.cardName
                     ? card.translations.en.cardName
@@ -544,6 +541,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
               })}
             </div>
           )}
+          </div>
 
           {/* Pagination */}
           {!loading && totalPages > 1 && (

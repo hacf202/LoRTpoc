@@ -1,5 +1,7 @@
 import React from 'react';
 import ChampionElementsDetail from '../components/ChampionElementsDetail';
+import ListLoadingBar from '../components/ListLoadingBar';
+import DetailSkeleton from '../components/DetailSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 /**
@@ -27,7 +29,7 @@ export default function ChampionDetailView({
     : champion?.name || '';
 
   return (
-    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center">
+    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center animate-in fade-in duration-300">
       <div className="w-full max-w-6xl mx-auto px-2 sm:px-6 py-2 sm:py-8">
         {/* 1. Top Bar: Back Button & Minimal Breadcrumb */}
         <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-white/10 select-none">
@@ -75,12 +77,10 @@ export default function ChampionDetailView({
         </div>
 
         {/* 2. Main Detail Content */}
-        {loading && !champion ? (
-          <div className="py-32 flex flex-col items-center justify-center gap-4 text-center">
-            <div className="w-10 h-10 border-3 border-[#8CC0EB] border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm font-semibold text-slate-400">
-              {t('hero.searching') || 'Đang tải dữ liệu vị tướng...'}
-            </span>
+        {loading || !champion?.relicSets ? (
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={true} />
+            <DetailSkeleton type="champion" />
           </div>
         ) : champion ? (
           <ChampionElementsDetail

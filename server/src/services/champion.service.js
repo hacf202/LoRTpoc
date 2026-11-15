@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { matchSearchQuery, rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
+import { relationService } from './relation.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,6 +105,20 @@ function sanitizeChampionPayload(data) {
 
       return s;
     });
+  }
+
+  // 3. Sanitize powerStarIds, adventurePowerIds, itemIds
+  if (Array.isArray(clean.powerStarIds)) {
+    clean.powerStarIds = clean.powerStarIds.map((p) => String(p || '').trim().toUpperCase()).slice(0, 6);
+    while (clean.powerStarIds.length < 6) clean.powerStarIds.push('');
+  }
+
+  if (Array.isArray(clean.adventurePowerIds)) {
+    clean.adventurePowerIds = clean.adventurePowerIds.map((p) => String(p || '').trim().toUpperCase()).filter(Boolean);
+  }
+
+  if (Array.isArray(clean.itemIds)) {
+    clean.itemIds = clean.itemIds.map((it) => String(it || '').trim().toUpperCase()).filter(Boolean);
   }
 
   return clean;
@@ -276,6 +291,24 @@ export const championService = {
         result.sort((a, b) => (a.cost || 0) - (b.cost || 0));
       } else if (filter.sort === 'cost-desc') {
         result.sort((a, b) => (b.cost || 0) - (a.cost || 0));
+      } else if (filter.sort === 'tier') {
+        const getTierWeight = (t) => {
+          if (!t) return 0;
+          const u = t.split('//')[0].trim().toUpperCase();
+          if (u.startsWith('S+')) return 9;
+          if (u.startsWith('S')) return 8;
+          if (u.startsWith('A+')) return 7;
+          if (u.startsWith('A')) return 6;
+          if (u.startsWith('B+')) return 5;
+          if (u.startsWith('B')) return 4;
+          if (u.startsWith('C')) return 3;
+          if (u.startsWith('D')) return 2;
+          return 1;
+        };
+        result.sort((a, b) => {
+          const diff = getTierWeight(b.tier) - getTierWeight(a.tier);
+          return diff !== 0 ? diff : (a.name || '').localeCompare(b.name || '');
+        });
       }
     }
 
@@ -354,7 +387,8 @@ export const championService = {
     }
 
     if (!champion) return null;
-    return fields ? pickFields(champion, fields, 'championID') : champion;
+    const hydrated = relationService.hydrateChampion(champion);
+    return fields ? pickFields(hydrated, fields, 'championID') : hydrated;
   },
 
   create: async (data) => {
@@ -369,6 +403,7 @@ export const championService = {
     };
     champions.push(newChampion);
     saveChampionsToFile();
+    relationService.rebuild();
     return newChampion;
   },
 
@@ -390,6 +425,7 @@ export const championService = {
       championID: champions[index].championID // Keep primary ID immutable
     };
     saveChampionsToFile();
+    relationService.rebuild();
     return champions[index];
   },
 
@@ -405,6 +441,7 @@ export const championService = {
 
     champions.splice(index, 1);
     saveChampionsToFile();
+    relationService.rebuild();
     return true;
   },
 

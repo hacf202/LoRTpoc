@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import LorMarkup from '../components/LorMarkup';
 import AdventureMapVisualizer from '../components/AdventureMapVisualizer';
+import ListLoadingBar from '../components/ListLoadingBar';
+import DetailSkeleton from '../components/DetailSkeleton';
+import SEOHead from '../components/SEOHead';
+import { getMapKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 
 // In-memory cache for map details (Rule 10)
 const mapDetailCache = new Map();
+
+const ADVENTURE_TYPE_EN = {
+  'Ác Mộng': 'Nightmare Adventures',
+  'Phiêu Lưu Khắp Thế Giới': 'World Adventures',
+  'Người Khổng Lồ Của Runeterra': 'Titans of Runeterra',
+  'Hoa Linh Lục Địa': 'Spirit Blossom',
+  'Tên Cướp Runeterra': 'Rogues of Runeterra',
+  'Huyền Thoại Arcane': 'Legends of Arcane'
+};
 
 export default function MapDetailView({
   mapId,
@@ -29,18 +42,32 @@ export default function MapDetailView({
   useEffect(() => {
     if (!mapId) return;
 
+    let isMounted = true;
+
     if (mapDetailCache.has(mapId)) {
-      setMap(mapDetailCache.get(mapId));
-      setLoading(false);
-      return;
+      const cached = mapDetailCache.get(mapId);
+      const timer = setTimeout(() => {
+        if (isMounted) {
+          setMap(cached);
+          setLoading(false);
+        }
+      }, 350);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
     }
 
-    let isMounted = true;
     const fetchMap = async () => {
+      const startTime = performance.now();
       try {
         setLoading(true);
         setError(null);
         const res = await fetch(`/api/v1/maps/${encodeURIComponent(mapId)}`);
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, 380 - elapsed);
+        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const json = await res.json();
         if (json.success && isMounted) {
@@ -70,8 +97,8 @@ export default function MapDetailView({
     : map?.adventureName || map?.translations?.en?.adventureName;
 
   const adventureType = isEn
-    ? map?.translations?.en?.typeAdventure || map?.typeAdventure
-    : map?.typeAdventure || map?.translations?.en?.typeAdventure;
+    ? (map?.translations?.en?.typeAdventure || ADVENTURE_TYPE_EN[map?.typeAdventure] || map?.typeAdventure)
+    : (map?.typeAdventure || map?.translations?.en?.typeAdventure);
 
   const bgImage = map?.background || map?.assetAbsolutePath;
 
@@ -81,8 +108,71 @@ export default function MapDetailView({
 
   const hasRewards = Array.isArray(map?.rewards) && map.rewards.length > 0;
 
+  // SEO metadata computation (Rule 1 & Rule 4)
+  const mapStars = map?.difficultyStars || map?.stars || 3;
+  const seoTitle = isEn
+    ? `${adventureName} Adventure (${mapStars}★) - Boss Strategy & Rewards`
+    : `Cuộc Phiêu Lưu ${adventureName} (${mapStars}★) - Chiến Thuật & Phần Thưởng`;
+
+  const seoDesc = isEn
+    ? `Full walkthrough for ${adventureName} (${adventureType}, ${mapStars} Stars) in The Path of Champions. Boss strategies, encounter powers, and rewards.`
+    : `Cẩm nang vượt cuộc phiêu lưu ${adventureName} (${adventureType}, ${mapStars} Sao) trong Con Đường Anh Hùng. Chiến thuật diệt trùm, sức mạnh đặc biệt và phần thưởng.`;
+
+  const seoUrl = `https://thepathofchampions.guide/map/${encodeURIComponent(mapId)}`;
+  const seoKeywords = getMapKeywords(map, language);
+  const seoImage = bgImage || '/assets/hero-bg.jpg';
+
+  const seoJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: isEn ? 'Home' : 'Trang Chủ',
+            item: 'https://thepathofchampions.guide/'
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: isEn ? 'Adventures' : 'Cuộc Phiêu Lưu',
+            item: 'https://thepathofchampions.guide/?tab=maps'
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: adventureName,
+            item: seoUrl
+          }
+        ]
+      },
+      {
+        '@type': 'ItemPage',
+        mainEntity: {
+          '@type': 'Place',
+          name: adventureName,
+          description: seoDesc,
+          image: seoImage
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-200">
+    <div className="min-h-screen bg-[#07090e] text-slate-200 animate-in fade-in duration-300">
+      {/* Dynamic Bilingual SEO */}
+      <SEOHead
+        title={seoTitle}
+        description={seoDesc}
+        keywords={seoKeywords}
+        image={seoImage}
+        url={seoUrl}
+        jsonLd={seoJsonLd}
+        type="article"
+        lang={language}
+      />
       {/* 1. Top Bar: Breadcrumbs & Back Navigation */}
       <header className="sticky top-0 z-30 bg-[#07090e]/90 backdrop-blur-md border-b border-white/10 px-2 sm:px-6 py-2 sm:py-2.5 select-none">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
@@ -132,9 +222,9 @@ export default function MapDetailView({
       {/* Main Content Container */}
       <main className="max-w-6xl mx-auto p-2 sm:p-5">
         {loading ? (
-          <div className="space-y-4 animate-pulse">
-            <div className="h-64 rounded-2xl bg-[#0e1320] border border-white/10" />
-            <div className="h-40 rounded-2xl bg-[#0e1320] border border-white/10" />
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={true} />
+            <DetailSkeleton type="map" />
           </div>
         ) : error || !map ? (
           <div className="py-20 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
@@ -151,8 +241,10 @@ export default function MapDetailView({
             </button>
           </div>
         ) : (
-          <div className="space-y-5 sm:space-y-6">
-            {/* 2. HERO SECTION (Banner with difficulty, title, XP) */}
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={loading} />
+            <div className={`space-y-5 sm:space-y-6 transition-opacity duration-200 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+              {/* 2. HERO SECTION (Banner with difficulty, title, XP) */}
             <section className="relative rounded-2xl overflow-hidden border border-white/15 bg-[#0e1320] shadow-2xl">
               {bgImage && (
                 <div className="absolute inset-0 z-0">
@@ -593,6 +685,7 @@ export default function MapDetailView({
                 )}
               </section>
             )}
+          </div>
           </div>
         )}
       </main>

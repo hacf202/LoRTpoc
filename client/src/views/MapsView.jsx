@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import MapFiltersSidebar, { DIFFICULTY_OPTIONS, TYPE_OPTIONS } from '../components/MapFiltersSidebar';
 import EntityCard from '../components/EntityCard';
 import Pagination from '../components/Pagination';
+import ListLoadingBar from '../components/ListLoadingBar';
+import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 /**
@@ -63,12 +65,17 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
     setSearchInput(filters.q || filters.search || '');
   }, [filters.q, filters.search]);
 
-  // Rule 9: 350ms Debounced search synchronization to URL
+  // Rule 9: 350ms Debounced search synchronization to URL with subtle loading transition
   useEffect(() => {
+    const currentQuery = (filters.q || filters.search || '').trim();
+    if (searchInput.trim() !== currentQuery) {
+      setIsTransitioning(true);
+    }
     const timer = setTimeout(() => {
-      const currentQuery = filters.q || filters.search || '';
-      if (searchInput.trim() !== currentQuery.trim()) {
+      if (searchInput.trim() !== currentQuery) {
         updateFilters?.({ q: searchInput.trim(), page: 1 });
+      } else {
+        setIsTransitioning(false);
       }
     }, 350);
     return () => clearTimeout(timer);
@@ -77,6 +84,7 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
   // Smooth Data Fetcher with In-Memory Query Cache (Rules 9 & 10)
   useEffect(() => {
     let isCancelled = false;
+    setLoading(true);
     setIsTransitioning(true);
 
     const queryDiff = selectedDifficulties.slice().sort().join(',');
@@ -91,34 +99,53 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
       page: currentPage
     });
 
-    // Cache-First (Rule 10): serve instantly from cache if available
+    // Cache-First (Rule 10): serve from cache with subtle smooth transition
     if (queryCache.current.has(cacheKey)) {
       const cached = queryCache.current.get(cacheKey);
-      if (!isCancelled) {
-        setMaps(cached.data);
-        setTotalItems(cached.pagination?.total || cached.data.length);
-        setTotalPages(cached.pagination?.totalPages || 1);
-        setIsTransitioning(false);
-        setLoading(false);
-      }
-      return;
+      const timer = setTimeout(() => {
+        if (!isCancelled) {
+          setMaps(cached.data);
+          setTotalItems(cached.pagination?.total || cached.data.length);
+          setTotalPages(cached.pagination?.totalPages || 1);
+          setIsTransitioning(false);
+          setLoading(false);
+        }
+      }, 180);
+      return () => {
+        isCancelled = true;
+        clearTimeout(timer);
+      };
     }
 
     const fetchAdventures = async () => {
+      const startTime = performance.now();
       try {
         const params = new URLSearchParams();
         if (querySearch) params.append('q', querySearch);
         if (queryDiff) params.append('difficulty', queryDiff);
         if (queryType) params.append('type', queryType);
         if (sortBy) params.append('sort', sortBy);
+        params.append('fields', 'adventureID,adventureName,difficulty,background,assetAbsolutePath,typeAdventure,Bosses,translations');
         params.append('page', String(currentPage));
         params.append('limit', '24');
 
         const res = await fetch(`/api/v1/maps?${params.toString()}`);
+
+        const elapsed = performance.now() - startTime;
+        const remainingDelay = Math.max(0, 320 - elapsed);
+        if (remainingDelay > 0) {
+          await new Promise((resolve) => setTimeout(resolve, remainingDelay));
+        }
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && !isCancelled) {
+          // Store in cache with 50-item LRU cap to prevent memory bloat
+          if (queryCache.current.size >= 50) {
+            const oldestKey = queryCache.current.keys().next().value;
+            queryCache.current.delete(oldestKey);
+          }
           queryCache.current.set(cacheKey, {
             data: json.data,
             pagination: json.pagination
@@ -145,9 +172,10 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
     };
   }, [filters.q, filters.search, selectedDifficulties, selectedTypes, sortBy, currentPage]);
 
-  // Filter Toggle Handlers
+  // Filter Toggle Handlers with immediate transition feedback
   const handleToggleDifficulty = useCallback(
     (diffVal) => {
+      setIsTransitioning(true);
       const next = selectedDifficulties.includes(diffVal)
         ? selectedDifficulties.filter((d) => d !== diffVal)
         : [...selectedDifficulties, diffVal];
@@ -158,6 +186,7 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handleToggleType = useCallback(
     (typeVal) => {
+      setIsTransitioning(true);
       const next = selectedTypes.includes(typeVal)
         ? selectedTypes.filter((t) => t !== typeVal)
         : [...selectedTypes, typeVal];
@@ -168,12 +197,14 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handleSortChange = useCallback(
     (newSort) => {
+      setIsTransitioning(true);
       updateFilters?.({ sort: newSort, page: 1 });
     },
     [updateFilters]
   );
 
   const handleResetFilters = useCallback(() => {
+    setIsTransitioning(true);
     setSearchInput('');
     updateFilters?.({
       q: '',
@@ -186,6 +217,7 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handlePageChange = useCallback(
     (newPage) => {
+      setIsTransitioning(true);
       updateFilters?.({ page: newPage });
       rosterTopRef.current?.scrollIntoView({ behavior: 'smooth' });
     },
@@ -340,65 +372,50 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
               </div>
             )}
 
-            {/* Rule 9: Subtle Loading Transition Progress Line */}
-            {isTransitioning && (
-              <div className="h-0.5 w-full bg-[#8CC0EB]/20 overflow-hidden rounded-full mb-3">
-                <div className="h-full bg-[#8CC0EB] animate-pulse w-full" />
-              </div>
-            )}
+            {/* Standardized Subtle Loading Progress Line (Rule 9) */}
+            <ListLoadingBar isTransitioning={isTransitioning} />
 
             {/* Adventures Grid with Subtle Loading Opacity */}
-            {loading && maps.length === 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
-                {Array.from({ length: 12 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="h-20 rounded-xl bg-[#0e1320] border border-white/5 animate-pulse p-3 flex items-center gap-3"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-white/5 shrink-0" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-3 w-16 bg-white/5 rounded" />
-                      <div className="h-4 w-28 bg-white/5 rounded" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : maps.length === 0 ? (
-              <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
-                <h3 className="text-base font-bold text-white mb-1">
-                  {isEn ? 'No adventures found' : 'Không tìm thấy cuộc phiêu lưu nào'}
-                </h3>
-                <p className="text-xs text-slate-400 mb-4 max-w-sm mx-auto">
-                  {isEn
-                    ? 'Try adjusting your search keyword or difficulty filters.'
-                    : 'Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc.'}
-                </p>
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="px-4 py-2 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase cursor-pointer"
-                  >
-                    {isEn ? 'Reset Filters' : 'Đặt lại bộ lọc'}
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div
-                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 transition-opacity duration-200 ${
-                  isTransitioning ? 'opacity-60' : 'opacity-100'
-                }`}
-              >
-                {maps.map((mapItem) => (
-                  <EntityCard
-                    key={mapItem.adventureID}
-                    item={mapItem}
-                    type="map"
-                    onClick={() => onSelectMap?.(mapItem.adventureID || mapItem.adventureName)}
-                  />
-                ))}
-              </div>
-            )}
+            <div className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+              {loading && maps.length === 0 ? (
+                <ListSkeleton
+                  type="entity"
+                  count={12}
+                  gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5"
+                />
+              ) : maps.length === 0 ? (
+                <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
+                  <h3 className="text-base font-bold text-white mb-1">
+                    {isEn ? 'No adventures found' : 'Không tìm thấy cuộc phiêu lưu nào'}
+                  </h3>
+                  <p className="text-xs text-slate-400 mb-4 max-w-sm mx-auto">
+                    {isEn
+                      ? 'Try adjusting your search keyword or difficulty filters.'
+                      : 'Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc.'}
+                  </p>
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
+                      className="px-4 py-2 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase cursor-pointer"
+                    >
+                      {isEn ? 'Reset Filters' : 'Đặt lại bộ lọc'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
+                  {maps.map((mapItem) => (
+                    <EntityCard
+                      key={mapItem.adventureID}
+                      item={mapItem}
+                      type="map"
+                      onClick={() => onSelectMap?.(mapItem.adventureID || mapItem.adventureName)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Pagination */}
             {!loading && totalPages > 1 && (

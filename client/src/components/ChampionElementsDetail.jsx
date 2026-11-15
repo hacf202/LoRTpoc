@@ -14,7 +14,6 @@ import {
 
 // Module-level in-memory cache for dictionaries to optimize rendering & avoid re-fetching
 let cachedRelicsMap = null;
-let relicsPromise = null;
 let cachedCardsMap = null;
 let cachedItemsMap = null;
 let cachedPowersMap = null;
@@ -133,48 +132,43 @@ export default function ChampionElementsDetail({
 
   const [activeBuildIndex, setActiveBuildIndex] = useState(0);
 
-  // Global Relic Catalog dictionary for localized names & info
-  const [relicMap, setRelicMap] = useState(cachedRelicsMap || {});
-  const [cardMap, setCardMap] = useState(cachedCardsMap || {});
-  const [itemMap, setItemMap] = useState(cachedItemsMap || {});
-  const [powerMap, setPowerMap] = useState(cachedPowersMap || {});
+  // Dynamic dictionaries for localized names & info (fed from server hydration)
+  const [relicMap, setRelicMap] = useState(() => ({ ...(cachedRelicsMap || {}), ...(champion?.resolvedRelics || {}) }));
+  const [cardMap, setCardMap] = useState(() => ({ ...(cachedCardsMap || {}), ...(champion?.resolvedCards || {}) }));
+  const [itemMap, setItemMap] = useState(() => ({ ...(cachedItemsMap || {}), ...(champion?.resolvedItems || {}) }));
+  const [powerMap, setPowerMap] = useState(() => ({ ...(cachedPowersMap || {}), ...(champion?.resolvedPowers || {}) }));
   const [selectedCardForModal, setSelectedCardForModal] = useState(null);
   const [selectedEntityForModal, setSelectedEntityForModal] = useState(null);
 
-  // Fetch and cache relics catalog
+  // Synchronize in-memory cumulative caches whenever champion changes
   useEffect(() => {
-    if (cachedRelicsMap) {
+    if (!champion) return;
+
+    if (champion.resolvedRelics) {
+      cachedRelicsMap = { ...(cachedRelicsMap || {}), ...champion.resolvedRelics };
       setRelicMap(cachedRelicsMap);
-      return;
     }
-    if (!relicsPromise) {
-      relicsPromise = fetch('/api/v1/relics?limit=all')
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.success && Array.isArray(json.data)) {
-            const map = {};
-            json.data.forEach((r) => {
-              if (r.relicCode) map[r.relicCode] = r;
-            });
-            cachedRelicsMap = map;
-            return map;
-          }
-          return {};
-        })
-        .catch((err) => {
-          console.error('Failed to load relics map:', err);
-          return {};
-        });
+    if (champion.resolvedCards) {
+      cachedCardsMap = { ...(cachedCardsMap || {}), ...champion.resolvedCards };
+      setCardMap(cachedCardsMap);
     }
-    relicsPromise.then((map) => setRelicMap(map || {}));
-  }, []);
+    if (champion.resolvedItems) {
+      cachedItemsMap = { ...(cachedItemsMap || {}), ...champion.resolvedItems };
+      setItemMap(cachedItemsMap);
+    }
+    if (champion.resolvedPowers) {
+      cachedPowersMap = { ...(cachedPowersMap || {}), ...champion.resolvedPowers };
+      setPowerMap(cachedPowersMap);
+    }
+  }, [champion]);
 
-  // Fetch and cache card metadata for starting deck cards
+  // Fallback: If for any reason cards were not pre-hydrated (e.g. legacy props), fetch missing card codes on demand
   useEffect(() => {
-    const baseCards = champion?.startingDeck?.baseCards || [];
-    const refCards = champion?.startingDeck?.referenceCards || [];
-    const allCodes = [...baseCards, ...refCards].map((c) => c.cardCode).filter(Boolean);
+    if (!champion || champion.resolvedCards) return;
 
+    const baseCards = champion.startingDeck?.baseCards || [];
+    const refCards = champion.startingDeck?.referenceCards || [];
+    const allCodes = [...baseCards, ...refCards].map((c) => c.cardCode).filter(Boolean);
     if (allCodes.length === 0) return;
 
     const missingCodes = allCodes.filter((c) => !(cachedCardsMap && cachedCardsMap[c.toLowerCase()]));
@@ -196,65 +190,6 @@ export default function ChampionElementsDetail({
           }
         })
         .catch((err) => console.error('Failed to load cards for deck:', err));
-    }
-  }, [champion]);
-
-  // Fetch and cache item metadata for starting deck items and recommended champion items
-  useEffect(() => {
-    const baseCards = champion?.startingDeck?.baseCards || [];
-    const refCards = champion?.startingDeck?.referenceCards || [];
-    const champItemIds = champion?.itemIds || [];
-    const allItemCodes = [...champItemIds];
-    [...baseCards, ...refCards].forEach((c) => {
-      (c.itemCodes || []).forEach((it) => {
-        if (it.itemCode) allItemCodes.push(it.itemCode);
-      });
-    });
-
-    if (allItemCodes.length === 0) return;
-
-    const missingItemCodes = allItemCodes.filter((c) => !(cachedItemsMap && cachedItemsMap[c]));
-    if (missingItemCodes.length === 0 && cachedItemsMap) {
-      setItemMap(cachedItemsMap);
-    } else {
-      fetch('/api/v1/items?limit=all')
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.success && Array.isArray(json.data)) {
-            const nextItems = { ...(cachedItemsMap || {}) };
-            json.data.forEach((it) => {
-              if (it.itemCode) nextItems[it.itemCode] = it;
-            });
-            cachedItemsMap = nextItems;
-            setItemMap(nextItems);
-          }
-        })
-        .catch((err) => console.error('Failed to load items:', err));
-    }
-  }, [champion]);
-
-  // Fetch and cache power metadata for recommended adventure powers
-  useEffect(() => {
-    const champPowerIds = champion?.adventurePowerIds || [];
-    if (champPowerIds.length === 0) return;
-
-    const missingPowerIds = champPowerIds.filter((p) => !(cachedPowersMap && cachedPowersMap[p]));
-    if (missingPowerIds.length === 0 && cachedPowersMap) {
-      setPowerMap(cachedPowersMap);
-    } else {
-      fetch('/api/v1/powers?limit=all')
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.success && Array.isArray(json.data)) {
-            const nextPowers = { ...(cachedPowersMap || {}) };
-            json.data.forEach((p) => {
-              if (p.powerCode) nextPowers[p.powerCode] = p;
-            });
-            cachedPowersMap = nextPowers;
-            setPowerMap(nextPowers);
-          }
-        })
-        .catch((err) => console.error('Failed to load powers:', err));
     }
   }, [champion]);
 

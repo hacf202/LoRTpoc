@@ -3,6 +3,7 @@ import BackgroundHero from './components/BackgroundHero';
 import Navbar from './components/Navbar';
 import EntityDetailModal from './components/EntityDetailModal';
 import SEOHead from './components/SEOHead';
+import { getGlobalKeywords, getChampionKeywords, getTabKeywords } from './utils/seoKeywords';
 import HomeView from './views/HomeView';
 import ChampionsView from './views/ChampionsView';
 import ChampionDetailView from './views/ChampionDetailView';
@@ -41,6 +42,7 @@ export default function App() {
   // All champions state for the full roster
   const [allChampions, setAllChampions] = useState([]);
   const [rosterLoading, setRosterLoading] = useState(true);
+  const [championDetailLoading, setChampionDetailLoading] = useState(false);
 
   const searchInputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -82,25 +84,41 @@ export default function App() {
 
   // Fetch on-demand champion details
   const loadChampionDetails = useCallback(async (champ) => {
-    if (!champ) return;
-    setSelectedChampion(champ);
+    if (!champ) {
+      setChampionDetailLoading(false);
+      return;
+    }
 
-    if (!champ.relicSets || !champ.constellation) {
-      try {
-        const targetId = champ.championID || champ.cardCode || champ.name;
-        const res = await fetch(
-          `/api/v1/champions/${encodeURIComponent(targetId)}?_t=${Date.now()}`,
-          { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.data) {
-            setSelectedChampion(data.data);
-          }
+    // If champ already has full details (relicSets, constellation, resolvedRelics), set immediately
+    if (champ.relicSets && champ.constellation && champ.resolvedRelics) {
+      setSelectedChampion(champ);
+      setChampionDetailLoading(false);
+      return;
+    }
+
+    setChampionDetailLoading(true);
+    setSelectedChampion(champ);
+    const startTime = performance.now();
+    try {
+      const targetId = champ.championID || champ.cardCode || champ.name;
+      const res = await fetch(
+        `/api/v1/champions/${encodeURIComponent(targetId)}?_t=${Date.now()}`,
+        { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } }
+      );
+      const elapsed = performance.now() - startTime;
+      const remaining = Math.max(0, 380 - elapsed);
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setSelectedChampion(data.data);
         }
-      } catch (err) {
-        console.error('Failed to load full champion details:', err);
       }
+    } catch (err) {
+      console.error('Failed to load full champion details:', err);
+    } finally {
+      setChampionDetailLoading(false);
     }
   }, []);
 
@@ -108,6 +126,7 @@ export default function App() {
   useEffect(() => {
     if (!filters.champion) {
       if (selectedChampion) setSelectedChampion(null);
+      setChampionDetailLoading(false);
       return;
     }
 
@@ -115,8 +134,10 @@ export default function App() {
     const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const targetNorm = norm(targetParam);
 
+    // If already displaying this champion with full details, don't re-fetch
     if (
       selectedChampion &&
+      selectedChampion.relicSets &&
       ((selectedChampion.championID && selectedChampion.championID.toLowerCase() === targetParam) ||
         (selectedChampion.cardCode && selectedChampion.cardCode.toLowerCase() === targetParam) ||
         (selectedChampion.name && selectedChampion.name.toLowerCase() === targetParam) ||
@@ -128,6 +149,7 @@ export default function App() {
           norm(selectedChampion.cardCode) === targetNorm
         )))
     ) {
+      setChampionDetailLoading(false);
       return;
     }
 
@@ -148,16 +170,27 @@ export default function App() {
     if (found) {
       loadChampionDetails(found);
     } else {
+      setChampionDetailLoading(true);
+      const startTime = performance.now();
       fetch(`/api/v1/champions/${encodeURIComponent(filters.champion)}`)
         .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
+        .then(async (data) => {
+          const elapsed = performance.now() - startTime;
+          const remaining = Math.max(0, 380 - elapsed);
+          if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
           if (data?.success && data?.data) {
-            loadChampionDetails(data.data);
+            setSelectedChampion(data.data);
           }
         })
-        .catch((err) => console.error('Failed to load champion from URL:', err));
+        .catch((err) => {
+          console.error('Failed to load champion from URL:', err);
+        })
+        .finally(() => {
+          setChampionDetailLoading(false);
+        });
     }
-  }, [filters.champion, allChampions, loadChampionDetails, selectedChampion]);
+  }, [filters.champion, allChampions, loadChampionDetails]);
 
   // Keyboard shortcut listener (Ctrl+K or /)
   useEffect(() => {
@@ -349,122 +382,136 @@ export default function App() {
         '/assets/hero-bg.jpg';
 
       const title = isEn
-        ? `${champName} Guide - Star Powers, Best Relics & Constellation (${stars}★${tierPart})`
-        : `${champName} - Cẩm Nang Tướng, Sức Mạnh Sao & Cổ Vật Tối Ưu (${stars}★${tierPart})`;
+        ? `${champName} Guide - Best Relics, Constellation & Star Powers (${stars}★${tierPart})`
+        : `${champName} - Cẩm Nang Tướng, Sức Mạnh Sao, Chòm Sao & Cổ Vật Tối Ưu (${stars}★${tierPart})`;
 
       const description = isEn
         ? `Complete Path of Champions guide for ${champName} (${regionsStr}). Detailed constellation powers, star powers, relic loadouts, and encounter strategies.`
         : `Cẩm nang chuyên sâu vị tướng ${champName} (${regionsStr}) trong Con Đường Anh Hùng. Khám phá sức mạnh sao, cây chòm sao và gợi ý cổ vật tối ưu nhất.`;
 
+      const keywords = getChampionKeywords(selectedChampion, language);
+      const champSlug = selectedChampion.championID || selectedChampion.name;
+      const url = `https://thepathofchampions.guide/champion/${encodeURIComponent(champSlug)}`;
+
       const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'ItemPage',
-        mainEntity: {
-          '@type': 'VideoGameCharacter',
-          name: champName,
-          description: description,
-          image: image,
-          genre: 'Legends of Runeterra'
-        }
+        '@graph': [
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: isEn ? 'Home' : 'Trang Chủ',
+                item: 'https://thepathofchampions.guide/'
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: isEn ? 'Champions' : 'Tướng',
+                item: 'https://thepathofchampions.guide/?tab=champions'
+              },
+              {
+                '@type': 'ListItem',
+                position: 3,
+                name: champName,
+                item: url
+              }
+            ]
+          },
+          {
+            '@type': 'ItemPage',
+            mainEntity: {
+              '@type': 'VideoGameCharacter',
+              name: champName,
+              description: description,
+              image: image,
+              genre: 'Legends of Runeterra'
+            }
+          }
+        ]
       };
 
-      return { title, description, image, jsonLd, type: 'article' };
-    }
-
-    if (filters.relic) {
-      return {
-        title: isEn ? `Relic: ${filters.relic} - PoC Guide` : `Cổ Vật: ${filters.relic} - PoC Guide`,
-        description: isEn
-          ? `Detailed stats and compatible champions for relic ${filters.relic} in The Path of Champions.`
-          : `Thông tin chi tiết và danh sách tướng phù hợp với cổ vật ${filters.relic} trong Con Đường Anh Hùng.`
-      };
-    }
-
-    if (filters.power) {
-      return {
-        title: isEn ? `Power: ${filters.power} - PoC Guide` : `Sức Mạnh: ${filters.power} - PoC Guide`,
-        description: isEn
-          ? `Detailed stats and champions using power ${filters.power} in The Path of Champions.`
-          : `Chi tiết sức mạnh và danh sách tướng sở hữu ${filters.power} trong Con Đường Anh Hùng.`
-      };
-    }
-
-    if (filters.item) {
-      return {
-        title: isEn ? `Item: ${filters.item} - PoC Guide` : `Vật Phẩm: ${filters.item} - PoC Guide`,
-        description: isEn
-          ? `Detailed stats and compatible champions for item ${filters.item} in The Path of Champions.`
-          : `Chi tiết vật phẩm và các tướng phù hợp với ${filters.item} trong Con Đường Anh Hùng.`
-      };
-    }
-
-    if (filters.card) {
-      return {
-        title: isEn ? `Card: ${filters.card} - PoC Guide` : `Lá Bài: ${filters.card} - PoC Guide`,
-        description: isEn
-          ? `Detailed stats and decks using card ${filters.card} in Legends of Runeterra.`
-          : `Chi tiết lá bài và bộ bài tướng sử dụng ${filters.card} trong Huyền Thoại Runeterra.`
-      };
-    }
-
-    if (filters.map) {
-      return {
-        title: isEn ? `Adventure: ${filters.map} - PoC Guide` : `Cuộc Phiêu Lưu: ${filters.map} - PoC Guide`,
-        description: isEn
-          ? `Detailed encounter map, boss strategies, special rules, and rewards in The Path of Champions.`
-          : `Chi tiết bản đồ, chiến thuật khắc chế trùm, quy tắc đặc biệt và phần thưởng trong Con Đường Anh Hùng.`
-      };
+      return { title, description, image, keywords, url, jsonLd, type: 'article' };
     }
 
     switch (activeTab) {
       case 'champions':
         return {
-          title: isEn ? 'Champions Roster (89 Heroes)' : 'Danh Sách 89 Vị Tướng Con Đường Anh Hùng',
+          title: isEn
+            ? 'Champions Roster (89 Heroes) - Tier List & Builds'
+            : 'Danh Sách 89 Vị Tướng Con Đường Anh Hùng - Xếp Hạng & Sức Mạnh',
           description: isEn
-            ? 'Browse all 89 champions in LoR: The Path of Champions. Filter by region, star rating, and tier list ranking.'
-            : 'Tra cứu toàn bộ 89 tướng trong Con Đường Anh Hùng. Lọc theo vùng đất Runeterra, cấp sao tối đa và thứ hạng sức mạnh.'
+            ? 'Browse all 89 champions in LoR: The Path of Champions. Filter by region, star rating, optimal relics, and tier list ranking.'
+            : 'Tra cứu toàn bộ 89 tướng trong Con Đường Anh Hùng. Lọc theo vùng đất Runeterra, cấp sao tối đa, cổ vật tối ưu và thứ hạng sức mạnh.',
+          keywords: getTabKeywords('champions', language),
+          url: 'https://thepathofchampions.guide/?tab=champions'
         };
       case 'relics':
         return {
-          title: isEn ? 'Relics List (155 Items)' : 'Danh Sách Cổ Vật Con Đường Anh Hùng (155 Cổ Vật)',
+          title: isEn
+            ? 'Relics Database (155 Items) - Common, Rare & Epic'
+            : 'Danh Sách Cổ Vật Con Đường Anh Hùng (155 Cổ Vật) - Thường, Hiếm & Sử Thi',
           description: isEn
-            ? 'Explore all 155 common, rare, and epic relics in The Path of Champions with full stat breakdown.'
-            : 'Khám phá 155 cổ vật Thường, Hiếm và Sử Thi trong Con Đường Anh Hùng cùng hiệu ứng gia tăng sức mạnh.'
+            ? 'Explore all 155 common, rare, and epic relics in The Path of Champions with full stat breakdown and best champion synergies.'
+            : 'Khám phá 155 cổ vật Thường, Hiếm và Sử Thi trong Con Đường Anh Hùng cùng hiệu ứng gia tăng sức mạnh và gợi ý tướng phù hợp.',
+          keywords: getTabKeywords('relics', language),
+          url: 'https://thepathofchampions.guide/?tab=relics'
         };
       case 'powers':
         return {
-          title: isEn ? 'Powers List (1,196 Powers)' : 'Danh Sách Sức Mạnh Con Đường Anh Hùng (1,196 Sức Mạnh)',
+          title: isEn
+            ? 'Powers Database (1,196 Powers) - Star Powers & Blessings'
+            : 'Danh Sách Sức Mạnh Con Đường Anh Hùng (1,196 Sức Mạnh) - Sức Mạnh Sao & Nội Tại',
           description: isEn
-            ? 'Complete database of 1,196 star powers, encounter blessings, and enemy abilities.'
-            : 'Hệ thống tra cứu 1,196 sức mạnh sao, bổng lộc phiêu lưu và nội tại của kẻ địch trong Con Đường Anh Hùng.'
+            ? 'Complete database of 1,196 star powers, encounter blessings, and enemy abilities in Legends of Runeterra: The Path of Champions.'
+            : 'Hệ thống tra cứu 1,196 sức mạnh sao, bổng lộc phiêu lưu và nội tại của kẻ địch trong Con Đường Anh Hùng.',
+          keywords: getTabKeywords('powers', language),
+          url: 'https://thepathofchampions.guide/?tab=powers'
         };
       case 'items':
         return {
-          title: isEn ? 'Card Items List (187 Items)' : 'Danh Sách Vật Phẩm Thẻ Bài (187 Items)',
+          title: isEn
+            ? 'Card Items Database (187 Items) - Equipment & Stats'
+            : 'Danh Sách Vật Phẩm Thẻ Bài (187 Items) - Trang Bị & Hiệu Ứng',
           description: isEn
-            ? 'Explore 187 items attachable to cards, spells, and equipment in The Path of Champions.'
-            : 'Khám phá 187 vật phẩm trang bị gắn vào bài quân và phép thuật trong Con Đường Anh Hùng.'
+            ? 'Explore 187 items attachable to cards, spells, and equipment in The Path of Champions with synergized champions.'
+            : 'Khám phá 187 vật phẩm trang bị gắn vào bài quân và phép thuật trong Con Đường Anh Hùng.',
+          keywords: getTabKeywords('items', language),
+          url: 'https://thepathofchampions.guide/?tab=items'
         };
       case 'cards':
         return {
-          title: isEn ? 'Cards List (2,686 Cards)' : 'Danh Sách Lá Bài Runeterra (2,686 Lá Bài)',
+          title: isEn
+            ? 'Cards Database (2,686 Cards) - Champions, Spells & Units'
+            : 'Thư Viện Lá Bài Runeterra (2,686 Lá Bài) - Tướng & Phép Thuật',
           description: isEn
-            ? 'Explore all 2,686 collectible cards and spells in Legends of Runeterra.'
-            : 'Tra cứu toàn bộ 2,686 lá bài quân, phép thuật và địa danh trong Huyền Thoại Runeterra.'
+            ? 'Explore all 2,686 collectible cards and spells in Legends of Runeterra with high-resolution card artwork.'
+            : 'Tra cứu toàn bộ 2,686 lá bài quân, phép thuật và địa danh trong Huyền Thoại Runeterra với ảnh gốc sắc nét.',
+          keywords: getTabKeywords('cards', language),
+          url: 'https://thepathofchampions.guide/?tab=cards'
         };
       case 'tierlist':
         return {
-          title: isEn ? 'Champion Tier List (S+ to C Tier)' : 'Bảng Xếp Hạng Tướng Con Đường Anh Hùng (S+ đến C)',
+          title: isEn
+            ? 'Champion Tier List (S+ to C Tier) - Meta Power Rankings'
+            : 'Bảng Xếp Hạng Tướng Con Đường Anh Hùng (Tier S+ đến C) - Meta Mới Nhất',
           description: isEn
-            ? 'Latest community and meta power rankings for all champions in The Path of Champions.'
-            : 'Bảng xếp hạng sức mạnh và phân bậc meta từ S+ đến C của các tướng trong Con Đường Anh Hùng.'
+            ? 'Latest community and meta power rankings for all 89 champions in The Path of Champions. Discover the strongest champions in the current patch.'
+            : 'Bảng xếp hạng sức mạnh và phân bậc meta từ S+ đến C của 89 tướng trong Con Đường Anh Hùng. Tìm kiếm vị tướng mạnh nhất phiên bản hiện tại.',
+          keywords: getTabKeywords('tierlist', language),
+          url: 'https://thepathofchampions.guide/?tab=tierlist'
         };
       case 'maps':
         return {
-          title: isEn ? 'Adventures & Boss Guides' : 'Cuộc Phiêu Lưu & Trùm Con Đường Anh Hùng',
+          title: isEn
+            ? 'Adventures & Boss Guides (48 Maps & 338 Bosses)'
+            : 'Cuộc Phiêu Lưu & Trùm Con Đường Anh Hùng (48 Bản Đồ & 338 Trùm)',
           description: isEn
-            ? 'Guide to all 48 world adventures, nightmare weekly maps, and 338 boss encounters.'
-            : 'Cẩm nang 48 cuộc phiêu lưu, bản đồ Ác Mộng và hướng dẫn khắc chế 338 trùm nguy hiểm.'
+            ? 'Guide to all 48 world adventures, nightmare weekly maps, and 338 boss encounters in The Path of Champions.'
+            : 'Cẩm nang 48 cuộc phiêu lưu, bản đồ Ác Mộng và hướng dẫn khắc chế 338 trùm nguy hiểm trong Con Đường Anh Hùng.',
+          keywords: getTabKeywords('maps', language),
+          url: 'https://thepathofchampions.guide/?tab=maps'
         };
       case 'admin':
         if (filters.adminChampion) {
@@ -473,28 +520,63 @@ export default function App() {
             title: isNew
               ? (isEn ? 'Create New Champion - Admin Portal' : 'Thêm Tướng Mới - Quản Trị Hệ Thống')
               : (isEn ? `Edit ${filters.adminChampion} - Admin Portal` : `Chỉnh Sửa ${filters.adminChampion} - Quản Trị Hệ Thống`),
-            description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide'
+            description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
+            keywords: 'poc admin cms, edit champion, poc guide admin'
           };
         }
         if (filters.adminModule && filters.adminModule !== 'overview') {
           const modLabel = filters.adminModule.charAt(0).toUpperCase() + filters.adminModule.slice(1);
           return {
             title: isEn ? `${modLabel} - Admin Portal` : `Quản Trị ${modLabel} - PoC Guide CMS`,
-            description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide'
+            description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
+            keywords: 'poc admin cms, poc guide admin'
           };
         }
         return {
           title: isEn ? 'Admin Portal - PoC Guide CMS' : 'Cổng Quản Trị Hệ Thống - PoC Guide CMS',
-          description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide'
+          description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
+          keywords: 'poc admin cms, poc guide admin'
         };
       default:
         return {
           title: isEn
-            ? 'The Path of Champions Guide - Strategy & Database'
+            ? 'The Path of Champions Guide - Strategy, Builds & Database'
             : 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR',
           description: isEn
-            ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Explore champions, relics, powers, and adventures.'
-            : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.'
+            ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Explore 89 champions, 155 relics, 1,196 powers, and adventures.'
+            : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.',
+          keywords: getGlobalKeywords(language),
+          url: 'https://thepathofchampions.guide/',
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebSite',
+                '@id': 'https://thepathofchampions.guide/#website',
+                url: 'https://thepathofchampions.guide/',
+                name: 'The Path of Champions Guide',
+                description: isEn
+                  ? 'Comprehensive strategy and database for LoR: The Path of Champions'
+                  : 'Cẩm nang và cơ sở dữ liệu chuyên sâu Con Đường Anh Hùng - Legends of Runeterra',
+                inLanguage: ['vi', 'en'],
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: {
+                    '@type': 'EntryPoint',
+                    urlTemplate: 'https://thepathofchampions.guide/?q={search_term_string}'
+                  },
+                  'query-input': 'required name=search_term_string'
+                }
+              },
+              {
+                '@type': 'VideoGame',
+                '@id': 'https://thepathofchampions.guide/#game',
+                name: 'Legends of Runeterra: The Path of Champions',
+                genre: ['Digital Card Game', 'Roguelike Deckbuilder'],
+                gamePlatform: ['PC', 'Android', 'iOS']
+              }
+            ]
+          }
         };
     }
   };
@@ -503,14 +585,19 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen w-full flex flex-col bg-[#07090e] font-sans">
-      {/* 0. Dynamic SEO Head Manager */}
-      <SEOHead
-        title={seoData.title}
-        description={seoData.description}
-        image={seoData.image}
-        jsonLd={seoData.jsonLd}
-        type={seoData.type || 'website'}
-      />
+      {/* 0. Dynamic SEO Head Manager (rendered when not in child view that manages its own SEO) */}
+      {!filters.relic && !filters.power && !filters.item && !filters.card && !filters.map && (
+        <SEOHead
+          title={seoData.title}
+          description={seoData.description}
+          keywords={seoData.keywords}
+          image={seoData.image}
+          url={seoData.url}
+          jsonLd={seoData.jsonLd}
+          type={seoData.type || 'website'}
+          lang={language}
+        />
+      )}
 
       {/* 1. Hero Background Layer (Đen dần 3/4 từ dưới lên cho các trang phụ, ẩn ở trang Admin CMS) */}
       {activeTab !== 'admin' && (
@@ -607,7 +694,7 @@ export default function App() {
       ) : (selectedChampion || Boolean(filters.champion && filters.champion.trim())) ? (
         <ChampionDetailView
           champion={selectedChampion}
-          loading={rosterLoading && !selectedChampion}
+          loading={championDetailLoading || !selectedChampion?.relicSets}
           onBack={handleCloseModal}
           onNavigate={handleNavigateTab}
           currentHash={filters.hash}

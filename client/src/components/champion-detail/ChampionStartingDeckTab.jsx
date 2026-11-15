@@ -118,9 +118,6 @@ export default function ChampionStartingDeckTab({
                 <span className="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-sky-300 transition-colors block truncate" title={cardName}>
                   {cardName}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono">
-                  x{c.count || 1}
-                </span>
               </div>
             </div>
           );

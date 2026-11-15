@@ -71,29 +71,29 @@ export default function ChampionGridCard({ champion, onClick }) {
 
         {/* Tier Badge (Top-Right) */}
         {tierShort && (
-          <div className="absolute top-2 right-2 z-10 transition-transform duration-300 group-hover:scale-105">
-            <span className={`text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md border tracking-wider uppercase ${tierStyle}`}>
+          <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 z-10 transition-transform duration-300 group-hover:scale-105">
+            <span className={`text-[9px] sm:text-xs font-black px-1.5 sm:px-2 py-0.5 rounded-md border tracking-wider uppercase ${tierStyle}`}>
               {tierShort}
             </span>
           </div>
         )}
 
         {/* Stars Badge (Top-Left) */}
-        <div className="absolute top-2 left-2 z-10 flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-[#070a10] border border-[#BFDDF0]/40 shadow-md transition-transform duration-300 group-hover:scale-105">
-          <span className="text-[#FFF9D2] text-xs sm:text-sm font-bold">★</span>
-          <span className="text-[#FFEBCC] text-xs font-extrabold tracking-wide">{stars}</span>
+        <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 z-10 flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-md bg-[#070a10] border border-[#BFDDF0]/40 shadow-md transition-transform duration-300 group-hover:scale-105">
+          <span className="text-[#FFF9D2] text-[10px] sm:text-sm font-bold">★</span>
+          <span className="text-[#FFEBCC] text-[10px] sm:text-xs font-extrabold tracking-wide">{stars}</span>
         </div>
       </div>
 
       {/* Card Info Body - Overlap top by 1px to eliminate any subpixel hairline gap */}
-      <div className="relative z-10 -mt-px p-3 sm:p-3.5 flex flex-col bg-[#0e1320] group-hover:bg-[#141b2b] transition-colors duration-300">
+      <div className="relative z-10 -mt-px p-2 sm:p-3.5 flex flex-col bg-[#0e1320] group-hover:bg-[#141b2b] transition-colors duration-300">
         {/* Champion Name */}
-        <h3 className="text-sm sm:text-base font-extrabold text-white tracking-wide truncate group-hover:text-[#8CC0EB] transition-colors duration-200">
+        <h3 className="text-xs sm:text-base font-extrabold text-white tracking-wide truncate group-hover:text-[#8CC0EB] transition-colors duration-200">
           {displayName}
         </h3>
 
         {/* Regions with Icon: Single line only with ellipsis on overflow */}
-        <div className="flex items-center gap-2 mt-1.5 w-full min-w-0 overflow-hidden flex-nowrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-1.5 w-full min-w-0 overflow-hidden flex-nowrap">
           {rawRegions.map((regKey) => {
             const cleanKey = String(regKey).toLowerCase().trim();
             const regionName = t(`regions.${cleanKey}`) || regKey;

@@ -15,7 +15,9 @@ export default function DropDragSidePanel({
   bonusStars = [],
   items = [],
   cards = [],
-  onQuickAssignRelic // (relicCode, targetSlotInfo) => void
+  onQuickAssignRelic, // (relicCode) => void
+  onQuickAssignPower, // (powerCode) => void
+  onQuickAssignItem // (itemCode) => void
 }) {
   const [activeTab, setActiveTab] = useState('relics'); // 'relics' | 'powers' | 'bonusStars' | 'items' | 'cards'
   const [search, setSearch] = useState('');
@@ -61,7 +63,17 @@ export default function DropDragSidePanel({
 
   // Bắt đầu kéo (Drag Start)
   const handleDragStart = (e, item) => {
-    const code = item.bonusStarID || item.relicCode || item.powerCode || item.itemCode || item.cardCode || '';
+    const code =
+      activeTab === 'relics'
+        ? item.relicCode || item.code
+        : activeTab === 'powers'
+        ? item.powerCode || item.code
+        : activeTab === 'bonusStars'
+        ? item.bonusStarID || item.code
+        : activeTab === 'items'
+        ? item.itemCode || item.code
+        : item.cardCode || item.code || '';
+
     const dragPayload = {
       type:
         activeTab === 'relics'
@@ -84,7 +96,9 @@ export default function DropDragSidePanel({
     };
     const jsonStr = JSON.stringify(dragPayload);
     e.dataTransfer.setData('application/json', jsonStr);
-    e.dataTransfer.setData('text/plain', jsonStr);
+    // QUAN TRỌNG: text/plain phải là mã code thuần (VD: R0080) thay vì chuỗi JSON,
+    // giúp kéo thả vào ô nhập input chuẩn xác và không bị dính nguyên JSON payload thô.
+    e.dataTransfer.setData('text/plain', code);
     e.dataTransfer.effectAllowed = 'copy';
   };
 
@@ -315,6 +329,32 @@ export default function DropDragSidePanel({
                     }}
                     className="p-1.5 rounded-lg bg-[#8CC0EB]/20 hover:bg-[#8CC0EB] text-[#8CC0EB] hover:text-[#07090e] transition-all cursor-pointer font-bold text-xs shrink-0"
                     title={`Gán nhanh "${name}" vào slot trống`}
+                  >
+                    +
+                  </button>
+                )}
+                {onQuickAssignPower && activeTab === 'powers' && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onQuickAssignPower(code);
+                    }}
+                    className="p-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400 text-amber-300 hover:text-black transition-all cursor-pointer font-bold text-xs shrink-0"
+                    title={`Gán nhanh sức mạnh "${name}"`}
+                  >
+                    +
+                  </button>
+                )}
+                {onQuickAssignItem && activeTab === 'items' && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onQuickAssignItem(code);
+                    }}
+                    className="p-1.5 rounded-lg bg-emerald-400/20 hover:bg-emerald-400 text-emerald-300 hover:text-black transition-all cursor-pointer font-bold text-xs shrink-0"
+                    title={`Gán nhanh vật phẩm "${name}"`}
                   >
                     +
                   </button>

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import LorMarkup from '../components/LorMarkup';
+import ListLoadingBar from '../components/ListLoadingBar';
+import DetailSkeleton from '../components/DetailSkeleton';
+import SEOHead from '../components/SEOHead';
+import { getPowerKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 
 // In-memory cache for power details (Rule 10)
@@ -66,23 +70,37 @@ export default function PowerDetailView({
   useEffect(() => {
     if (!powerCode) return;
 
+    let isMounted = true;
+
     if (powerDetailCache.has(powerCode)) {
-      setPower(powerDetailCache.get(powerCode));
-      setLoading(false);
-      setError(null);
-      return;
+      const cached = powerDetailCache.get(powerCode);
+      const timer = setTimeout(() => {
+        if (isMounted) {
+          setPower(cached);
+          setLoading(false);
+          setError(null);
+        }
+      }, 350);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
     }
 
-    let isMounted = true;
     setLoading(true);
     setError(null);
+    const startTime = performance.now();
 
     fetch(`/api/v1/powers/${encodeURIComponent(powerCode)}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Power ${powerCode} not found`);
         return res.json();
       })
-      .then((json) => {
+      .then(async (json) => {
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, 380 - elapsed);
+        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
         if (json.success && json.data) {
           powerDetailCache.set(powerCode, json.data);
           if (isMounted) {
@@ -150,8 +168,69 @@ export default function PowerDetailView({
 
   const compatibleChamps = power?.compatibleChampions || [];
 
+  // SEO metadata computation (Rule 1 & Rule 4)
+  const seoTitle = isEn
+    ? `${powerName} Power (${powerRarityLabel || 'Power'}) - Stats & Synergies`
+    : `Sức Mạnh ${powerName} (${powerRarityLabel || 'Sức Mạnh'}) - Chi Tiết & Tướng Sở Hữu`;
+
+  const seoDesc = isEn
+    ? `Detailed effects, rarity tier, and compatible champions for ${powerName} in LoR: The Path of Champions.`
+    : `Chi tiết hiệu ứng, phân loại sức mạnh và danh sách tướng sở hữu ${powerName} trong Con Đường Anh Hùng.`;
+
+  const seoUrl = `https://thepathofchampions.guide/power/${encodeURIComponent(powerCode)}`;
+  const seoKeywords = getPowerKeywords(power, language);
+
+  const seoJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: isEn ? 'Home' : 'Trang Chủ',
+            item: 'https://thepathofchampions.guide/'
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: isEn ? 'Powers' : 'Sức Mạnh',
+            item: 'https://thepathofchampions.guide/?tab=powers'
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: powerName,
+            item: seoUrl
+          }
+        ]
+      },
+      {
+        '@type': 'ItemPage',
+        mainEntity: {
+          '@type': 'Thing',
+          name: powerName,
+          description: seoDesc,
+          image: powerImg
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center">
+    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center animate-in fade-in duration-300">
+      {/* Dynamic Bilingual SEO */}
+      <SEOHead
+        title={seoTitle}
+        description={seoDesc}
+        keywords={seoKeywords}
+        image={powerImg}
+        url={seoUrl}
+        jsonLd={seoJsonLd}
+        type="article"
+        lang={language}
+      />
       <div className="w-full max-w-5xl mx-auto px-2 sm:px-6 py-2 sm:py-8">
         {/* 1. Top Bar: Back Button & Minimal Breadcrumb */}
         <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-white/10 select-none">
@@ -194,11 +273,9 @@ export default function PowerDetailView({
 
         {/* 2. Loading / Error States */}
         {loading ? (
-          <div className="py-28 flex flex-col items-center justify-center gap-3 text-center">
-            <div className="w-8 h-8 border-2 border-[#8CC0EB] border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-semibold text-slate-400">
-              {isEn ? 'Loading...' : 'Đang tải...'}
-            </span>
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={true} />
+            <DetailSkeleton type="entity" />
           </div>
         ) : error || !power ? (
           <div className="py-20 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
@@ -214,8 +291,10 @@ export default function PowerDetailView({
             </button>
           </div>
         ) : (
-          <div className="space-y-4 sm:space-y-6">
-            {/* 3. Hero Power Card */}
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={loading} />
+            <div className={`space-y-4 sm:space-y-6 transition-opacity duration-200 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+              {/* 3. Hero Power Card */}
             <div className={`p-3 sm:p-5 rounded-2xl bg-[#0e1320] border ${rarityStyle.border} ${rarityStyle.glow}`}>
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-5">
                 {/* Power Icon */}
@@ -332,6 +411,7 @@ export default function PowerDetailView({
                   </p>
                 </div>
               )}
+            </div>
             </div>
           </div>
         )}

@@ -19,8 +19,8 @@ export function getTierTheme(tierStr) {
   const raw = (tierStr || '').toUpperCase();
   if (raw.includes('OP') || raw.includes('S+')) {
     return {
-      badge: 'bg-purple-900/80 text-purple-200 border-purple-500',
-      text: 'text-purple-300'
+      badge: 'bg-rose-900/80 text-rose-200 border-rose-500',
+      text: 'text-rose-300'
     };
   }
   if (raw.startsWith('S')) {
@@ -39,6 +39,18 @@ export function getTierTheme(tierStr) {
     return {
       badge: 'bg-emerald-900/80 text-emerald-200 border-emerald-500',
       text: 'text-emerald-300'
+    };
+  }
+  if (raw.startsWith('C')) {
+    return {
+      badge: 'bg-slate-800 text-slate-300 border-slate-600',
+      text: 'text-slate-400'
+    };
+  }
+  if (raw.startsWith('D')) {
+    return {
+      badge: 'bg-stone-900 text-stone-300 border-stone-700',
+      text: 'text-stone-400'
     };
   }
   return {

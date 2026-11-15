@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PowerFiltersSidebar from '../components/PowerFiltersSidebar';
 import EntityCard from '../components/EntityCard';
 import Pagination from '../components/Pagination';
+import ListLoadingBar from '../components/ListLoadingBar';
+import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 /**
@@ -117,6 +119,7 @@ export default function PowersView({ filters = {}, updateFilters, onSelectPower 
         if (queryRarity) params.append('rarity', queryRarity);
         if (queryType) params.append('type', queryType);
         if (sortBy) params.append('sort', sortBy);
+        params.append('fields', 'powerCode,name,rarity,type,assetAbsolutePath,descriptionRaw,description,translations');
         params.append('page', String(currentPage));
         params.append('limit', String(itemsPerPage));
 
@@ -135,7 +138,11 @@ export default function PowersView({ filters = {}, updateFilters, onSelectPower 
             const resultTotal = json.total || 0;
             const resultTotalPages = json.pagination?.totalPages || 1;
 
-            // Store in cache
+            // Store in cache with 50-item LRU cap to prevent memory bloat
+            if (queryCache.current.size >= 50) {
+              const oldestKey = queryCache.current.keys().next().value;
+              queryCache.current.delete(oldestKey);
+            }
             queryCache.current.set(cacheKey, {
               data: resultData,
               total: resultTotal,
@@ -388,31 +395,17 @@ export default function PowersView({ filters = {}, updateFilters, onSelectPower 
               </div>
             )}
 
-            {/* Subtle Loading Progress Line (Rule 9) */}
-            <div className={`h-0.5 w-full mb-3 rounded-full overflow-hidden transition-opacity duration-200 ${isTransitioning ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="h-full bg-[#8CC0EB] animate-pulse w-full shadow-[0_0_8px_rgba(140,192,235,0.6)]" />
-            </div>
+            {/* Standardized Subtle Loading Progress Line (Rule 9) */}
+            <ListLoadingBar isTransitioning={isTransitioning} />
 
             {/* Powers Cards Grid */}
             <div className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-              {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="p-4 rounded-2xl bg-[#0e1320] border border-white/10 animate-pulse flex flex-col gap-3 min-h-[160px]"
-                    >
-                      <div className="flex gap-3 items-center">
-                        <div className="w-14 h-14 rounded-xl bg-white/10" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-3 bg-white/15 rounded w-1/3" />
-                          <div className="h-4 bg-white/20 rounded w-3/4" />
-                        </div>
-                      </div>
-                      <div className="h-12 bg-white/10 rounded-xl" />
-                    </div>
-                  ))}
-                </div>
+              {loading && powers.length === 0 ? (
+                <ListSkeleton
+                  type="entity"
+                  count={12}
+                  gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+                />
               ) : powers.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
                   {powers.map((power) => (

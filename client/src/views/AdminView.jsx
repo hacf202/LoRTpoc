@@ -36,6 +36,9 @@ const DEFAULT_CHAMPION_TEMPLATE = {
     }
   ],
   ratings: { damage: 7, defense: 7, synergy: 7, difficulty: 5 },
+  powerStarIds: ['', '', '', '', '', ''],
+  adventurePowerIds: [],
+  itemIds: [],
   constellation: {
     constellationID: '',
     championName: '',
@@ -45,19 +48,46 @@ const DEFAULT_CHAMPION_TEMPLATE = {
   translations: { en: { name: '', description: '', tier: '' } }
 };
 
+function cleanRelicCode(str) {
+  if (!str) return '';
+  if (typeof str !== 'string') {
+    str = String(str);
+  }
+  const trimmed = str.trim();
+  if (trimmed.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      const c =
+        parsed.code ||
+        parsed.id ||
+        parsed.relicCode ||
+        parsed.powerCode ||
+        parsed.itemCode ||
+        parsed.cardCode ||
+        parsed.bonusStarID;
+      if (c && typeof c === 'string') return c.trim().toUpperCase();
+    } catch (_) {
+      const match = trimmed.match(/"code"\s*:\s*"([^"]+)"/i) || trimmed.match(/"id"\s*:\s*"([^"]+)"/i);
+      if (match) return match[1].trim().toUpperCase();
+    }
+  }
+  return trimmed.toUpperCase();
+}
+
 function normalizeAdminCoreRelics(raw) {
   if (!raw) return { mandatory: [], options: [], description: '' };
   if (Array.isArray(raw)) {
     return {
-      mandatory: raw.filter((x) => typeof x === 'string'),
+      mandatory: raw.map(cleanRelicCode).filter(Boolean),
       options: [],
       description: ''
     };
   }
   if (typeof raw === 'object') {
-    const mandatory = Array.isArray(raw.mandatory) ? raw.mandatory : (Array.isArray(raw.items) ? raw.items : []);
+    const rawMandatory = Array.isArray(raw.mandatory) ? raw.mandatory : (Array.isArray(raw.items) ? raw.items : []);
+    const mandatory = rawMandatory.map(cleanRelicCode).filter(Boolean);
     const options = Array.isArray(raw.options)
-      ? raw.options.map((opt) => (Array.isArray(opt) ? opt : (opt?.items || [opt])).filter(Boolean))
+      ? raw.options.map((opt) => (Array.isArray(opt) ? opt : (opt?.items || [opt])).map(cleanRelicCode).filter(Boolean))
       : [];
     const description = typeof raw.description === 'string' ? raw.description : '';
     const translations = raw.translations || {};
@@ -135,7 +165,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     coreMandatory: '',
     coreDescription: '',
     otherRelicOptions: '',
-    setItems: {}
+    setItems: {},
+    adventurePowerIds: '',
+    itemIds: ''
   });
 
   // Đồng bộ rawInputs từ champion object
@@ -152,7 +184,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       setItems: (champ.relicSets || []).reduce((acc, set, idx) => {
         acc[idx] = Array.isArray(set.items) ? set.items.join(', ') : '';
         return acc;
-      }, {})
+      }, {}),
+      adventurePowerIds: Array.isArray(champ.adventurePowerIds) ? champ.adventurePowerIds.join(', ') : '',
+      itemIds: Array.isArray(champ.itemIds) ? champ.itemIds.join(', ') : ''
     });
   }, []);
 
@@ -375,6 +409,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       cloned.coreRelics.translations.en.description = cloned.coreRelics.translations.en.description.replace(/\\n/g, '\n');
     }
 
+    cloned.powerStarIds = Array.isArray(cloned.powerStarIds) ? [...cloned.powerStarIds] : [];
+    while (cloned.powerStarIds.length < 6) cloned.powerStarIds.push('');
+    cloned.adventurePowerIds = Array.isArray(cloned.adventurePowerIds) ? [...cloned.adventurePowerIds] : [];
+    cloned.itemIds = Array.isArray(cloned.itemIds) ? [...cloned.itemIds] : [];
+
     setEditingChampion(cloned);
     setEditorTab('basic');
     syncRawInputsFromChampion(cloned);
@@ -547,22 +586,44 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     adminFetch
   ]);
 
+  // Trích xuất mã code sạch từ sự kiện kéo thả (hỗ trợ cả application/json lẫn text/plain và chống dính payload JSON thô)
+  const extractDropCode = (e) => {
+    if (!e || !e.dataTransfer) return '';
+    try {
+      const rawJson = e.dataTransfer.getData('application/json');
+      if (rawJson) {
+        const payload = JSON.parse(rawJson);
+        const c =
+          payload.code ||
+          payload.id ||
+          payload.relicCode ||
+          payload.powerCode ||
+          payload.itemCode ||
+          payload.cardCode ||
+          payload.bonusStarID;
+        if (c) return cleanRelicCode(c);
+      }
+    } catch (_) {}
+
+    try {
+      const text = e.dataTransfer.getData('text/plain');
+      if (text) {
+        return cleanRelicCode(text);
+      }
+    } catch (_) {}
+
+    return '';
+  };
+
   // Kéo thả vào 1 ô Slot cụ thể của Bộ Cổ Vật
   const handleDropToSlot = (sIdx, slotIdx, e) => {
     e.preventDefault();
-    let code = e.dataTransfer.getData('text/plain');
-    if (!code) {
-      try {
-        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
-        code = payload.code;
-      } catch (err) {}
-    }
+    const code = extractDropCode(e);
     if (!code) return;
-    code = code.trim().toUpperCase();
 
     const copy = [...editingChampion.relicSets];
     const targetSet = copy[sIdx] || { items: [] };
-    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items] : ['', '', ''];
+    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items].map(cleanRelicCode) : ['', '', ''];
     while (currentItems.length < 3) currentItems.push('');
     currentItems[slotIdx] = code;
     copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
@@ -578,7 +639,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   const handleRemoveSlotItem = (sIdx, slotIdx) => {
     const copy = [...editingChampion.relicSets];
     const targetSet = copy[sIdx] || { items: [] };
-    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items] : ['', '', ''];
+    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items].map(cleanRelicCode) : ['', '', ''];
     while (currentItems.length < 3) currentItems.push('');
     currentItems[slotIdx] = '';
     copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
@@ -593,17 +654,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   // Kéo thả vào Mandatory Core Relics Box
   const handleDropToCore = (e) => {
     e.preventDefault();
-    let code = e.dataTransfer.getData('text/plain');
-    if (!code) {
-      try {
-        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
-        code = payload.code;
-      } catch (err) {}
-    }
+    const code = extractDropCode(e);
     if (!code) return;
-    code = code.trim().toUpperCase();
 
-    const curMandatory = [...(editingChampion.coreRelics?.mandatory || [])];
+    const curMandatory = [...(editingChampion.coreRelics?.mandatory || [])]
+      .map(cleanRelicCode)
+      .filter(Boolean);
+
     if (!curMandatory.includes(code)) {
       curMandatory.push(code);
       setEditingChampion({
@@ -619,7 +676,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
   // Xóa 1 cổ vật khỏi Mandatory Core Relics
   const handleRemoveCoreRelic = (codeToRemove) => {
-    const curMandatory = (editingChampion.coreRelics?.mandatory || []).filter((c) => c !== codeToRemove);
+    const curMandatory = (editingChampion.coreRelics?.mandatory || [])
+      .map(cleanRelicCode)
+      .filter((c) => c !== codeToRemove);
     setEditingChampion({
       ...editingChampion,
       coreRelics: {
@@ -658,18 +717,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   // Kéo thả cổ vật vào 1 Option cụ thể
   const handleDropToOption = (optIdx, e) => {
     e.preventDefault();
-    let code = e.dataTransfer.getData('text/plain');
-    if (!code) {
-      try {
-        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
-        code = payload.code;
-      } catch (err) {}
-    }
+    const code = extractDropCode(e);
     if (!code) return;
-    code = code.trim().toUpperCase();
 
     const curOptions = [...(editingChampion.coreRelics?.options || [])];
-    const targetOpt = [...(curOptions[optIdx] || [])];
+    const targetOpt = [...(curOptions[optIdx] || [])].map(cleanRelicCode).filter(Boolean);
     if (!targetOpt.includes(code)) {
       targetOpt.push(code);
       curOptions[optIdx] = targetOpt;
@@ -686,7 +738,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   // Xóa 1 cổ vật khỏi Option
   const handleRemoveOptionRelic = (optIdx, codeToRemove) => {
     const curOptions = [...(editingChampion.coreRelics?.options || [])];
-    const targetOpt = (curOptions[optIdx] || []).filter((c) => c !== codeToRemove);
+    const targetOpt = (curOptions[optIdx] || []).map(cleanRelicCode).filter((c) => c !== codeToRemove);
     curOptions[optIdx] = targetOpt;
     setEditingChampion({
       ...editingChampion,
@@ -699,7 +751,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
   // Nhập text cho Option
   const handleOptionTextInputChange = (optIdx, val) => {
-    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+    const list = val.split(',').map(cleanRelicCode).filter(Boolean);
     const curOptions = [...(editingChampion.coreRelics?.options || [])];
     curOptions[optIdx] = list;
     setEditingChampion({
@@ -726,17 +778,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   // Kéo thả vào Other Relic Options Box
   const handleDropToOther = (e) => {
     e.preventDefault();
-    let code = e.dataTransfer.getData('text/plain');
-    if (!code) {
-      try {
-        const payload = JSON.parse(e.dataTransfer.getData('application/json'));
-        code = payload.code;
-      } catch (err) {}
-    }
+    const code = extractDropCode(e);
     if (!code) return;
-    code = code.trim().toUpperCase();
 
-    const current = Array.isArray(editingChampion.otherRelicOptions) ? [...editingChampion.otherRelicOptions] : [];
+    const current = (Array.isArray(editingChampion.otherRelicOptions) ? [...editingChampion.otherRelicOptions] : [])
+      .map(cleanRelicCode)
+      .filter(Boolean);
     if (!current.includes(code)) {
       current.push(code);
       setEditingChampion({ ...editingChampion, otherRelicOptions: current });
@@ -746,18 +793,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
   // Xóa 1 cổ vật khỏi Other Relic Options
   const handleRemoveOtherRelic = (codeToRemove) => {
-    const current = (editingChampion.otherRelicOptions || []).filter((c) => c !== codeToRemove);
+    const current = (editingChampion.otherRelicOptions || []).map(cleanRelicCode).filter((c) => c !== codeToRemove);
     setEditingChampion({ ...editingChampion, otherRelicOptions: current });
     setRawInputs((p) => ({ ...p, otherRelicOptions: current.join(', ') }));
   };
 
   // Nút (+) gán nhanh từ Menu Kéo Thả vào slot trống đầu tiên
-  const handleQuickAssignRelic = (code) => {
+  const handleQuickAssignRelic = (rawCode) => {
+    const code = cleanRelicCode(rawCode);
+    if (!code) return;
     if (!editingChampion || !Array.isArray(editingChampion.relicSets) || editingChampion.relicSets.length === 0) return;
     const copy = [...editingChampion.relicSets];
     let assigned = false;
     for (let sIdx = 0; sIdx < copy.length; sIdx++) {
-      const items = Array.isArray(copy[sIdx].items) ? [...copy[sIdx].items] : ['', '', ''];
+      const items = Array.isArray(copy[sIdx].items) ? [...copy[sIdx].items].map(cleanRelicCode) : ['', '', ''];
       while (items.length < 3) items.push('');
       const emptySlotIdx = items.findIndex((it) => !it);
       if (emptySlotIdx !== -1) {
@@ -777,6 +826,112 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     }
   };
 
+  // --- HANDLERS CHO VẬT PHẨM & SỨC MẠNH (SYNERGIES) ---
+
+  // Kéo thả vào ô Sức Mạnh Ngôi Sao (1★ - 6★)
+  const handleDropToStarPower = (starIdx, e) => {
+    e.preventDefault();
+    const code = extractDropCode(e);
+    if (!code) return;
+    const stars = Array.isArray(editingChampion.powerStarIds) ? [...editingChampion.powerStarIds] : [];
+    while (stars.length < 6) stars.push('');
+    stars[starIdx] = code;
+    setEditingChampion({ ...editingChampion, powerStarIds: stars });
+  };
+
+  // Gỡ bỏ sức mạnh khỏi ô sao
+  const handleRemoveStarPower = (starIdx) => {
+    const stars = Array.isArray(editingChampion.powerStarIds) ? [...editingChampion.powerStarIds] : [];
+    while (stars.length < 6) stars.push('');
+    stars[starIdx] = '';
+    setEditingChampion({ ...editingChampion, powerStarIds: stars });
+  };
+
+  // Nhập mã sao trực tiếp
+  const handleStarPowerCodeChange = (starIdx, val) => {
+    const code = cleanRelicCode(val);
+    const stars = Array.isArray(editingChampion.powerStarIds) ? [...editingChampion.powerStarIds] : [];
+    while (stars.length < 6) stars.push('');
+    stars[starIdx] = code;
+    setEditingChampion({ ...editingChampion, powerStarIds: stars });
+  };
+
+  // Kéo thả vào Sức Mạnh Phiêu Lưu (Adventure Powers)
+  const handleDropToAdventurePower = (e) => {
+    e.preventDefault();
+    const code = extractDropCode(e);
+    if (!code) return;
+    const cur = (Array.isArray(editingChampion.adventurePowerIds) ? [...editingChampion.adventurePowerIds] : [])
+      .map(cleanRelicCode)
+      .filter(Boolean);
+    if (!cur.includes(code)) {
+      cur.push(code);
+      setEditingChampion({ ...editingChampion, adventurePowerIds: cur });
+      setRawInputs((p) => ({ ...p, adventurePowerIds: cur.join(', ') }));
+    }
+  };
+
+  // Xóa 1 sức mạnh phiêu lưu
+  const handleRemoveAdventurePower = (codeToRemove) => {
+    const cur = (editingChampion.adventurePowerIds || []).map(cleanRelicCode).filter((c) => c !== codeToRemove);
+    setEditingChampion({ ...editingChampion, adventurePowerIds: cur });
+    setRawInputs((p) => ({ ...p, adventurePowerIds: cur.join(', ') }));
+  };
+
+  // Kéo thả vào Vật Phẩm Khuyên Dùng (Recommended Items)
+  const handleDropToItem = (e) => {
+    e.preventDefault();
+    const code = extractDropCode(e);
+    if (!code) return;
+    const cur = (Array.isArray(editingChampion.itemIds) ? [...editingChampion.itemIds] : [])
+      .map(cleanRelicCode)
+      .filter(Boolean);
+    if (!cur.includes(code)) {
+      cur.push(code);
+      setEditingChampion({ ...editingChampion, itemIds: cur });
+      setRawInputs((p) => ({ ...p, itemIds: cur.join(', ') }));
+    }
+  };
+
+  // Xóa 1 vật phẩm khuyên dùng
+  const handleRemoveItem = (codeToRemove) => {
+    const cur = (editingChampion.itemIds || []).map(cleanRelicCode).filter((c) => c !== codeToRemove);
+    setEditingChampion({ ...editingChampion, itemIds: cur });
+    setRawInputs((p) => ({ ...p, itemIds: cur.join(', ') }));
+  };
+
+  // Nút (+) gán nhanh Sức Mạnh từ Menu Kéo Thả
+  const handleQuickAssignPower = (rawCode) => {
+    const code = cleanRelicCode(rawCode);
+    if (!code || !editingChampion) return;
+    const stars = Array.isArray(editingChampion.powerStarIds) ? [...editingChampion.powerStarIds] : [];
+    while (stars.length < 6) stars.push('');
+    const emptyStarIdx = stars.findIndex((p) => !p);
+    if (editorTab === 'synergies' && emptyStarIdx !== -1) {
+      stars[emptyStarIdx] = code;
+      setEditingChampion({ ...editingChampion, powerStarIds: stars });
+      return;
+    }
+    const curAdv = (Array.isArray(editingChampion.adventurePowerIds) ? [...editingChampion.adventurePowerIds] : []).map(cleanRelicCode).filter(Boolean);
+    if (!curAdv.includes(code)) {
+      curAdv.push(code);
+      setEditingChampion({ ...editingChampion, adventurePowerIds: curAdv });
+      setRawInputs((p) => ({ ...p, adventurePowerIds: curAdv.join(', ') }));
+    }
+  };
+
+  // Nút (+) gán nhanh Vật Phẩm từ Menu Kéo Thả
+  const handleQuickAssignItem = (rawCode) => {
+    const code = cleanRelicCode(rawCode);
+    if (!code || !editingChampion) return;
+    const curItems = (Array.isArray(editingChampion.itemIds) ? [...editingChampion.itemIds] : []).map(cleanRelicCode).filter(Boolean);
+    if (!curItems.includes(code)) {
+      curItems.push(code);
+      setEditingChampion({ ...editingChampion, itemIds: curItems });
+      setRawInputs((p) => ({ ...p, itemIds: curItems.join(', ') }));
+    }
+  };
+
   // Save Champion Full-Page
   const handleSaveChampion = async () => {
     if (!editingChampion || !editingChampion.name?.trim()) {
@@ -792,17 +947,17 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       const regions = (rawInputs.regions || '').split(',').map((s) => s.trim()).filter(Boolean);
       const tags = (rawInputs.tags || '').split(',').map((s) => s.trim()).filter(Boolean);
       const tagsEn = (rawInputs.tagsEn || '').split(',').map((s) => s.trim()).filter(Boolean);
-      const otherRelicOptions = (rawInputs.otherRelicOptions || '').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+      const otherRelicOptions = (rawInputs.otherRelicOptions || '').split(',').map(cleanRelicCode).filter(Boolean);
 
       // Chuẩn hóa cấu trúc coreRelics linh hoạt
       const coreMandatory = (rawInputs.coreMandatory !== undefined ? rawInputs.coreMandatory : (editingChampion.coreRelics?.mandatory || []).join(', '))
         .split(',')
-        .map((s) => s.trim().toUpperCase())
+        .map(cleanRelicCode)
         .filter(Boolean);
 
       const rawOptions = editingChampion.coreRelics?.options || [];
       const coreOptions = rawOptions
-        .map((opt) => (Array.isArray(opt) ? opt : [opt]).map((s) => String(s).trim().toUpperCase()).filter(Boolean))
+        .map((opt) => (Array.isArray(opt) ? opt : [opt]).map(cleanRelicCode).filter(Boolean))
         .filter((opt) => opt.length > 0);
 
       const coreDescription = (rawInputs.coreDescription !== undefined ? rawInputs.coreDescription : (editingChampion.coreRelics?.description || '')).trim();
@@ -823,7 +978,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       // Chuẩn hóa relicSets (không lưu title, hệ thống tự hiển thị Bộ #1, Bộ #2...)
       const cleanRelicSets = (editingChampion.relicSets || []).map((set, idx) => {
         const rawItemsStr = rawInputs.setItems?.[idx] !== undefined ? rawInputs.setItems[idx] : (Array.isArray(set.items) ? set.items.join(', ') : '');
-        const items = rawItemsStr.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean).slice(0, 3);
+        const items = rawItemsStr.split(',').map(cleanRelicCode).filter(Boolean).slice(0, 3);
         const cleanSet = {
           recommendedStars: Number(set.recommendedStars) || 1,
           items,
@@ -841,6 +996,23 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         }
         return cleanSet;
       });
+
+      // Chuẩn hóa powerStarIds (6 ngôi sao)
+      const rawPowerStars = Array.isArray(editingChampion.powerStarIds) ? [...editingChampion.powerStarIds] : [];
+      while (rawPowerStars.length < 6) rawPowerStars.push('');
+      const cleanPowerStarIds = rawPowerStars.slice(0, 6).map(cleanRelicCode);
+
+      // Chuẩn hóa adventurePowerIds
+      const adventurePowerIds = (rawInputs.adventurePowerIds !== undefined ? rawInputs.adventurePowerIds : (editingChampion.adventurePowerIds || []).join(', '))
+        .split(',')
+        .map(cleanRelicCode)
+        .filter(Boolean);
+
+      // Chuẩn hóa itemIds
+      const itemIds = (rawInputs.itemIds !== undefined ? rawInputs.itemIds : (editingChampion.itemIds || []).join(', '))
+        .split(',')
+        .map(cleanRelicCode)
+        .filter(Boolean);
 
       // Chuẩn hóa ratings (hỗ trợ bước nhảy 0.5)
       const rawRatings = editingChampion.ratings || {};
@@ -877,6 +1049,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         coreRelics: finalCoreRelics,
         otherRelicOptions,
         relicSets: cleanRelicSets,
+        powerStarIds: cleanPowerStarIds,
+        adventurePowerIds,
+        itemIds,
         ratings: cleanRatings,
         assets: cleanAssets,
         constellation: cleanConstellation,
@@ -1005,6 +1180,23 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       desc: p.descriptionRaw || p.description || ''
     }));
   }, [powers, powerSearch]);
+
+  // Lookup Maps tra cứu O(1) hiển thị thông tin Sức Mạnh & Vật Phẩm
+  const powerMap = useMemo(() => {
+    const map = new Map();
+    powers.forEach((p) => {
+      if (p.powerCode) map.set(p.powerCode, p);
+    });
+    return map;
+  }, [powers]);
+
+  const itemMap = useMemo(() => {
+    const map = new Map();
+    items.forEach((it) => {
+      if (it.itemCode) map.set(it.itemCode, it);
+    });
+    return map;
+  }, [items]);
 
   // Loading auth spinner
   if (authLoading) {
@@ -1343,6 +1535,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     label: isEn ? 'Relic Builds' : 'Các Bộ Cổ Vật',
                     badge: (editingChampion.relicSets || []).length
                   },
+                  {
+                    id: 'synergies',
+                    label: isEn ? 'Items & Powers' : 'Vật Phẩm & Sức Mạnh',
+                    badge:
+                      (editingChampion.powerStarIds || []).filter(Boolean).length +
+                      (editingChampion.adventurePowerIds || []).length +
+                      (editingChampion.itemIds || []).length
+                  },
                   { id: 'ratings', label: isEn ? 'Ratings & Overview' : 'Đánh Giá & Vận Hành' },
                   { id: 'assets', label: isEn ? 'Assets & Art' : 'Hình Ảnh & Asset' },
                   {
@@ -1639,10 +1839,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 <input
                   type="text"
                   value={rawInputs.coreMandatory !== undefined ? rawInputs.coreMandatory : (editingChampion.coreRelics?.mandatory || []).join(', ')}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropToCore(e);
+                  }}
                   onChange={(e) => {
                     const val = e.target.value;
                     setRawInputs((p) => ({ ...p, coreMandatory: val }));
-                    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                    const list = val.split(',').map(cleanRelicCode).filter(Boolean);
                     setEditingChampion({
                       ...editingChampion,
                       coreRelics: {
@@ -1660,25 +1865,29 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   {(editingChampion.coreRelics?.mandatory || []).length === 0 ? (
                     <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật bắt buộc (Kéo thả cổ vật vào đây)</span>
                   ) : (
-                    (editingChampion.coreRelics?.mandatory || []).map((code) => (
-                      <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-[#8CC0EB]/50 shadow-sm">
-                        <img
-                          src={`https://images.lortpoc.com/relics/${code}.webp`}
-                          alt={code}
-                          className="w-6 h-6 object-contain"
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                        <span className="text-xs font-mono font-bold text-amber-200">{code}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveCoreRelic(code)}
-                          className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
-                          title="Xóa món này"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))
+                    (editingChampion.coreRelics?.mandatory || []).map((rawCode) => {
+                      const code = cleanRelicCode(rawCode);
+                      if (!code) return null;
+                      return (
+                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-[#8CC0EB]/50 shadow-sm">
+                          <img
+                            src={`https://images.lortpoc.com/relics/${code}.webp`}
+                            alt={code}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                          <span className="text-xs font-mono font-bold text-amber-200">{code}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCoreRelic(code)}
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            title="Xóa món này"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -1736,6 +1945,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         <input
                           type="text"
                           value={Array.isArray(optArr) ? optArr.join(', ') : optArr}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDropToOption(optIdx, e);
+                          }}
                           onChange={(e) => handleOptionTextInputChange(optIdx, e.target.value)}
                           placeholder="VD: R0025 hoặc R0040, R0025 (kéo thả hoặc nhập mã)"
                           className="w-full px-3 py-2 rounded-lg bg-[#070a10] border border-white/10 text-white font-mono text-xs focus:border-sky-400 focus:outline-none"
@@ -1746,25 +1960,29 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           {(Array.isArray(optArr) ? optArr : []).length === 0 ? (
                             <span className="text-[11px] text-slate-500 italic">Kéo thả cổ vật vào đây hoặc nhập mã</span>
                           ) : (
-                            (Array.isArray(optArr) ? optArr : []).map((code) => (
-                              <div key={code} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#070a10] border border-sky-400/30">
-                                <img
-                                  src={`https://images.lortpoc.com/relics/${code}.webp`}
-                                  alt={code}
-                                  className="w-5 h-5 object-contain"
-                                  onError={(e) => { e.target.style.display = 'none'; }}
-                                />
-                                <span className="text-[11px] font-mono font-bold text-sky-200">{code}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveOptionRelic(optIdx, code)}
-                                  className="text-slate-400 hover:text-rose-400 text-[10px] ml-0.5 cursor-pointer font-bold"
-                                  title="Xóa món"
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ))
+                            (Array.isArray(optArr) ? optArr : []).map((rawCode) => {
+                              const code = cleanRelicCode(rawCode);
+                              if (!code) return null;
+                              return (
+                                <div key={code} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#070a10] border border-sky-400/30">
+                                  <img
+                                    src={`https://images.lortpoc.com/relics/${code}.webp`}
+                                    alt={code}
+                                    className="w-5 h-5 object-contain"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                  <span className="text-[11px] font-mono font-bold text-sky-200">{code}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveOptionRelic(optIdx, code)}
+                                    className="text-slate-400 hover:text-rose-400 text-[10px] ml-0.5 cursor-pointer font-bold"
+                                    title="Xóa món"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              );
+                            })
                           )}
                         </div>
                       </div>
@@ -1845,10 +2063,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 <input
                   type="text"
                   value={rawInputs.otherRelicOptions}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropToOther(e);
+                  }}
                   onChange={(e) => {
                     const val = e.target.value;
                     setRawInputs((p) => ({ ...p, otherRelicOptions: val }));
-                    const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                    const list = val.split(',').map(cleanRelicCode).filter(Boolean);
                     setEditingChampion({ ...editingChampion, otherRelicOptions: list });
                   }}
                   placeholder="VD: R0060, R0020, R0114"
@@ -1860,25 +2083,29 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   {(editingChampion.otherRelicOptions || []).length === 0 ? (
                     <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật tùy chọn (Thả cổ vật vào đây)</span>
                   ) : (
-                    (editingChampion.otherRelicOptions || []).map((code) => (
-                      <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-white/15 shadow-sm">
-                        <img
-                          src={`https://images.lortpoc.com/relics/${code}.webp`}
-                          alt={code}
-                          className="w-6 h-6 object-contain"
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                        <span className="text-xs font-mono text-slate-300">{code}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveOtherRelic(code)}
-                          className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
-                          title="Xóa món này"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))
+                    (editingChampion.otherRelicOptions || []).map((rawCode) => {
+                      const code = cleanRelicCode(rawCode);
+                      if (!code) return null;
+                      return (
+                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-white/15 shadow-sm">
+                          <img
+                            src={`https://images.lortpoc.com/relics/${code}.webp`}
+                            alt={code}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                          <span className="text-xs font-mono text-slate-300">{code}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOtherRelic(code)}
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            title="Xóa món này"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -1891,7 +2118,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
               <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
                 <div>
                   <h3 className="text-base font-bold font-heading text-[#8CC0EB] uppercase tracking-wider flex items-center gap-2">
-                    <span>3.</span> Danh Sách Các Bộ Cổ Vật Đề Xuất ({ (editingChampion.relicSets || []).length } Bộ)
+                    <span>3.</span> Danh Sách Các Bộ Cổ Vật Khác ({ (editingChampion.relicSets || []).length } Bộ)
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Mỗi bộ trang bị gồm tiêu đề, 3 ô cổ vật, sao khuyên dùng và phân tích chiến thuật chi tiết.
@@ -1974,6 +2201,23 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         <input
                           type="text"
                           value={rawInputs.setItems?.[sIdx] !== undefined ? rawInputs.setItems[sIdx] : (Array.isArray(setObj.items) ? setObj.items.join(', ') : '')}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const code = extractDropCode(e);
+                            if (!code) return;
+                            const items = [...(setObj.items || [])].map(cleanRelicCode).filter(Boolean);
+                            if (items.length < 3 && !items.includes(code)) {
+                              items.push(code);
+                              const copy = [...editingChampion.relicSets];
+                              copy[sIdx] = { ...setObj, items };
+                              setEditingChampion({ ...editingChampion, relicSets: copy });
+                              setRawInputs((p) => ({
+                                ...p,
+                                setItems: { ...p.setItems, [sIdx]: items.join(', ') }
+                              }));
+                            }
+                          }}
                           onChange={(e) => {
                             const val = e.target.value;
                             setRawInputs((p) => ({
@@ -1982,7 +2226,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             }));
                             const items = val
                               .split(',')
-                              .map((s) => s.trim().toUpperCase())
+                              .map(cleanRelicCode)
                               .filter(Boolean)
                               .slice(0, 3);
                             const copy = [...editingChampion.relicSets];
@@ -1996,7 +2240,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         {/* Visual 3 slots preview with DROP ZONE */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
                           {[0, 1, 2].map((slotIdx) => {
-                            const code = (setObj.items || [])[slotIdx];
+                            const code = cleanRelicCode((setObj.items || [])[slotIdx]);
                             return (
                               <div
                                 key={slotIdx}
@@ -2116,11 +2360,317 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             </div>
             )}
 
-            {/* TAB 4: CHỈ SỐ ĐÁNH GIÁ (RATINGS) & MÔ TẢ TỔNG QUAN */}
+            {/* TAB 4: VẬT PHẨM & SỨC MẠNH (SYNERGIES) */}
+            {editorTab === 'synergies' && (
+            <div id="admin-sec-synergies" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+                <h3 className="text-base font-bold font-heading text-[#8CC0EB] uppercase tracking-wider flex items-center gap-2">
+                  <span>4.</span> Vật Phẩm & Sức Mạnh Khuyên Dùng (Items & Powers)
+                </h3>
+                <span className="text-xs text-amber-300 font-medium">
+                  Kéo thả từ Menu bên phải hoặc nhập mã code
+                </span>
+              </div>
+
+              {/* 4.1 SỨC MẠNH NGÔI SAO (STAR POWERS: 1★ - 6★) */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-amber-300 uppercase font-heading flex items-center gap-2">
+                      <span>⭐</span> 4.1 Sức Mạnh Ngôi Sao (Star Powers: 1★ - 6★)
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Sức mạnh nội tại kích hoạt tương ứng từ mốc 1 Sao đến 6 Sao của tướng. Kéo thả sức mạnh vào từng ô sao.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[#452600] text-amber-200 border border-amber-400/40">
+                    {(editingChampion.powerStarIds || []).filter(Boolean).length}/6 Sao
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                  {[0, 1, 2, 3, 4, 5].map((starIdx) => {
+                    const starNum = starIdx + 1;
+                    const code = cleanRelicCode((editingChampion.powerStarIds || [])[starIdx]);
+                    const powerInfo = powerMap.get(code);
+                    const pName = powerInfo?.name || code;
+                    const pDesc = powerInfo?.descriptionRaw || powerInfo?.description || '';
+                    const pRarity = powerInfo?.rarity || '';
+                    const pImage = powerInfo?.assetAbsolutePath || (code ? `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${code}.png` : null);
+
+                    return (
+                      <div
+                        key={starIdx}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'copy';
+                        }}
+                        onDrop={(e) => handleDropToStarPower(starIdx, e)}
+                        className={`p-3.5 rounded-xl border-2 transition-all space-y-2.5 ${
+                          code
+                            ? 'bg-[#0a0f1a] border-amber-500/40 shadow-md hover:border-amber-400'
+                            : 'bg-[#070a10] border-dashed border-white/20 hover:border-amber-400/60 hover:bg-amber-950/10'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-black font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            {starNum}★
+                          </span>
+                          {code && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveStarPower(starIdx)}
+                              className="text-xs text-slate-400 hover:text-rose-400 font-bold cursor-pointer transition-colors"
+                              title="Gỡ sức mạnh này"
+                            >
+                              ✕ Gỡ bỏ
+                            </button>
+                          )}
+                        </div>
+
+                        {code ? (
+                          <div className="flex items-start gap-2.5 min-h-[52px]">
+                            <div className="w-12 h-12 rounded-lg bg-black border border-white/20 p-1 flex items-center justify-center shrink-0">
+                              <img
+                                src={pImage}
+                                alt={pName}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
+                                }}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-heading font-bold text-xs text-white truncate block" title={pName}>
+                                  {pName}
+                                </span>
+                                {pRarity && (
+                                  <span className="text-[9px] px-1 py-0.2 rounded font-bold uppercase bg-slate-800 text-slate-300 shrink-0">
+                                    {pRarity}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] font-mono text-amber-300/80 block mt-0.5">{code}</span>
+                              {pDesc && (
+                                <p className="text-[10px] text-slate-400 line-clamp-2 mt-1 leading-snug">
+                                  {pDesc}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="py-3 text-center text-xs text-slate-500 italic">
+                            Kéo thả sức mạnh vào đây
+                          </div>
+                        )}
+
+                        <input
+                          type="text"
+                          value={code}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDropToStarPower(starIdx, e);
+                          }}
+                          onChange={(e) => handleStarPowerCodeChange(starIdx, e.target.value)}
+                          placeholder={`Mã sao ${starNum}★ (VD: P0156)`}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#070a10] border border-white/10 text-white font-mono text-xs focus:border-amber-400 focus:outline-none"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 4.2 SỨC MẠNH PHIÊU LƯU KHUYÊN DÙNG (ADVENTURE POWERS) */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'copy';
+                }}
+                onDrop={handleDropToAdventurePower}
+                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-sky-400/40 hover:border-sky-400 hover:bg-sky-950/10 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
+                      <span>⚡</span> 4.2 Sức Mạnh Phiêu Lưu Khuyên Dùng (Adventure Powers)
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Các sức mạnh nhặt trong cuộc phiêu lưu phù hợp nhất với lối chơi của tướng.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#0b2545] text-sky-200 border border-sky-400">
+                    {(editingChampion.adventurePowerIds || []).length} Sức mạnh
+                  </span>
+                </div>
+
+                <input
+                  type="text"
+                  value={rawInputs.adventurePowerIds !== undefined ? rawInputs.adventurePowerIds : (editingChampion.adventurePowerIds || []).join(', ')}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropToAdventurePower(e);
+                  }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setRawInputs((p) => ({ ...p, adventurePowerIds: val }));
+                    const list = val.split(',').map(cleanRelicCode).filter(Boolean);
+                    setEditingChampion({ ...editingChampion, adventurePowerIds: list });
+                  }}
+                  placeholder="VD: P0067, P0680, P0222 (Kéo thả hoặc nhập mã phân cách bằng dấu phẩy)"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-sky-400 focus:outline-none"
+                />
+
+                {/* Visual Preview */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
+                  {(editingChampion.adventurePowerIds || []).length === 0 ? (
+                    <span className="text-[11px] text-slate-500 italic">
+                      Chưa có sức mạnh phiêu lưu nào (Kéo thả từ tab Sức Mạnh ở Menu bên phải vào đây)
+                    </span>
+                  ) : (
+                    (editingChampion.adventurePowerIds || []).map((rawCode) => {
+                      const code = cleanRelicCode(rawCode);
+                      if (!code) return null;
+                      const pInfo = powerMap.get(code);
+                      const pName = pInfo?.name || code;
+                      const pImage = pInfo?.assetAbsolutePath || `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${code}.png`;
+
+                      return (
+                        <div
+                          key={code}
+                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#0e1422] border border-sky-400/40 shadow-sm"
+                        >
+                          <img
+                            src={pImage}
+                            alt={pName}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://images.lortpoc.com/icon/starIcon.webp';
+                            }}
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-white max-w-[140px] truncate" title={pName}>
+                              {pName}
+                            </span>
+                            <span className="text-[10px] font-mono text-sky-300 font-bold">{code}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAdventurePower(code)}
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            title="Xóa sức mạnh này"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* 4.3 VẬT PHẨM KHUYÊN DÙNG (RECOMMENDED ITEMS) */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'copy';
+                }}
+                onDrop={handleDropToItem}
+                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/10 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-emerald-300 uppercase font-heading flex items-center gap-2">
+                      <span>📦</span> 4.3 Vật Phẩm Khuyên Dùng (Recommended Items)
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Các vật phẩm trang bị tối ưu nhất để nâng cấp bài trong hành trình phiêu lưu.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                    {(editingChampion.itemIds || []).length} Vật phẩm
+                  </span>
+                </div>
+
+                <input
+                  type="text"
+                  value={rawInputs.itemIds !== undefined ? rawInputs.itemIds : (editingChampion.itemIds || []).join(', ')}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropToItem(e);
+                  }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setRawInputs((p) => ({ ...p, itemIds: val }));
+                    const list = val.split(',').map(cleanRelicCode).filter(Boolean);
+                    setEditingChampion({ ...editingChampion, itemIds: list });
+                  }}
+                  placeholder="VD: I0118, I0077, I0014 (Kéo thả hoặc nhập mã phân cách bằng dấu phẩy)"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-emerald-400 focus:outline-none"
+                />
+
+                {/* Visual Preview */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
+                  {(editingChampion.itemIds || []).length === 0 ? (
+                    <span className="text-[11px] text-slate-500 italic">
+                      Chưa có vật phẩm nào (Kéo thả từ tab Vật Phẩm ở Menu bên phải vào đây)
+                    </span>
+                  ) : (
+                    (editingChampion.itemIds || []).map((rawCode) => {
+                      const code = cleanRelicCode(rawCode);
+                      if (!code) return null;
+                      const itInfo = itemMap.get(code);
+                      const itName = itInfo?.name || code;
+                      const itImage = itInfo?.assetAbsolutePath || 'https://images.lortpoc.com/icon/itemIcon.webp';
+
+                      return (
+                        <div
+                          key={code}
+                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#0e1422] border border-emerald-500/40 shadow-sm"
+                        >
+                          <img
+                            src={itImage}
+                            alt={itName}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://images.lortpoc.com/icon/itemIcon.webp';
+                            }}
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-white max-w-[140px] truncate" title={itName}>
+                              {itName}
+                            </span>
+                            <span className="text-[10px] font-mono text-emerald-300 font-bold">{code}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveItem(code)}
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            title="Xóa vật phẩm này"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* TAB 5: CHỈ SỐ ĐÁNH GIÁ (RATINGS) & MÔ TẢ TỔNG QUAN */}
             {editorTab === 'ratings' && (
             <div id="admin-sec-ratings" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
               <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
-                <span>4.</span> Chỉ Số Sức Mạnh & Mô Tả Chi Tiết
+                <span>5.</span> Chỉ Số Sức Mạnh & Mô Tả Chi Tiết
               </h3>
 
               {/* Ratings Grid */}
@@ -2252,11 +2802,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             </div>
             )}
 
-            {/* TAB 5: ARTWORK ASSETS */}
+            {/* TAB 6: ARTWORK ASSETS */}
             {editorTab === 'assets' && (
             <div id="admin-sec-assets" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
               <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
-                <span>5.</span> Hình Ảnh & Splash Art (Assets)
+                <span>6.</span> Hình Ảnh & Splash Art (Assets)
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -2374,7 +2924,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             </div>
             )}
 
-            {/* TAB 6: CHÒM SAO (CONSTELLATION) */}
+            {/* TAB 7: CHÒM SAO (CONSTELLATION) */}
             {editorTab === 'constellation' && (
               <div id="admin-sec-constellation" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-4">
                 <ConstellationEditor
@@ -2407,7 +2957,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   <button
                     type="button"
                     onClick={() => {
-                      const tabs = ['basic', 'core', 'builds', 'ratings', 'assets', 'constellation'];
+                      const tabs = ['basic', 'core', 'builds', 'synergies', 'ratings', 'assets', 'constellation'];
                       const idx = tabs.indexOf(editorTab);
                       if (idx > 0) setEditorTab(tabs[idx - 1]);
                     }}
@@ -2420,7 +2970,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   <button
                     type="button"
                     onClick={() => {
-                      const tabs = ['basic', 'core', 'builds', 'ratings', 'assets', 'constellation'];
+                      const tabs = ['basic', 'core', 'builds', 'synergies', 'ratings', 'assets', 'constellation'];
                       const idx = tabs.indexOf(editorTab);
                       if (idx < tabs.length - 1) setEditorTab(tabs[idx + 1]);
                     }}
@@ -2464,6 +3014,8 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 items={items}
                 cards={cards}
                 onQuickAssignRelic={handleQuickAssignRelic}
+                onQuickAssignPower={handleQuickAssignPower}
+                onQuickAssignItem={handleQuickAssignItem}
               />
             </aside>
           )}

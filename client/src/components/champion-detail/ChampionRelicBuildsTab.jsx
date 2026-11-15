@@ -167,10 +167,10 @@ export default function ChampionRelicBuildsTab({
           </div>
 
           {/* --- DESKTOP VIEW (PC): Sơ đồ rẽ nhánh đầy đủ, sạch sẽ, không có chữ --- */}
-          <div className="hidden sm:flex flex-col xl:flex-row items-stretch xl:items-center gap-4 xl:gap-0 py-1">
+          <div className="hidden sm:flex flex-col xl:flex-row items-stretch xl:items-center gap-4 xl:gap-0">
             {/* 1. Vế trái: Cổ vật cố định bắt buộc (A hoặc A + B) */}
             {suitableData.mandatory.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 xl:pr-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
                 {suitableData.mandatory.map((code, idx) => (
                   <React.Fragment key={code}>
                     {idx > 0 && (
@@ -194,12 +194,17 @@ export default function ChampionRelicBuildsTab({
 
             {/* 2. Đường kẻ ngang nối từ vế trái sang trục dọc */}
             {suitableData.mandatory.length > 0 && suitableData.options.length > 0 && (
-              <div className="hidden xl:block w-8 h-0.5 bg-sky-400/60 shrink-0 self-center" />
+              <div className="hidden xl:block w-7 h-0.5 bg-sky-400/60 shrink-0 self-center" />
             )}
 
-            {/* 3. Vế phải: Nhánh các tùy chọn linh hoạt (sơ đồ rẽ nhánh sạch, không có chữ OR) */}
+            {/* 3. Vế phải: Nhánh các tùy chọn linh hoạt (sơ đồ rẽ nhánh sạch, các hàng bằng nhau tuyệt đối để trục ngang khớp chuẩn tâm) */}
             {suitableData.options.length > 0 && (
-              <div className="flex-1 flex flex-col justify-center gap-3 relative py-1">
+              <div
+                className="flex-1 grid grid-cols-1 gap-3 relative"
+                style={{
+                  gridTemplateRows: `repeat(${suitableData.options.length}, minmax(0, 1fr))`
+                }}
+              >
                 {suitableData.options.map((optItems, optIdx) => {
                   const isFirst = optIdx === 0;
                   const isLast = optIdx === suitableData.options.length - 1;
@@ -258,11 +263,11 @@ export default function ChampionRelicBuildsTab({
         </div>
       )}
 
-      {/* 2. Recommended Relic Sets Section (Bộ Cổ Vật Đề Xuất) - NẰM Ở GIỮA */}
+      {/* 2. Other Relic Sets Section (Các Bộ Cổ Vật Khác) - NẰM Ở GIỮA */}
       <div className="p-2 sm:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-3 sm:space-y-5">
         <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-white/10 flex-wrap gap-2">
           <h3 className="text-base sm:text-lg font-bold font-heading text-white">
-            {isEn ? 'Recommended Relic Sets' : 'Bộ Cổ Vật Đề Xuất'}
+            {isEn ? 'Other Relic Builds' : 'Các Bộ Cổ Vật Khác'}
           </h3>
           {currentBuild?.recommendedStars && (
             <span className="px-2 sm:px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#452600] text-amber-200 border border-amber-400">

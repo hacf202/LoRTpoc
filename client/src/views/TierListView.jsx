@@ -102,10 +102,10 @@ export default function TierListView({ onSelectChampion }) {
     return Object.values(tierData).reduce((acc, list) => acc + (list?.length || 0), 0);
   }, [tierData]);
 
-  // Display ordered tiers with champions
+  // Display ordered tiers: standard tiers (S+ to D) always visible; UNRANKED only if populated
   const tierRows = useMemo(() => {
     return ORDERED_TIERS
-      .filter((tierKey) => (tierData[tierKey] || []).length > 0)
+      .filter((tierKey) => tierKey !== 'UNRANKED' || (tierData[tierKey] || []).length > 0)
       .map((tierKey) => ({
         tierKey,
         champions: tierData[tierKey] || []
@@ -159,53 +159,59 @@ export default function TierListView({ onSelectChampion }) {
                   </div>
 
                   {/* Right Column: Dense Streamlined Champions Grid (No cluttering badges) */}
-                  <div className="flex-1 p-1.5 sm:p-2.5">
-                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1.5 sm:gap-2">
-                      {champions.map((champ) => {
-                        const champName = isEn
-                          ? champ.translations?.en?.name || champ.name
-                          : champ.name;
-                        const avatarUrl =
-                          champ.assets?.[0]?.avatar ||
-                          `https://images.lortpoc.com/avatarChampions/${champ.championID}.webp`;
-                        const champKey = champ.name || champ.championID || champ.cardCode;
-                        const champHref = `/champion/${encodeURIComponent(champKey)}`;
+                  <div className="flex-1 p-2 sm:p-2.5 flex items-center">
+                    {champions.length === 0 ? (
+                      <div className="w-full py-2.5 sm:py-3 px-2 text-center sm:text-left text-xs text-slate-500 italic">
+                        {isEn ? 'No champions currently in this tier' : 'Chưa có tướng trong bậc này'}
+                      </div>
+                    ) : (
+                      <div className="w-full grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1.5 sm:gap-2">
+                        {champions.map((champ) => {
+                          const champName = isEn
+                            ? champ.translations?.en?.name || champ.name
+                            : champ.name;
+                          const avatarUrl =
+                            champ.assets?.[0]?.avatar ||
+                            `https://images.lortpoc.com/avatarChampions/${champ.championID}.webp`;
+                          const champKey = champ.name || champ.championID || champ.cardCode;
+                          const champHref = `/champion/${encodeURIComponent(champKey)}`;
 
-                        return (
-                          <a
-                            key={champ.championID || champ.cardCode}
-                            href={champHref}
-                            onClick={(e) => {
-                              if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
-                                e.preventDefault();
-                                onSelectChampion?.(champ);
-                              }
-                            }}
-                            className="group relative flex flex-col items-center cursor-pointer select-none"
-                            title={`${champName} (${champ.regions?.[0] || 'LoR'}) - Tier ${tierKey}`}
-                          >
-                            {/* Clean Portrait Avatar (Zero noisy overlay badges) */}
-                            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#070a10] border border-white/10 group-hover:border-[#8CC0EB] group-hover:shadow-[0_0_10px_rgba(140,192,235,0.35)] group-hover:scale-105 transition-all duration-150">
-                              <img
-                                src={avatarUrl}
-                                alt={champName}
-                                loading="lazy"
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.onerror = null;
-                                  e.currentTarget.src = 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
-                                }}
-                              />
-                            </div>
+                          return (
+                            <a
+                              key={champ.championID || champ.cardCode}
+                              href={champHref}
+                              onClick={(e) => {
+                                if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                                  e.preventDefault();
+                                  onSelectChampion?.(champ);
+                                }
+                              }}
+                              className="group relative flex flex-col items-center cursor-pointer select-none"
+                              title={`${champName} (${champ.regions?.[0] || 'LoR'}) - Tier ${tierKey}`}
+                            >
+                              {/* Clean Portrait Avatar (Zero noisy overlay badges) */}
+                              <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#070a10] border border-white/10 group-hover:border-[#8CC0EB] group-hover:shadow-[0_0_10px_rgba(140,192,235,0.35)] group-hover:scale-105 transition-all duration-150">
+                                <img
+                                  src={avatarUrl}
+                                  alt={champName}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = 'https://dd.b.pvp.net/latest/set1/en_us/img/cards/01DE001.png';
+                                  }}
+                                />
+                              </div>
 
-                            {/* Champion Name */}
-                            <span className="mt-1 text-[10px] sm:text-[11px] font-semibold text-slate-300 group-hover:text-[#8CC0EB] transition-colors truncate w-full text-center">
-                              {champName}
-                            </span>
-                          </a>
-                        );
-                      })}
-                    </div>
+                              {/* Champion Name */}
+                              <span className="mt-1 text-[10px] sm:text-[11px] font-semibold text-slate-300 group-hover:text-[#8CC0EB] transition-colors truncate w-full text-center">
+                                {champName}
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

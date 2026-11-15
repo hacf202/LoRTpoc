@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import LorMarkup from '../components/LorMarkup';
+import ListLoadingBar from '../components/ListLoadingBar';
+import DetailSkeleton from '../components/DetailSkeleton';
+import SEOHead from '../components/SEOHead';
+import { getCardKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 
@@ -60,19 +64,33 @@ export default function CardDetailView({
   useEffect(() => {
     if (!cardCode) return;
 
+    let isMounted = true;
+
     if (cardDetailCache.has(cardCode)) {
-      setCard(cardDetailCache.get(cardCode));
-      setLoading(false);
-      setError(null);
-      return;
+      const cached = cardDetailCache.get(cardCode);
+      const timer = setTimeout(() => {
+        if (isMounted) {
+          setCard(cached);
+          setLoading(false);
+          setError(null);
+        }
+      }, 350);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
     }
 
-    let isMounted = true;
     const fetchCard = async () => {
+      const startTime = performance.now();
       try {
         setLoading(true);
         setError(null);
         const res = await fetch(`/api/v1/cards/${encodeURIComponent(cardCode)}`);
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, 380 - elapsed);
+        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const json = await res.json();
         if (json.success && isMounted) {
@@ -138,8 +156,70 @@ export default function CardDetailView({
 
   const compatibleChamps = card?.compatibleChampions || [];
 
+  // SEO metadata computation (Rule 1 & Rule 4)
+  const cardRegion = card?.region || card?.regions?.join(', ') || 'Runeterra';
+  const seoTitle = isEn
+    ? `${cardName} Card (${cardRegion}) - Stats & Decks`
+    : `Lá Bài ${cardName} (${cardRegion}) - Chỉ Số & Bộ Bài`;
+
+  const seoDesc = isEn
+    ? `Explore card ${cardName} in Legends of Runeterra: The Path of Champions. Cost, attack, health, keywords, and deck synergies.`
+    : `Thông tin chi tiết lá bài ${cardName} (${cardRegion}) trong Huyền Thoại Runeterra. Chỉ số năng lượng, hiệu ứng và bộ bài kết hợp tối ưu.`;
+
+  const seoUrl = `https://thepathofchampions.guide/card/${encodeURIComponent(cardCode)}`;
+  const seoKeywords = getCardKeywords(card, language);
+
+  const seoJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: isEn ? 'Home' : 'Trang Chủ',
+            item: 'https://thepathofchampions.guide/'
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: isEn ? 'Cards' : 'Lá Bài',
+            item: 'https://thepathofchampions.guide/?tab=cards'
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: cardName,
+            item: seoUrl
+          }
+        ]
+      },
+      {
+        '@type': 'ItemPage',
+        mainEntity: {
+          '@type': 'Thing',
+          name: cardName,
+          description: seoDesc,
+          image: cardImg
+        }
+      }
+    ]
+  };
+
   return (
-    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center">
+    <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center animate-in fade-in duration-300">
+      {/* Dynamic Bilingual SEO */}
+      <SEOHead
+        title={seoTitle}
+        description={seoDesc}
+        keywords={seoKeywords}
+        image={cardImg}
+        url={seoUrl}
+        jsonLd={seoJsonLd}
+        type="article"
+        lang={language}
+      />
       <div className="w-full max-w-5xl mx-auto px-2 sm:px-6 py-2 sm:py-8">
         {/* 1. Top Bar: Back Button & Minimal Breadcrumb */}
         <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-white/10 select-none">
@@ -182,11 +262,9 @@ export default function CardDetailView({
 
         {/* 2. Main Content Body */}
         {loading && !card ? (
-          <div className="py-28 flex flex-col items-center justify-center gap-3 text-center">
-            <div className="w-8 h-8 border-2 border-[#8CC0EB] border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-semibold text-slate-400">
-              {isEn ? 'Loading card details...' : 'Đang tải thông tin lá bài...'}
-            </span>
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={true} />
+            <DetailSkeleton type="card" />
           </div>
         ) : error || !card ? (
           <div className="py-20 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
@@ -202,8 +280,10 @@ export default function CardDetailView({
             </button>
           </div>
         ) : (
-          <div className="space-y-4 sm:space-y-6">
-            {/* 3. Hero Card Details */}
+          <div className="space-y-4">
+            <ListLoadingBar isTransitioning={loading} />
+            <div className={`space-y-4 sm:space-y-6 transition-opacity duration-200 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+              {/* 3. Hero Card Details */}
             <div className={`p-3 sm:p-5 rounded-2xl bg-[#0e1320] border ${rarityStyle.border} ${rarityStyle.glow}`}>
               <div className="flex flex-col md:flex-row items-center md:items-start gap-4 sm:gap-6">
                 {/* LoR Card Artwork */}
@@ -467,6 +547,7 @@ export default function CardDetailView({
                   </p>
                 </div>
               )}
+            </div>
             </div>
           </div>
         )}

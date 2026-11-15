@@ -1,26 +1,49 @@
 import { useEffect } from 'react';
+import { getGlobalKeywords } from '../utils/seoKeywords';
 
 /**
  * SEOHead Component
- * Manages document head, Open Graph, Twitter Cards, and Schema.org JSON-LD
- * Works seamlessly with React 19 native hoisting and guarantees DOM synchronization
+ * Manages document head, Open Graph, Twitter Cards, canonical links, and Schema.org JSON-LD
+ * Guarantees synchronization with React 19 and SPA navigation
  */
 export default function SEOHead({
   title,
   description,
+  keywords,
   image = '/assets/hero-bg.jpg',
   url,
   type = 'website',
-  jsonLd = null
+  jsonLd = null,
+  lang = 'vi'
 }) {
-  const defaultTitle = 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
-  const finalTitle = title ? `${title} | PoC Guide` : defaultTitle;
-  const finalDesc = description || 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
-  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : 'https://thepathofchampions.guide/');
+  const isEn = lang === 'en';
+  const defaultTitle = isEn
+    ? 'The Path of Champions Guide - Strategy, Builds & Database'
+    : 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
+
+  let finalTitle = title || defaultTitle;
+  if (!finalTitle.includes('PoC Guide') && !finalTitle.includes('POC GUIDE')) {
+    finalTitle = `${finalTitle} | PoC Guide`;
+  }
+
+  const finalDesc =
+    description ||
+    (isEn
+      ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Complete 89 champions, relics, powers, star powers, and meta tier list.'
+      : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.');
+
+  const finalKeywords = keywords || getGlobalKeywords(lang);
+
+  const currentUrl =
+    url ||
+    (typeof window !== 'undefined'
+      ? window.location.href.split('#')[0]
+      : 'https://thepathofchampions.guide/');
 
   useEffect(() => {
-    // 1. Update Document Title
+    // 1. Update Document Title & Language
     document.title = finalTitle;
+    document.documentElement.lang = isEn ? 'en' : 'vi';
 
     // Helper to update or create a meta tag
     const setMeta = (attrName, attrValue, content) => {
@@ -34,15 +57,37 @@ export default function SEOHead({
       el.setAttribute('content', content);
     };
 
+    // Helper to update or create a link tag
+    const setLink = (rel, href) => {
+      if (!href) return;
+      let el = document.querySelector(`link[rel="${rel}"]`);
+      if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', rel);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('href', href);
+    };
+
     // 2. Primary Meta Tags
     setMeta('name', 'title', finalTitle);
     setMeta('name', 'description', finalDesc);
+    setMeta('name', 'keywords', finalKeywords);
+    setMeta('name', 'author', 'The Path of Champions Community');
+    setMeta('name', 'robots', 'index, follow');
 
-    // 3. Open Graph Tags
+    // 3. Canonical URL
+    setLink('canonical', currentUrl);
+
+    // 4. Open Graph Tags
     setMeta('property', 'og:title', finalTitle);
     setMeta('property', 'og:description', finalDesc);
     setMeta('property', 'og:type', type);
     setMeta('property', 'og:url', currentUrl);
+    setMeta('property', 'og:site_name', 'The Path of Champions Guide');
+    setMeta('property', 'og:locale', isEn ? 'en_US' : 'vi_VN');
+    setMeta('property', 'og:locale:alternate', isEn ? 'vi_VN' : 'en_US');
+
     if (image) {
       const fullImageUrl = image.startsWith('http')
         ? image
@@ -51,12 +96,13 @@ export default function SEOHead({
       setMeta('property', 'twitter:image', fullImageUrl);
     }
 
-    // 4. Twitter Cards
+    // 5. Twitter Cards
     setMeta('property', 'twitter:title', finalTitle);
     setMeta('property', 'twitter:description', finalDesc);
     setMeta('property', 'twitter:card', 'summary_large_image');
+    setMeta('property', 'twitter:url', currentUrl);
 
-    // 5. Dynamic JSON-LD Structured Data
+    // 6. Dynamic JSON-LD Structured Data
     if (jsonLd) {
       let scriptTag = document.getElementById('seo-dynamic-jsonld');
       if (!scriptTag) {
@@ -69,16 +115,16 @@ export default function SEOHead({
     }
 
     return () => {
-      // Optional cleanup on unmount
       const scriptTag = document.getElementById('seo-dynamic-jsonld');
       if (scriptTag) scriptTag.textContent = '';
     };
-  }, [finalTitle, finalDesc, image, currentUrl, type, jsonLd]);
+  }, [finalTitle, finalDesc, finalKeywords, image, currentUrl, type, jsonLd, isEn]);
 
   return (
     <>
       <title>{finalTitle}</title>
       <meta name="description" content={finalDesc} />
+      <meta name="keywords" content={finalKeywords} />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={finalDesc} />
       <meta property="og:type" content={type} />
@@ -87,6 +133,7 @@ export default function SEOHead({
       <meta property="twitter:title" content={finalTitle} />
       <meta property="twitter:description" content={finalDesc} />
       {image && <meta property="twitter:image" content={image} />}
+      <link rel="canonical" href={currentUrl} />
     </>
   );
 }

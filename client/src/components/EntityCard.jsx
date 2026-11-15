@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import LorMarkup from './LorMarkup';
 import { useLanguage } from '../context/LanguageContext';
 
+const ADVENTURE_TYPE_EN = {
+  'Ác Mộng': 'Nightmare Adventures',
+  'Phiêu Lưu Khắp Thế Giới': 'World Adventures',
+  'Người Khổng Lồ Của Runeterra': 'Titans of Runeterra',
+  'Hoa Linh Lục Địa': 'Spirit Blossom',
+  'Tên Cướp Runeterra': 'Rogues of Runeterra',
+  'Huyền Thoại Arcane': 'Legends of Arcane'
+};
+
 /**
  * Universal Entity Card for Relics, Items, Powers, Cards, and Maps
  * Displays authentic data artwork, rarity glow, metadata badges, and rich formatted text.
@@ -19,7 +28,11 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
     item.name ||
     item.adventureName ||
     item.cardName ||
-    'Không tên';
+    (isEn ? 'Unnamed' : 'Không tên');
+
+  const displayTypeAdventure = isEn
+    ? (item.translations?.en?.typeAdventure || ADVENTURE_TYPE_EN[item.typeAdventure] || item.typeAdventure)
+    : (item.typeAdventure || item.translations?.en?.typeAdventure);
 
   const rawRarity = (item.rarity || item.translations?.en?.rarity || '').toLowerCase();
   
@@ -100,9 +113,9 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
         <div className="flex items-center gap-1.5 flex-wrap mb-1">
           {type === 'map' ? (
             <>
-              {item.typeAdventure && (
+              {displayTypeAdventure && (
                 <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border bg-[#121929] text-sky-200 border-sky-500/30">
-                  {item.typeAdventure}
+                  {displayTypeAdventure}
                 </span>
               )}
               {item.difficulty !== undefined && (
