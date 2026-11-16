@@ -19,11 +19,11 @@ export default function SEOHead({
 }) {
   const isEn = lang === 'en';
   const defaultTitle = isEn
-    ? 'LoR TPoC - LoR TPoC - lortpoc.com | lortpoc.com'
-    : 'LoR TPoC - Hướng dẫn Con Đường Anh Hùng & Bảng Xếp Hạng | lortpoc.com';
+    ? 'LoR TPoC - The Path of Champions Guide & Tier List'
+    : 'LoR TPoC - Hướng dẫn Con Đường Anh Hùng & Bảng Xếp Hạng';
 
   let finalTitle = title || defaultTitle;
-  if (!finalTitle.includes('PoC Guide') && !finalTitle.includes('POC GUIDE')) {
+  if (!finalTitle.includes('lortpoc.com')) {
     finalTitle = `${finalTitle} | lortpoc.com`;
   }
 

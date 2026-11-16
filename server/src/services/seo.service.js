@@ -174,8 +174,8 @@ Sitemap: ${baseUrl}/sitemap.xml
   generateSocialPreviewHtml: (targetParam, customBaseUrl, category = null) => {
     const baseUrl = (customBaseUrl || (config.clientUrl?.startsWith('http') && !config.clientUrl.includes('localhost') ? config.clientUrl : null) || 'https://lortpoc.com').replace(/\/+$/, '');
     const homeHeroImage = `${baseUrl}/home-hero.webp`;
-    let title = 'LoR TPoC - Hướng dẫn Con Đường Anh Hùng | lortpoc.com';
-    let description = 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
+    let title = 'LoR TPoC - The Path of Champions Guide | Hướng dẫn Con Đường Anh Hùng | lortpoc.com';
+    let description = 'Comprehensive database & strategy guide for Legends of Runeterra: The Path of Champions. Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
     let image = homeHeroImage;
     let canonicalUrl = `${baseUrl}/`;
 
@@ -193,17 +193,20 @@ Sitemap: ${baseUrl}/sitemap.xml
       );
 
       if (champ) {
+        const enName = champ.translations?.en?.name;
         const champName = champ.name;
+        const displayName = enName && enName !== champName ? `${champName} (${enName})` : champName;
         const regionsStr = Array.isArray(champ.regions) ? champ.regions.join(' • ') : 'Runeterra';
         const stars = champ.maxStar || 3;
         const tier = champ.tier ? ` - Tier ${champ.tier.split('//')[0].trim()}` : '';
 
-        title = `${champName} - Cẩm Nang Tướng, Sức Mạnh Sao & Cổ Vật (${stars}★${tier}) | lortpoc.com`;
+        title = `${displayName} - Build, Relics, Star Powers & Guide (${stars}★${tier}) | lortpoc.com`;
         description =
+          champ.translations?.en?.description ||
           champ.relicSets?.[0]?.descriptionRaw ||
           champ.descriptionRaw ||
           champ.description ||
-          `Hướng dẫn lối chơi, cây chòm sao và gợi ý cổ vật chuẩn nhất cho ${champName} (${regionsStr}) trong Con Đường Anh Hùng.`;
+          `Best relic builds, star powers, and strategy guide for ${displayName} in Legends of Runeterra: The Path of Champions.`;
 
         if (champ.assets?.[0]?.gameAbsolutePath) {
           image = champ.assets[0].gameAbsolutePath;
@@ -294,56 +297,56 @@ Sitemap: ${baseUrl}/sitemap.xml
 
     // 2. High-level Catalog Pages (Trang danh sách: Lấy ảnh của phần tử đầu tiên trong danh sách)
     if (category === 'tierlist') {
-      title = 'Bảng Xếp Hạng Tướng Con Đường Anh Hùng (Tier S+ đến C) | lortpoc.com';
-      description = 'Đánh giá sức mạnh meta toàn diện của 89 tướng trong Legends of Runeterra: The Path of Champions.';
+      title = 'PoC Champion Tier List (S+ to C) - Meta Rankings | Bảng Xếp Hạng Tướng | lortpoc.com';
+      description = 'Latest community and meta power rankings for all 89 champions in The Path of Champions. Đánh giá sức mạnh meta toàn diện của 89 tướng trong LoR PoC.';
       canonicalUrl = `${baseUrl}/tierlist`;
       const topChamp = champions.find(c => c.tier && (c.tier.includes('S+') || c.tier.includes('0'))) || champions[0];
       if (topChamp) {
         image = topChamp.assets?.[0]?.gameAbsolutePath || topChamp.assets?.[0]?.avatar || homeHeroImage;
       }
     } else if (category === 'champions_list') {
-      title = 'Danh Sách 89 Tướng Con Đường Anh Hùng - Chỉ Số & Lối Chơi | lortpoc.com';
-      description = 'Tra cứu toàn bộ 89 vị tướng: Chỉ số Mana, Sao tối ưu, Bộ bài khởi điểm và Cây chòm sao 6 sao.';
+      title = 'Champions Database (89 Heroes) - Builds & Stars | Danh Sách Tướng | lortpoc.com';
+      description = 'Browse all 89 champions in LoR: The Path of Champions: stats, starting decks, 6-star constellations and relic builds.';
       canonicalUrl = `${baseUrl}/champions`;
       const firstChamp = champions[0];
       if (firstChamp) {
         image = firstChamp.assets?.[0]?.gameAbsolutePath || firstChamp.assets?.[0]?.avatar || homeHeroImage;
       }
     } else if (category === 'relics_list') {
-      title = 'Danh Sách 155 Cổ Vật Relics - Hiệu Ứng & Phân Cấp | lortpoc.com';
-      description = 'Khám phá 155 cổ vật Thường, Hiếm, Sử Thi và Cổ Vật Độc Quyền tương thích tốt nhất cho từng tướng.';
+      title = 'Relics Database (155 Items) - Common, Rare & Epic | Danh Sách Cổ Vật | lortpoc.com';
+      description = 'Explore all 155 common, rare, and epic relics in The Path of Champions with full stat breakdown and best champion synergies.';
       canonicalUrl = `${baseUrl}/relics`;
       const firstRelic = relics[0];
       if (firstRelic) {
         image = firstRelic.assetAbsolutePath || firstRelic.image || `https://images.lortpoc.com/relics/${firstRelic.relicCode}.webp` || homeHeroImage;
       }
     } else if (category === 'powers_list') {
-      title = 'Danh Sách 1,196 Sức Mạnh Viễn Chinh - Bổ Trợ & Hiệu Ứng | lortpoc.com';
-      description = 'Tra cứu tất cả sức mạnh ngẫu nhiên trong hành trình Con Đường Anh Hùng.';
+      title = 'Powers Database (1,196 Powers) - Star Powers & Blessings | Sức Mạnh Viễn Chinh | lortpoc.com';
+      description = 'Complete database of 1,196 star powers, encounter blessings, and enemy abilities in Legends of Runeterra: The Path of Champions.';
       canonicalUrl = `${baseUrl}/powers`;
       const firstPower = powers[0];
       if (firstPower) {
         image = firstPower.image || firstPower.assetFullAbsolutePath || firstPower.assetAbsolutePath || `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${firstPower.powerCode}.png` || homeHeroImage;
       }
     } else if (category === 'items_list') {
-      title = 'Danh Sách 187 Vật Phẩm Thẻ Bài - Trang Bị & Nâng Cấp | lortpoc.com';
-      description = 'Chi tiết toàn bộ trang bị cường hóa chỉ số và từ khóa đặc biệt cho bài quân.';
+      title = 'Card Items Database (187 Items) - Equipment & Stats | Vật Phẩm Thẻ Bài | lortpoc.com';
+      description = 'Explore 187 items attachable to cards, spells, and equipment in The Path of Champions with synergized champions.';
       canonicalUrl = `${baseUrl}/items`;
       const firstItem = items[0];
       if (firstItem) {
         image = firstItem.assetAbsolutePath || firstItem.image || `https://images.lortpoc.com/items/${firstItem.itemCode}.webp` || homeHeroImage;
       }
     } else if (category === 'cards_list') {
-      title = 'Thư Viện 2,686 Lá Bài Runeterra - Toàn Bộ Bài Quân & Phép | lortpoc.com';
-      description = 'Thư viện hình ảnh sắc nét và hiệu ứng của toàn bộ bài quân, phép thuật và địa danh trong LoR.';
+      title = 'Cards Database (2,686 Cards) - Champions & Spells | Thư Viện Lá Bài | lortpoc.com';
+      description = 'High-resolution card art, stats, and keywords for all 2,686 cards in Legends of Runeterra.';
       canonicalUrl = `${baseUrl}/cards`;
       const firstCard = cards[0];
       if (firstCard) {
         image = firstCard.gameAbsolutePath || firstCard.assets?.[0]?.gameAbsolutePath || `https://dd.b.pvp.net/latest/set1/vi_vn/img/cards/${firstCard.cardCode}.png` || homeHeroImage;
       }
     } else if (category === 'maps_list') {
-      title = 'Danh Sách 48 Bản Đồ Phiêu Lưu & Trùm Cuối | lortpoc.com';
-      description = 'Cẩm nang chinh phục 48 cuộc phiêu lưu từ 0.5 sao đến Ác Mộng 6.5 sao trong Con Đường Anh Hùng.';
+      title = 'Adventures & Boss Guides (48 Maps & 338 Bosses) | Bản Đồ & Trùm | lortpoc.com';
+      description = 'Guide to all 48 world adventures, nightmare weekly maps, and 338 boss encounters in The Path of Champions.';
       canonicalUrl = `${baseUrl}/maps`;
       const firstMap = maps[0];
       if (firstMap) {
