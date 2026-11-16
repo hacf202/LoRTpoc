@@ -116,13 +116,13 @@ export default function TierListView({ onSelectChampion }) {
 
   return (
     <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-8">
         {/* 1. Single Clean Page Header (Ra giữa, chữ lớn lên, không nền đen - Đồng bộ toàn hệ thống) */}
-        <div className="w-full text-center pb-6 sm:pb-8 mb-6 sm:mb-8 border-b border-white/10 select-none">
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
+        <div className="w-full text-center pb-3 sm:pb-6 mb-3 sm:mb-6 border-b border-white/10 select-none">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
             {isEn ? 'Champion Tier List' : 'Bảng Xếp Hạng Tướng'}
           </h1>
-          <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs sm:text-sm font-semibold text-slate-300">
+          <div className="mt-1.5 sm:mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/10 text-[11px] sm:text-xs font-semibold text-slate-300">
             <span className="text-[#FFF9D2] font-bold">{totalChampsCount || 88}</span>
             <span>{isEn ? 'Champions' : 'Vị Tướng'}</span>
           </div>
@@ -132,12 +132,12 @@ export default function TierListView({ onSelectChampion }) {
         {loading ? (
           <div className="space-y-2 sm:space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-24 rounded-xl bg-[#0e1320] border border-white/10 animate-pulse" />
+              <div key={i} className="h-16 sm:h-24 rounded-xl bg-[#0e1320] border border-white/10 animate-pulse" />
             ))}
           </div>
         ) : tierRows.length === 0 ? (
-          <div className="py-12 text-center rounded-xl bg-[#0e1320] border border-white/10 p-4">
-            <h3 className="text-sm font-bold text-white mb-1">
+          <div className="py-8 sm:py-12 text-center rounded-xl bg-[#0e1320] border border-white/10 p-2 sm:p-4">
+            <h3 className="text-xs sm:text-sm font-bold text-white mb-1">
               {isEn ? 'No tier data available' : 'Chưa có dữ liệu xếp hạng'}
             </h3>
           </div>
@@ -151,23 +151,23 @@ export default function TierListView({ onSelectChampion }) {
                   key={tierKey}
                   className={`rounded-xl bg-[#0b0f19] border ${theme.rowBorder} overflow-hidden flex flex-col sm:flex-row transition-all duration-150`}
                 >
-                  {/* Left Column: Bold Tier Block (Solid color, punchy, minimal - không hiện số lượng) */}
+                  {/* Left Column: Bold Tier Block (Solid color, punchy, minimal) */}
                   <div
-                    className={`w-full sm:w-20 lg:w-24 shrink-0 p-2 sm:p-3 border-b sm:border-b-0 sm:border-r ${theme.rowBorder} ${theme.tierBg} flex items-center justify-center select-none`}
+                    className={`w-full sm:w-20 lg:w-24 shrink-0 py-1 px-2 sm:p-3 border-b sm:border-b-0 sm:border-r ${theme.rowBorder} ${theme.tierBg} flex items-center justify-center select-none`}
                   >
-                    <span className="text-xl sm:text-3xl font-black font-heading tracking-wider leading-none drop-shadow-xs">
+                    <span className="text-base sm:text-3xl font-black font-heading tracking-wider leading-none drop-shadow-xs">
                       {theme.letter}
                     </span>
                   </div>
 
-                  {/* Right Column: Dense Streamlined Champions Grid (No cluttering badges) */}
-                  <div className="flex-1 p-2 sm:p-2.5 flex items-center">
+                  {/* Right Column: Dense Streamlined Champions Grid (6 cột trên mobile) */}
+                  <div className="flex-1 p-1.5 sm:p-2.5 flex items-center">
                     {champions.length === 0 ? (
-                      <div className="w-full py-2.5 sm:py-3 px-2 text-center sm:text-left text-xs text-slate-500 italic">
+                      <div className="w-full py-2 sm:py-3 px-2 text-center sm:text-left text-xs text-slate-500 italic">
                         {isEn ? 'No champions currently in this tier' : 'Chưa có tướng trong bậc này'}
                       </div>
                     ) : (
-                      <div className="w-full grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1.5 sm:gap-2">
+                      <div className="w-full grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-1.5 sm:gap-2">
                         {champions.map((champ) => {
                           const champName = isEn
                             ? champ.translations?.en?.name || champ.name
@@ -192,7 +192,7 @@ export default function TierListView({ onSelectChampion }) {
                               title={`${champName} (${champ.regions?.[0] || 'LoR'}) - Tier ${tierKey}`}
                             >
                               {/* Clean Portrait Avatar (Zero noisy overlay badges) */}
-                              <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#070a10] border border-white/10 group-hover:border-[#8CC0EB] group-hover:shadow-[0_0_10px_rgba(140,192,235,0.35)] group-hover:scale-105 transition-all duration-150">
+                              <div className="relative w-full aspect-square rounded-md sm:rounded-lg overflow-hidden bg-[#070a10] border border-white/10 group-hover:border-[#8CC0EB] group-hover:shadow-[0_0_10px_rgba(140,192,235,0.35)] group-hover:scale-105 transition-all duration-150">
                                 <img
                                   src={avatarUrl}
                                   alt={champName}
@@ -203,7 +203,7 @@ export default function TierListView({ onSelectChampion }) {
                               </div>
 
                               {/* Champion Name */}
-                              <span className="mt-1 text-[10px] sm:text-[11px] font-semibold text-slate-300 group-hover:text-[#8CC0EB] transition-colors truncate w-full text-center">
+                              <span className="mt-0.5 text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-slate-300 group-hover:text-[#8CC0EB] transition-colors truncate w-full text-center block leading-tight">
                                 {champName}
                               </span>
                             </a>
