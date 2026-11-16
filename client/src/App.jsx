@@ -274,6 +274,11 @@ export default function App() {
     if (!item) return;
     setIsDropdownOpen(false);
 
+    if (item.type === 'nav') {
+      handleNavigateTab(item.targetTab);
+      return;
+    }
+
     if (item.type === 'champion' || (!item.type && (item.championID || item.cardCode))) {
       handleSelectChampion(item.raw || item);
     } else if (item.type === 'relic' || item.relicCode || item.raw?.relicCode) {

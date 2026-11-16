@@ -4,6 +4,7 @@ import SearchDropdown from '../components/SearchDropdown';
 import ScrollFab from '../components/ScrollFab';
 import { useLanguage } from '../context/LanguageContext';
 import { handleImageError } from '../utils/imageFallback';
+import { getMatchingNavShortcuts } from '../utils/navShortcuts';
 
 /**
  * Enhanced Landing Page / Home View
@@ -257,9 +258,12 @@ export default function HomeView({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    const firstItem = (results?.flat && results.flat.length > 0)
-                      ? results.flat[0]
-                      : (Array.isArray(results) && results.length > 0 ? results[0] : null);
+                    const navShortcuts = getMatchingNavShortcuts(searchTerm);
+                    const firstItem = (navShortcuts.length > 0)
+                      ? navShortcuts[0]
+                      : ((results?.flat && results.flat.length > 0)
+                        ? results.flat[0]
+                        : (Array.isArray(results) && results.length > 0 ? results[0] : null));
                     if (firstItem) {
                       onSelectChampion?.(firstItem);
                     }

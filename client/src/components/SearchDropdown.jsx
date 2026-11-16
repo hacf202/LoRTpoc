@@ -2,6 +2,7 @@ import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'rea
 import { stripLorMarkup } from '../utils/lorMarkupParser';
 import { useLanguage } from '../context/LanguageContext';
 import { handleImageError } from '../utils/imageFallback';
+import { getMatchingNavShortcuts } from '../utils/navShortcuts';
 
 /**
  * Omnisearch Dropdown for Legends of Runeterra: The Path of Champions
@@ -196,12 +197,71 @@ const SearchDropdown = forwardRef(function SearchDropdown(
         </div>
       )}
 
-      {/* 2. Items List: Gọn gàng chỉ gồm Icon, Tên, Mô tả ngắn và Loại */}
+      {/* 2. Items List: Điều hướng nhanh, Icon, Tên, Mô tả ngắn và Loại */}
       <div
         className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar bg-[#090d16] overscroll-contain"
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
+        {/* Lối tắt điều hướng nhanh đến trang danh sách (khi gõ từ khóa khớp) */}
+        {(() => {
+          const navShortcuts = getMatchingNavShortcuts(searchTerm);
+          if (navShortcuts.length === 0) return null;
+          return (
+            <div className="p-1 mb-2 border-b border-white/10 space-y-1">
+              <div className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider text-[#8CC0EB]">
+                {isEn ? 'Direct Navigation' : 'Đi đến trang'}
+              </div>
+              {navShortcuts.map((nav) => (
+                <a
+                  key={nav.id}
+                  href={nav.path}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                      e.preventDefault();
+                      onSelect?.(nav);
+                    }
+                  }}
+                  className="group flex items-center justify-between gap-3 px-3 py-2 rounded-xl bg-[#0e1627] hover:bg-[#15233e] border border-[#8CC0EB]/35 hover:border-[#8CC0EB] transition-all duration-200 cursor-pointer select-none text-left no-underline shadow-sm"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#06080e] border border-[#8CC0EB]/40 flex-shrink-0 flex items-center justify-center overflow-hidden p-0.5 shadow-sm group-hover:scale-105 transition-transform">
+                      {nav.icon ? (
+                        <img
+                          src={nav.icon}
+                          alt=""
+                          className="w-full h-full object-contain"
+                          onError={(e) => handleImageError(e, 'default')}
+                        />
+                      ) : (
+                        <svg className="w-5 h-5 text-[#8CC0EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                          <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs sm:text-sm font-bold font-heading text-white group-hover:text-[#8CC0EB] transition-colors truncate">
+                        {isEn ? nav.title.en : nav.title.vi}
+                      </h4>
+                      <p className="text-[11px] sm:text-xs text-slate-300 truncate mt-0.5 font-normal leading-tight">
+                        {isEn ? nav.desc.en : nav.desc.vi}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#8CC0EB]/20 text-[#8CC0EB] border border-[#8CC0EB]/40">
+                      {isEn ? nav.badge.en : nav.badge.vi}
+                    </span>
+                    <svg className="w-4 h-4 text-[#8CC0EB] transform group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          );
+        })()}
+
         {loading ? (
           <div className="py-8 text-center text-xs text-slate-400 flex flex-col items-center gap-2">
             <div className="w-5 h-5 border-2 border-t-[#8CC0EB] border-r-transparent border-b-[#8CC0EB] border-l-transparent rounded-full animate-spin" />
@@ -273,11 +333,11 @@ const SearchDropdown = forwardRef(function SearchDropdown(
               </a>
             );
           })
-        ) : (
+        ) : getMatchingNavShortcuts(searchTerm).length === 0 ? (
           <div className="py-8 text-center text-xs text-slate-400">
             {t('hero.noResults', { query: searchTerm })}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

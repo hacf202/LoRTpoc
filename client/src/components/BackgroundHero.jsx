@@ -12,9 +12,9 @@ export default function BackgroundHero({
 }) {
   return (
     <div className="absolute inset-0 w-full h-screen z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Background Image */}
+      {/* Background Image: Hạ thấp tâm điểm trên mobile để đỉnh tháp không bị thanh điều hướng che khuất */}
       <div
-        className={`w-full h-full bg-cover bg-no-repeat bg-[center_15%] contrast-[1.08] transition-all duration-500 ${
+        className={`w-full h-full bg-cover bg-no-repeat bg-[center_15%] contrast-[1.08] transition-all duration-500 scale-115 sm:scale-100 translate-y-14 sm:translate-y-0 ${
           isSubpage ? 'opacity-35 brightness-[0.7]' : 'opacity-100 brightness-[0.92]'
         }`}
         style={{ backgroundImage: `url(${imageUrl})` }}
