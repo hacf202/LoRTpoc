@@ -20,5 +20,6 @@ Thumbs.db
 *.log
 
 # Database Backups
+backups/
 server/src/data/backup_mongo/
 
