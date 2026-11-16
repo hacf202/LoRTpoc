@@ -116,3 +116,30 @@ export async function initAllDataFromDatabase() {
   await clearServerCache();
   console.log('✅ [Database Sync] All collections successfully queried from MongoDB and indexed into memory & Redis!');
 }
+
+let isInitialized = false;
+let initPromise = null;
+
+/**
+ * Ensures MongoDB is connected and live data is loaded into memory.
+ * Safe for both Serverless (Vercel) cold starts and long-running local servers.
+ */
+export async function ensureDatabaseConnected() {
+  if (isInitialized) return true;
+  if (!initPromise) {
+    initPromise = (async () => {
+      try {
+        const { connectToMongoDB } = await import('./mongo.js');
+        const db = await connectToMongoDB();
+        if (db) {
+          await initAllDataFromDatabase();
+        }
+      } catch (err) {
+        console.warn('⚠️ [Database Sync] Connection error, running with fallback:', err.message);
+      } finally {
+        isInitialized = true;
+      }
+    })();
+  }
+  return initPromise;
+}
