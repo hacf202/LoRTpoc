@@ -212,24 +212,24 @@ export default function HomeView({
 
   return (
     <div className="relative z-10 w-full flex flex-col items-center">
-      {/* 1. Hero Viewport Section: Chiếm trọn vẹn màn hình đầu tiên (100vh) */}
-      <section className="min-h-screen h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 pb-12 sm:pb-16 md:pb-20 snap-start snap-always">
+      {/* 1. Hero Viewport Section: Cân đối, tinh gọn & chuẩn xác trên Mobile (<640px) */}
+      <section className="min-h-[75vh] sm:min-h-screen sm:h-screen w-full flex flex-col items-center justify-center px-2 sm:px-6 pt-6 pb-8 sm:pb-16 md:pb-20 snap-start">
         
-        {/* Adaptive Lift Wrapper: Nâng mạnh toàn bộ cụm ngay khi ấn vào thanh tìm kiếm */}
+        {/* Adaptive Lift Wrapper: Nâng nhẹ cụm khi focus hoặc tìm kiếm */}
         <div className={`w-full flex flex-col items-center transition-all duration-300 ease-out ${
           isLifted
-            ? '-translate-y-[100px] sm:-translate-y-[140px] md:-translate-y-[180px]'
+            ? '-translate-y-[80px] sm:-translate-y-[140px] md:-translate-y-[180px]'
             : 'translate-y-0'
         }`}>
-          {/* Main Header, bilingual 2-line break */}
-          <div className={`text-center select-none px-2 transition-all duration-300 ease-out origin-center -translate-y-[16px] ${
+          {/* Main Header: Tỷ lệ vàng 2 dòng, không rớt chữ trên mobile */}
+          <div className={`text-center select-none px-2 transition-all duration-300 ease-out origin-center -translate-y-2 sm:-translate-y-[16px] ${
             isLifted
-              ? 'scale-80 sm:scale-75 md:scale-70 opacity-90 mb-4 sm:mb-5 -mt-14 sm:-mt-18 md:-mt-24'
-              : 'scale-100 opacity-100 mb-8 sm:mb-12 md:mb-14 -mt-8 sm:-mt-12 md:-mt-16'
+              ? 'scale-85 sm:scale-75 md:scale-70 opacity-90 mb-3 sm:mb-5 -mt-6 sm:-mt-18 md:-mt-24'
+              : 'scale-100 opacity-100 mb-5 sm:mb-12 md:mb-14 mt-0 sm:-mt-8 md:-mt-16'
           }`}>
-            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase text-white tracking-normal drop-shadow-[0_4px_45px_rgba(0,0,0,0.98)] leading-[0.92] space-y-1 sm:space-y-2">
-              <span className="block">{t('hero.titleLine1')}</span>
-              <span className="block text-white/95">{t('hero.titleLine2')}</span>
+            <h1 className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black uppercase text-white tracking-tight sm:tracking-normal drop-shadow-[0_4px_45px_rgba(0,0,0,0.98)] leading-tight sm:leading-[0.92] space-y-0.5 sm:space-y-2">
+              <span className="block whitespace-nowrap">{t('hero.titleLine1')}</span>
+              <span className="block whitespace-nowrap text-white/95">{t('hero.titleLine2')}</span>
             </h1>
           </div>
 
@@ -277,12 +277,39 @@ export default function HomeView({
                 onSelect={onSelectChampion}
               />
             </div>
+
+            {/* Quick Category Chips: Cân bằng không gian phía dưới search bar trên mobile */}
+            <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-5 px-1 select-none">
+              <span className="text-[11px] sm:text-xs text-slate-400 font-semibold mr-0.5">
+                {t('hero.quickTagsLabel') || 'Gợi ý'}:
+              </span>
+              {[
+                { id: 'champions', label: t('nav.champions') || 'Tướng' },
+                { id: 'relics', label: t('nav.relics') || 'Cổ Vật' },
+                { id: 'powers', label: t('nav.powers') || 'Sức Mạnh' },
+                { id: 'items', label: t('nav.items') || 'Vật Phẩm' },
+                { id: 'cards', label: t('nav.cards') || 'Lá Bài' },
+                { id: 'tierlist', label: t('nav.tierlist') || 'Bảng Xếp Hạng' }
+              ].map((tag) => (
+                <a
+                  key={tag.id}
+                  href={`/${tag.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigateTab(tag.id);
+                  }}
+                  className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#121929]/80 hover:bg-[#1a253c] border border-white/15 hover:border-[#8CC0EB] text-[11px] sm:text-xs text-slate-300 hover:text-white transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+                >
+                  {tag.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* 2. Comprehensive Explore Section with 4 Categorized Groups */}
-      <section id="explore" className="w-full max-w-7xl mx-auto px-4 sm:px-6 xl:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 space-y-16 snap-start">
+      <section id="explore" className="w-full max-w-7xl mx-auto px-2 sm:px-6 xl:px-8 pt-8 sm:pt-20 pb-12 sm:pb-24 space-y-8 sm:space-y-16 snap-start">
         
         {/* Compact Section Header: 1 Dòng KHÁM PHÁ THÊM nổi bật */}
         <div className="flex items-center justify-center gap-4 sm:gap-6">
@@ -295,24 +322,24 @@ export default function HomeView({
 
         {/* 4 Categorized Hub Groups */}
         {EXPLORE_GROUPS.map((group) => (
-          <div key={group.groupId} className="space-y-6">
+          <div key={group.groupId} className="space-y-4 sm:space-y-6">
             
             {/* Group Header */}
-            <div className="pb-3 border-b border-white/10">
-              <h3 className="text-lg sm:text-xl font-extrabold uppercase text-white tracking-wide">
+            <div className="pb-2.5 sm:pb-3 border-b border-white/10">
+              <h3 className="text-base sm:text-xl font-extrabold uppercase text-white tracking-wide">
                 {group.title}
               </h3>
             </div>
 
-            {/* Group Cards Grid: 4 columns on PC, smaller on other breakpoints */}
-            <div className={`grid gap-4 sm:gap-5 ${
+            {/* Group Cards Grid: 2 columns on Mobile (<640px) */}
+            <div className={`grid gap-2 sm:gap-5 ${
               group.groupId === 'equipment'
-                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4'
+                ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4'
                 : group.groupId === 'champions'
-                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
+                ? 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
                 : group.groupId === 'adventure'
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2'
-                : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
+                ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2'
+                : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
               {group.items.map((item) => {
                 const targetPath = item.id === 'runes' ? '/powers' : item.id === 'bonusStars' ? '/champions' : `/${item.id}`;
@@ -327,11 +354,13 @@ export default function HomeView({
                         onNavigateTab(targetTab);
                       }
                     }}
-                    className={`group relative flex flex-col p-5 sm:p-6 rounded-2xl cursor-pointer border border-white/15 bg-[#0e1320] hover:bg-[#141b2b] ${item.borderHover} transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-2xl overflow-hidden`}
+                    className={`group relative flex flex-col p-2 sm:p-6 rounded-xl sm:rounded-2xl cursor-pointer border border-white/15 bg-[#0e1320] hover:bg-[#141b2b] ${item.borderHover} transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-2xl overflow-hidden ${
+                      group.items.length === 1 ? 'col-span-2 sm:col-span-1' : ''
+                    }`}
                   >
                   {/* Subtle Background Art Overlay */}
                   {item.bgImage && (
-                    <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
+                    <div className="absolute inset-0 overflow-hidden rounded-xl sm:rounded-2xl pointer-events-none z-0">
                       <img
                         src={item.bgImage}
                         alt=""
@@ -344,33 +373,35 @@ export default function HomeView({
                     </div>
                   )}
 
-                  <div className="relative z-10">
-                    {/* Top: Real Game Image Asset & Badge with high-contrast styling */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center transition-all duration-300">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-contain object-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-500"
-                          onError={(e) => handleImageError(e, 'default')}
-                        />
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                      {/* Top: Real Game Image Asset & Badge with high-contrast styling */}
+                      <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <div className="w-9 h-9 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center transition-all duration-300">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-contain object-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => handleImageError(e, 'default')}
+                          />
+                        </div>
+                        <span className="text-[9px] sm:text-[11px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#161d2d] text-white border border-white/15 shadow-sm">
+                          {item.badge}
+                        </span>
                       </div>
-                      <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#161d2d] text-white border border-white/15 shadow-sm">
-                        {item.badge}
-                      </span>
+
+                      {/* Card Title */}
+                      <h4 className={`text-xs sm:text-lg font-extrabold text-white mb-1 transition-colors ${item.textColor} truncate`}>
+                        {item.title}
+                      </h4>
+
+                      {/* Card Description */}
+                      <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed line-clamp-2 sm:line-clamp-3">
+                        {item.desc}
+                      </p>
                     </div>
-
-                    {/* Card Title */}
-                    <h4 className={`text-base sm:text-lg font-extrabold text-white mb-1.5 transition-colors ${item.textColor}`}>
-                      {item.title}
-                    </h4>
-
-                    {/* Card Description */}
-                    <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
-                      {item.desc}
-                    </p>
                   </div>
                 </a>
               );

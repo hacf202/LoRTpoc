@@ -247,12 +247,26 @@ export default function ChampionRelicBuildsTab({
             )}
           </div>
 
-          {/* 4. Mô tả giải thích (chỉ hiển thị trên PC, ẩn trên mobile) */}
+          {/* 4. Mô tả giải thích chiến thuật / lý do phù hợp (Hiển thị đầy đủ cả trên Mobile & PC) */}
           {suitableData.description && (
-            <div className="hidden sm:block p-2 sm:p-4 rounded-xl bg-[#080c14] border border-white/10 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+            <div className="p-2.5 sm:p-4 rounded-xl bg-[#080c14] border border-white/10 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
               <LorMarkup text={suitableData.description} />
             </div>
           )}
+
+          {/* 5. Mobile-only: Danh sách chi tiết các cổ vật phù hợp (Icon + Tên + Rarity + Mô tả hiệu ứng) */}
+          <div className="sm:hidden grid grid-cols-1 gap-2 pt-1 border-t border-white/10">
+            {Array.from(new Set([...suitableData.mandatory, ...suitableData.options.flat()])).map((code) => (
+              <RelicMiniCard
+                key={code}
+                relicCode={code}
+                relicInfo={relicMap[code]}
+                isEn={isEn}
+                isCore={suitableData.mandatory.includes(code)}
+                onClick={() => navigateTo('relic', code)}
+              />
+            ))}
+          </div>
         </div>
       )}
 
@@ -414,7 +428,7 @@ export default function ChampionRelicBuildsTab({
                 : (currentBuild.description || currentBuild.descriptionRaw || currentBuild.translations?.en?.description);
               if (!buildDesc) return null;
               return (
-                <div className="p-3.5 sm:p-4 rounded-xl bg-[#080c14] border border-white/10">
+                <div className="p-2 sm:p-4 rounded-xl bg-[#080c14] border border-white/10">
                   <div className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
                     <LorMarkup text={buildDesc} />
                   </div>

@@ -89,8 +89,9 @@ export function parseSuitableRelics(raw, isEn, champTranslations) {
       }).filter((arr) => arr.length > 0);
     }
 
-    const enDesc = raw.translations?.en?.description || champTranslations?.en?.coreRelics?.description;
-    const description = (isEn && enDesc ? enDesc : raw.description) || raw.description || '';
+    const viDesc = raw.description || raw.descriptionRaw || champTranslations?.vi?.coreRelics?.description || champTranslations?.vi?.coreRelics?.descriptionRaw;
+    const enDesc = raw.translations?.en?.description || raw.translations?.en?.descriptionRaw || champTranslations?.en?.coreRelics?.description || champTranslations?.en?.coreRelics?.descriptionRaw;
+    const description = (isEn && enDesc ? enDesc : viDesc) || viDesc || enDesc || '';
 
     return { mandatory, options, description };
   }

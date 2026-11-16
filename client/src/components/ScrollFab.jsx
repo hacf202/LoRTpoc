@@ -34,7 +34,7 @@ export default function ScrollFab({ targetId = 'explore' }) {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40">
+    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40">
       {/* Subtle pulse ring accent when in scroll-down CTA mode */}
       {!isScrolledDown && (
         <span
@@ -46,14 +46,14 @@ export default function ScrollFab({ targetId = 'explore' }) {
       <button
         onClick={handleClick}
         type="button"
-        className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0e1422] hover:bg-[#182236] border-2 border-[#8CC0EB] ring-2 ring-[#8CC0EB]/25 ring-offset-2 ring-offset-[#07090e] text-[#8CC0EB] hover:text-[#FFF9D2] shadow-[0_0_22px_rgba(140,192,235,0.35),0_10px_35px_rgba(0,0,0,0.9)] hover:shadow-[0_0_32px_rgba(140,192,235,0.6),0_12px_40px_rgba(0,0,0,0.95)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group select-none ${
+        className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-[#0e1422] hover:bg-[#182236] border-2 border-[#8CC0EB] ring-2 ring-[#8CC0EB]/25 ring-offset-2 ring-offset-[#07090e] text-[#8CC0EB] hover:text-[#FFF9D2] shadow-[0_0_22px_rgba(140,192,235,0.35),0_10px_35px_rgba(0,0,0,0.9)] hover:shadow-[0_0_32px_rgba(140,192,235,0.6),0_12px_40px_rgba(0,0,0,0.95)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group select-none ${
           isScrolledDown ? '' : 'animate-gentle-bounce'
         }`}
         aria-label={isScrolledDown ? 'Cuộn về đầu trang' : 'Cuộn xuống khám phá cẩm nang'}
         title={isScrolledDown ? 'Về đầu trang' : 'Cuộn xuống khám phá cẩm nang'}
       >
         <svg
-          className={`w-5 h-5 sm:w-6 sm:h-6 transform transition-transform duration-300 ${
+          className={`w-4 h-4 sm:w-6 sm:h-6 transform transition-transform duration-300 ${
             isScrolledDown
               ? 'rotate-180 group-hover:-translate-y-1'
               : 'group-hover:translate-y-1'
