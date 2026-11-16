@@ -564,7 +564,7 @@ export default function App() {
         return {
           title: isEn
             ? 'The Path of Champions Guide - Strategy, Builds & Database'
-            : 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR',
+            : 'The Path of Champions Guide - Hướng dẫn Con Đường Anh Hùng LoR',
           description: isEn
             ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Explore 89 champions, 155 relics, 1,196 powers, and adventures.'
             : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.',

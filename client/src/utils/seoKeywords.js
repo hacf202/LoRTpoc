@@ -11,7 +11,7 @@ export const CORE_KEYWORDS_VI = [
   'con đường anh hùng',
   'con đường anh hùng guide',
   'hướng dẫn con đường anh hùng',
-  'cẩm nang con đường anh hùng',
+  'Hướng dẫn Con Đường Anh Hùng',
   'tướng con đường anh hùng',
   'cổ vật con đường anh hùng',
   'sức mạnh con đường anh hùng',

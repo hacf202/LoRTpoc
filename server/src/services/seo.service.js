@@ -174,7 +174,7 @@ Sitemap: ${baseUrl}/sitemap.xml
   generateSocialPreviewHtml: (targetParam, customBaseUrl, category = null) => {
     const baseUrl = (customBaseUrl || (config.clientUrl?.startsWith('http') && !config.clientUrl.includes('localhost') ? config.clientUrl : null) || 'https://lortpoc.com').replace(/\/+$/, '');
     const homeHeroImage = `${baseUrl}/home-hero.webp`;
-    let title = 'LoR TPoC - Cẩm Nang Con Đường Anh Hùng | lortpoc.com';
+    let title = 'LoR TPoC - Hướng dẫn Con Đường Anh Hùng | lortpoc.com';
     let description = 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
     let image = homeHeroImage;
     let canonicalUrl = `${baseUrl}/`;

@@ -20,7 +20,7 @@ export default function SEOHead({
   const isEn = lang === 'en';
   const defaultTitle = isEn
     ? 'LoR TPoC - LoR TPoC - lortpoc.com | lortpoc.com'
-    : 'LoR TPoC - Cẩm Nang Con Đường Anh Hùng & Bảng Xếp Hạng | lortpoc.com';
+    : 'LoR TPoC - Hướng dẫn Con Đường Anh Hùng & Bảng Xếp Hạng | lortpoc.com';
 
   let finalTitle = title || defaultTitle;
   if (!finalTitle.includes('PoC Guide') && !finalTitle.includes('POC GUIDE')) {
