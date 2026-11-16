@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
 import { logger } from './utils/logger.js';
 import apiRouter from './routes/index.js';
@@ -8,6 +11,11 @@ import { seoController } from './controllers/seo.controller.js';
 import { socialCrawlerMiddleware } from './middlewares/socialCrawler.middleware.js';
 import { notFoundHandler } from './middlewares/notFound.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.join(__dirname, '../../client/dist');
+const rootDistPath = path.join(__dirname, '../../dist');
 
 const app = express();
 
@@ -66,6 +74,30 @@ app.get('/share', seoController.getSocialPreview);
 // API Routes (mounted at both /api/v1 and /v1 for resilient serverless & reverse-proxy routing)
 app.use('/api/v1', apiRouter);
 app.use('/v1', apiRouter);
+
+// Serve static client assets if present in distribution
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+}
+if (fs.existsSync(rootDistPath)) {
+  app.use(express.static(rootDistPath));
+}
+
+// For all non-API web routes, serve SPA index.html
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/v1')) {
+    return next();
+  }
+  const clientIndex = path.join(clientDistPath, 'index.html');
+  const rootIndex = path.join(rootDistPath, 'index.html');
+  if (fs.existsSync(clientIndex)) {
+    return res.sendFile(clientIndex);
+  }
+  if (fs.existsSync(rootIndex)) {
+    return res.sendFile(rootIndex);
+  }
+  next();
+});
 
 // 404 & Global Error Handling
 app.use(notFoundHandler);

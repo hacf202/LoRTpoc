@@ -1,10 +1,10 @@
 {
   "version": 2,
   "buildCommand": "npm run build:client",
-  "outputDirectory": "client/dist",
+  "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
-      "includeFiles": "server/src/data/**"
+      "includeFiles": "{server/src/data/**,client/dist/**,dist/**}"
     }
   },
   "rewrites": [
