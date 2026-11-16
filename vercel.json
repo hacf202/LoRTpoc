@@ -29,17 +29,6 @@
       "destination": "/api"
     },
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(facebookexternalhit|facebot|twitterbot|discordbot|telegrambot|whatsapp|slackbot|linkedinbot|pinterest|embedly|zalo|applebot).*"
-        }
-      ],
-      "destination": "/api"
-    },
-    {
       "source": "/((?!api|sitemap.xml|robots.txt|preview|share).*)",
       "destination": "/index.html"
     }
