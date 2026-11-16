@@ -6,6 +6,8 @@
  * - Dynamic network recovery via window 'online' event
  */
 
+import { LOR_CARD_BACK_BASE64 } from './cardBackBase64';
+
 // Global registry of failed image URLs during the current session
 const failedUrls = new Set();
 
@@ -23,26 +25,11 @@ function createSvgDataUri(iconPath, viewBox = '0 0 24 24', bgColor = '#0b0f19', 
 }
 
 export const FALLBACK_SVGS = {
-  // Champion Portrait Silhouette
-  champion: createSvgDataUri(
-    `<path d="M12 2a5 5 0 0 1 5 5v3a5 5 0 0 1-10 0V7a5 5 0 0 1 5-5z" fill="#1e293b"/>
-     <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#38bdf8" stroke-width="1.5"/>
-     <circle cx="12" cy="7" r="3" fill="#64748b"/>
-     <polygon points="12 1 14 4 10 4" fill="#f59e0b"/>`,
-    '0 0 24 24',
-    '#070a12',
-    '#38bdf8'
-  ),
+  // Champion Portrait: LoR Official Card Back (Summoner's Rift Order)
+  champion: LOR_CARD_BACK_BASE64,
 
-  // Card Outline
-  card: createSvgDataUri(
-    `<rect x="4" y="2" width="16" height="20" rx="2" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
-     <circle cx="12" cy="8" r="3.5" fill="#1e293b" stroke="#60a5fa" stroke-width="1"/>
-     <path d="M7 15h10M7 18h6" stroke="#64748b" stroke-width="1.5"/>`,
-    '0 0 24 24',
-    '#070a12',
-    '#3b82f6'
-  ),
+  // Card: LoR Official Card Back (Summoner's Rift Order)
+  card: LOR_CARD_BACK_BASE64,
 
   // Relic Hexagon Gem
   relic: createSvgDataUri(
@@ -129,6 +116,8 @@ export const FALLBACK_SVGS = {
 
 export const UNIVERSAL_FALLBACK_SVG = FALLBACK_SVGS.default;
 export const FALLBACK_IMAGE_URL = '/placeholder.svg';
+export const CHAMPION_FALLBACK_URL = '/championFallback.webp';
+export { LOR_CARD_BACK_BASE64 };
 
 /**
  * Determine placeholder type from image attributes or src URL
