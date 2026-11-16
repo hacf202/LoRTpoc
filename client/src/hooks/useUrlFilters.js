@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toChampionSlug } from '../utils/slug';
 
 const DEFAULT_FILTERS = {
   tab: 'home',
@@ -261,14 +262,14 @@ export function buildHierarchicalUrl(state) {
 
   if (state.tab === 'admin') {
     if (state.adminChampion && state.adminChampion.trim()) {
-      targetPath = `${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(state.adminChampion.trim())}`;
+      targetPath = `${ADMIN_ROUTE_PREFIX}/champion/${state.adminChampion.trim() === 'new' ? 'new' : toChampionSlug(state.adminChampion.trim())}`;
     } else if (state.adminModule && state.adminModule !== 'overview' && VALID_ADMIN_MODULES.includes(state.adminModule)) {
       targetPath = `${ADMIN_ROUTE_PREFIX}/${state.adminModule.trim().toLowerCase()}`;
     } else {
       targetPath = ADMIN_ROUTE_PREFIX;
     }
   } else if (state.champion && state.champion.trim()) {
-    targetPath = `/champion/${encodeURIComponent(state.champion.trim())}`;
+    targetPath = `/champion/${toChampionSlug(state.champion.trim())}`;
   } else if (state.relic && state.relic.trim()) {
     targetPath = `/relic/${encodeURIComponent(state.relic.trim())}`;
   } else if (state.power && state.power.trim()) {

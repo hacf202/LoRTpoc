@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { toChampionSlug } from '../utils/slug';
 
 const RouterContext = createContext(null);
 
@@ -57,7 +58,7 @@ export function parseRoute(pathname = window.location.pathname, search = window.
   // 3. Backward compatibility for legacy query param ?tab=... and ?champion=...
   if (searchParams.has('champion')) {
     const champ = searchParams.get('champion').trim();
-    return { pathname: `/champion/${encodeURIComponent(champ)}`, tab: 'champions', champion: champ, isDetail: true };
+    return { pathname: `/champion/${toChampionSlug(champ)}`, tab: 'champions', champion: champ, isDetail: true };
   }
   if (searchParams.has('tab')) {
     const legacyTab = searchParams.get('tab').trim().toLowerCase();

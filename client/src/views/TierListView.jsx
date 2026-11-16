@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { handleImageError } from '../utils/imageFallback';
+import { toChampionSlug } from '../utils/slug';
 
 const TIER_THEMES = {
   'S+': {
@@ -174,8 +175,8 @@ export default function TierListView({ onSelectChampion }) {
                           const avatarUrl =
                             champ.assets?.[0]?.avatar ||
                             `https://images.lortpoc.com/avatarChampions/${champ.championID}.webp`;
-                          const champKey = champ.name || champ.championID || champ.cardCode;
-                          const champHref = `/champion/${encodeURIComponent(champKey)}`;
+                          const champSlug = toChampionSlug(champ);
+                          const champHref = `/champion/${champSlug}#relics`;
 
                           return (
                             <a

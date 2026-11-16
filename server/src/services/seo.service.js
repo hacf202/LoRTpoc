@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from '../config/env.js';
+import { toChampionSlug } from '../utils/slug.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -186,7 +187,9 @@ Sitemap: ${baseUrl}/sitemap.xml
         (c) =>
           (c.championID && c.championID.toLowerCase() === q) ||
           (c.cardCode && c.cardCode.toLowerCase() === q) ||
-          (c.name && c.name.toLowerCase() === q)
+          (c.name && c.name.toLowerCase() === q) ||
+          toChampionSlug(c.name) === toChampionSlug(q) ||
+          toChampionSlug(c.translations?.en?.name) === toChampionSlug(q)
       );
 
       if (champ) {
@@ -207,7 +210,7 @@ Sitemap: ${baseUrl}/sitemap.xml
         } else if (champ.assets?.[0]?.avatar) {
           image = champ.assets[0].avatar;
         }
-        canonicalUrl = `${baseUrl}/champion/${encodeURIComponent(champ.name || champ.championID)}`;
+        canonicalUrl = `${baseUrl}/champion/${toChampionSlug(champ)}`;
       }
     }
 

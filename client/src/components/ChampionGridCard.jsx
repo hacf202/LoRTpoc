@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
+import { toChampionSlug } from '../utils/slug';
 
 // Tier badge styling with crisp high contrast using the new pastel palette
 const getTierStyle = (tier) => {
@@ -40,8 +41,8 @@ export default function ChampionGridCard({ champion, onClick }) {
   // Region tags
   const rawRegions = Array.isArray(champion.regions) ? champion.regions : [champion.region || 'runeterra'];
 
-  const champKey = champion.name || champion.championID || champion.cardCode;
-  const championHref = `/champion/${encodeURIComponent(champKey)}`;
+  const championSlug = toChampionSlug(champion);
+  const championHref = `/champion/${championSlug}#relics`;
 
   return (
     <a

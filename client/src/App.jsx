@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import EntityDetailModal from './components/EntityDetailModal';
 import SEOHead from './components/SEOHead';
 import { getGlobalKeywords, getChampionKeywords, getTabKeywords } from './utils/seoKeywords';
+import { toChampionSlug } from './utils/slug';
 import HomeView from './views/HomeView';
 import ChampionsView from './views/ChampionsView';
 import ChampionDetailView from './views/ChampionDetailView';
@@ -133,8 +134,8 @@ export default function App() {
     }
 
     const targetParam = filters.champion.trim().toLowerCase();
-    const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const targetNorm = norm(targetParam);
+    const targetSlug = toChampionSlug(targetParam);
+    const targetNorm = targetSlug.replace(/-/g, '');
 
     // If already displaying this champion with full details, don't re-fetch
     if (
@@ -144,11 +145,13 @@ export default function App() {
         (selectedChampion.cardCode && selectedChampion.cardCode.toLowerCase() === targetParam) ||
         (selectedChampion.name && selectedChampion.name.toLowerCase() === targetParam) ||
         (selectedChampion.translations?.en?.name && selectedChampion.translations.en.name.toLowerCase() === targetParam) ||
+        toChampionSlug(selectedChampion.name) === targetSlug ||
+        toChampionSlug(selectedChampion.translations?.en?.name) === targetSlug ||
         (targetNorm && (
-          norm(selectedChampion.name) === targetNorm ||
-          norm(selectedChampion.translations?.en?.name) === targetNorm ||
-          norm(selectedChampion.championID) === targetNorm ||
-          norm(selectedChampion.cardCode) === targetNorm
+          toChampionSlug(selectedChampion.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(selectedChampion.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          (selectedChampion.championID && selectedChampion.championID.toLowerCase() === targetNorm) ||
+          (selectedChampion.cardCode && selectedChampion.cardCode.toLowerCase() === targetNorm)
         )))
     ) {
       setChampionDetailLoading(false);
@@ -161,11 +164,13 @@ export default function App() {
         (c.cardCode && c.cardCode.toLowerCase() === targetParam) ||
         (c.name && c.name.toLowerCase() === targetParam) ||
         (c.translations?.en?.name && c.translations.en.name.toLowerCase() === targetParam) ||
+        toChampionSlug(c.name) === targetSlug ||
+        toChampionSlug(c.translations?.en?.name) === targetSlug ||
         (targetNorm && (
-          norm(c.name) === targetNorm ||
-          norm(c.translations?.en?.name) === targetNorm ||
-          norm(c.championID) === targetNorm ||
-          norm(c.cardCode) === targetNorm
+          toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          (c.championID && c.championID.toLowerCase() === targetNorm) ||
+          (c.cardCode && c.cardCode.toLowerCase() === targetNorm)
         ))
     );
 
@@ -306,8 +311,8 @@ export default function App() {
     if (!champ) return;
     setIsDropdownOpen(false);
 
-    // Update URL to match current champion for direct sharing & SEO (e.g. /champion/Yasuo#relics)
-    const champKey = champ.name || champ.championID || champ.cardCode;
+    // Update URL to match current champion for direct sharing & SEO (e.g. /champion/ahri-chieu-hon-thien-ho#relics)
+    const champKey = toChampionSlug(champ);
     const currentHash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
     const hash = currentHash || 'relics';
     updateFilters(
@@ -649,7 +654,7 @@ export default function App() {
               updateFilters({ relic: '', hash: '' });
             }
           }}
-          onNavigateChampion={(champKey) => updateFilters({ champion: champKey, hash: 'relics', relic: '', power: '', item: '', card: '' }, { push: true })}
+          onNavigateChampion={(champKey) => updateFilters({ champion: toChampionSlug(champKey), hash: 'relics', relic: '', power: '', item: '', card: '' }, { push: true })}
           onSelectRelic={(code) => updateFilters({ relic: code, hash: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
           currentHash={filters.hash}
@@ -665,7 +670,7 @@ export default function App() {
               updateFilters({ power: '', hash: '' });
             }
           }}
-          onNavigateChampion={(champKey, targetHash) => updateFilters({ champion: champKey, hash: targetHash || 'constellation', power: '', relic: '', item: '', card: '' }, { push: true })}
+          onNavigateChampion={(champKey, targetHash) => updateFilters({ champion: toChampionSlug(champKey), hash: targetHash || 'constellation', power: '', relic: '', item: '', card: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
           currentHash={filters.hash}
           onHashChange={(newHash) => updateFilters({ hash: newHash }, { push: false })}
@@ -680,7 +685,7 @@ export default function App() {
               updateFilters({ item: '' });
             }
           }}
-          onNavigateChampion={(champKey, targetHash) => updateFilters({ champion: champKey, hash: targetHash || 'synergies', item: '', relic: '', power: '', card: '' }, { push: true })}
+          onNavigateChampion={(champKey, targetHash) => updateFilters({ champion: toChampionSlug(champKey), hash: targetHash || 'synergies', item: '', relic: '', power: '', card: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
         />
       ) : filters.card ? (
@@ -693,7 +698,7 @@ export default function App() {
               updateFilters({ card: '' });
             }
           }}
-          onNavigateChampion={(champKey) => updateFilters({ champion: champKey, hash: 'deck', card: '', relic: '', power: '', item: '' }, { push: true })}
+          onNavigateChampion={(champKey) => updateFilters({ champion: toChampionSlug(champKey), hash: 'deck', card: '', relic: '', power: '', item: '' }, { push: true })}
           onSelectCard={(code) => updateFilters({ card: code }, { push: true })}
           onNavigateTab={handleNavigateTab}
         />
@@ -707,7 +712,7 @@ export default function App() {
               updateFilters({ map: '' });
             }
           }}
-          onNavigateChampion={(champKey) => updateFilters({ champion: champKey, map: '', relic: '', power: '', item: '', card: '' }, { push: true })}
+          onNavigateChampion={(champKey) => updateFilters({ champion: toChampionSlug(champKey), map: '', relic: '', power: '', item: '', card: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
         />
       ) : (selectedChampion || Boolean(filters.champion && filters.champion.trim())) ? (

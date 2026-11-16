@@ -7,6 +7,7 @@ import ConstellationEditor from '../components/admin/ConstellationEditor';
 import { rankSearchResults } from '../utils/searchUtils';
 import { VALID_ADMIN_MODULES, ADMIN_ROUTE_PREFIX } from '../hooks/useUrlFilters';
 import { handleImageError } from '../utils/imageFallback';
+import { toChampionSlug } from '../utils/slug';
 
 const DEFAULT_CHAMPION_TEMPLATE = {
   championID: '',
@@ -458,10 +459,10 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     });
   }, [updateFilters]);
 
-  // Điều hướng mở form chỉnh sửa tướng (/admin/champion/:name)
+  // Điều hướng mở form chỉnh sửa tướng (/admin/champion/:slug)
   const goToChampionEdit = useCallback((champ) => {
     handleOpenEdit(champ);
-    const champTarget = champ.name || champ.championID || '';
+    const champTarget = toChampionSlug(champ);
     updateFilters?.({
       tab: 'admin',
       adminModule: 'champions',
@@ -525,8 +526,8 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       return;
     }
 
-    const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const targetNorm = norm(targetParam);
+    const targetSlug = toChampionSlug(targetParam);
+    const targetNorm = targetSlug.replace(/-/g, '');
     const targetLower = targetParam.toLowerCase();
 
     // Nếu đã và đang mở đúng tướng này thì giữ nguyên state form (tránh mất dữ liệu đang gõ)
@@ -537,10 +538,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         (editingChampion.championID && editingChampion.championID.toLowerCase() === targetLower) ||
         (editingChampion.name && editingChampion.name.toLowerCase() === targetLower) ||
         (editingChampion.translations?.en?.name && editingChampion.translations.en.name.toLowerCase() === targetLower) ||
+        toChampionSlug(editingChampion.name) === targetSlug ||
+        toChampionSlug(editingChampion.translations?.en?.name) === targetSlug ||
         (targetNorm && (
-          norm(editingChampion.name) === targetNorm ||
-          norm(editingChampion.translations?.en?.name) === targetNorm ||
-          norm(editingChampion.championID) === targetNorm
+          toChampionSlug(editingChampion.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(editingChampion.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          (editingChampion.championID && editingChampion.championID.toLowerCase() === targetNorm)
         ))
       )
     ) {
@@ -553,10 +556,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         (c.championID && c.championID.toLowerCase() === targetLower) ||
         (c.name && c.name.toLowerCase() === targetLower) ||
         (c.translations?.en?.name && c.translations.en.name.toLowerCase() === targetLower) ||
+        toChampionSlug(c.name) === targetSlug ||
+        toChampionSlug(c.translations?.en?.name) === targetSlug ||
         (targetNorm && (
-          norm(c.name) === targetNorm ||
-          norm(c.translations?.en?.name) === targetNorm ||
-          norm(c.championID) === targetNorm
+          toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          (c.championID && c.championID.toLowerCase() === targetNorm)
         ))
     );
 
@@ -3189,7 +3194,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           <tr key={c.championID} className="hover:bg-[#141b2a]/60 transition-colors">
                             <td className="py-3 px-4">
                               <a
-                                href={`${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                href={`${ADMIN_ROUTE_PREFIX}/champion/${toChampionSlug(c)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);
@@ -3239,7 +3244,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                             <td className="py-3 px-4 text-right space-x-2">
                               <a
-                                href={`${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                href={`${ADMIN_ROUTE_PREFIX}/champion/${toChampionSlug(c)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);

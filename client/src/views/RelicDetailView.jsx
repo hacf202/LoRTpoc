@@ -7,6 +7,7 @@ import { getRelicKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
+import { toChampionSlug } from '../utils/slug';
 
 // In-memory cache for relic details (Rule 10)
 const relicDetailCache = new Map();
@@ -144,16 +145,19 @@ export default function RelicDetailView({
   const compatibleChamps = relic?.compatibleChampions || [];
   const companionRelicsMap = relic?.companionRelicsMap || {};
 
-  // Helper to find champion in compatible list by name, id or translation
+  // Helper to find champion in compatible list by clean slug, name, id or translation
   const findChampion = useCallback((targetKey, list) => {
     if (!targetKey || !list || !list.length) return null;
-    const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const targetNorm = norm(targetKey);
+    const targetSlug = toChampionSlug(targetKey);
+    const targetNorm = targetSlug.replace(/-/g, '');
     return list.find((c) =>
-      norm(c.name) === targetNorm ||
-      norm(c.championID) === targetNorm ||
-      norm(c.translations?.en?.name) === targetNorm ||
-      norm(c.cardCode) === targetNorm
+      toChampionSlug(c.name) === targetSlug ||
+      toChampionSlug(c.championID) === targetSlug ||
+      toChampionSlug(c.translations?.en?.name) === targetSlug ||
+      toChampionSlug(c.cardCode) === targetSlug ||
+      toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
+      toChampionSlug(c.championID).replace(/-/g, '') === targetNorm ||
+      toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm
     ) || null;
   }, []);
 
@@ -174,7 +178,7 @@ export default function RelicDetailView({
 
     const hashMatch = findChampion(rawHash, compatibleChamps);
     if (hashMatch) {
-      const matchKey = hashMatch.name || hashMatch.championID;
+      const matchKey = toChampionSlug(hashMatch);
       setSelectedChampKey(matchKey);
       return;
     }
@@ -188,7 +192,7 @@ export default function RelicDetailView({
     // 3. Fallback to first core or first champion
     const firstCore = compatibleChamps.find((c) => c.isCore);
     const chosen = firstCore || compatibleChamps[0];
-    const chosenKey = chosen ? (chosen.name || chosen.championID) : null;
+    const chosenKey = chosen ? toChampionSlug(chosen) : null;
 
     if (chosenKey) {
       setSelectedChampKey(chosenKey);
@@ -197,7 +201,7 @@ export default function RelicDetailView({
       if (onHashChange) {
         onHashChange(chosenKey);
       } else if (typeof window !== 'undefined') {
-        window.history.replaceState(window.history.state, '', `#${encodeURIComponent(chosenKey)}`);
+        window.history.replaceState(window.history.state, '', `#${chosenKey}`);
       }
     }
   }, [compatibleChamps, currentHash, findChampion, onHashChange, selectedChampKey]);
@@ -214,7 +218,7 @@ export default function RelicDetailView({
       }
       const match = findChampion(rawHash, compatibleChamps);
       if (match) {
-        setSelectedChampKey(match.name || match.championID);
+        setSelectedChampKey(toChampionSlug(match));
       }
     };
 
@@ -251,20 +255,20 @@ export default function RelicDetailView({
     }
   }, [activeChampion]);
 
-  // Handle focusing/selecting a champion and updating the URL hash (#ChampionName)
+  // Handle focusing/selecting a champion and updating the URL hash (#clean-slug)
   const handleSelectChampion = (targetKey) => {
     const champ = findChampion(targetKey, compatibleChamps);
-    const resolvedKey = champ ? (champ.name || champ.championID) : targetKey;
+    const resolvedKey = champ ? toChampionSlug(champ) : toChampionSlug(targetKey);
     if (resolvedKey === selectedChampKey) return;
 
     setIsTransitioning(true);
     setSelectedChampKey(resolvedKey);
 
-    const hashVal = champ ? (champ.name || champ.championID) : resolvedKey;
+    const hashVal = resolvedKey;
     if (onHashChange) {
       onHashChange(hashVal);
     } else if (typeof window !== 'undefined') {
-      window.history.replaceState(window.history.state, '', `#${encodeURIComponent(hashVal)}`);
+      window.history.replaceState(window.history.state, '', `#${hashVal}`);
     }
 
     setTimeout(() => {

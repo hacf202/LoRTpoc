@@ -6,6 +6,7 @@ import { matchSearchQuery, rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
 import { relationService } from './relation.service.js';
 import { loadCollectionFromDb, upsertDbDocument, deleteDbDocument } from '../config/dbDataLoader.js';
+import { toChampionSlug } from '../utils/slug.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -358,33 +359,41 @@ export const championService = {
   },
 
   getById: async (id, fields = null) => {
-    const cleanId = String(id).toLowerCase().trim();
-    const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const cleanNorm = norm(cleanId);
+    let rawId = String(id).trim();
+    try {
+      rawId = decodeURIComponent(rawId);
+    } catch {
+      // keep rawId
+    }
+    const cleanId = rawId.toLowerCase();
+    const targetSlug = toChampionSlug(rawId);
+    const targetNorm = targetSlug.replace(/-/g, '');
 
-    // 1. Exact match on ID, Code, Name, or English translation name
+    // 1. Exact match on ID, Code, Name, English name, or clean slug
     let champion = champions.find(
       (c) =>
         c.championID?.toLowerCase() === cleanId ||
         c.cardCode?.toLowerCase() === cleanId ||
         c.name?.toLowerCase() === cleanId ||
-        c.translations?.en?.name?.toLowerCase() === cleanId
+        c.translations?.en?.name?.toLowerCase() === cleanId ||
+        toChampionSlug(c.name) === targetSlug ||
+        toChampionSlug(c.translations?.en?.name) === targetSlug
     );
 
-    // 2. Normalized match (handles slugs like "master-yi", "aurelion-sol", "nunu-willump")
-    if (!champion && cleanNorm) {
+    // 2. Normalized match (handles slugs without hyphens or alternate formats)
+    if (!champion && targetNorm) {
       champion = champions.find(
         (c) =>
-          norm(c.championID) === cleanNorm ||
-          norm(c.cardCode) === cleanNorm ||
-          norm(c.name) === cleanNorm ||
-          norm(c.translations?.en?.name) === cleanNorm
+          toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          c.championID?.toLowerCase() === targetNorm ||
+          c.cardCode?.toLowerCase() === targetNorm
       );
     }
 
     // 3. Fallback: Prefix/partial match for multi-title names (e.g. "yasuo" matching "Yasuo")
-    if (!champion && cleanNorm) {
-      champion = champions.find((c) => norm(c.name).startsWith(cleanNorm));
+    if (!champion && targetNorm) {
+      champion = champions.find((c) => toChampionSlug(c.name).replace(/-/g, '').startsWith(targetNorm));
     }
 
     if (!champion) return null;

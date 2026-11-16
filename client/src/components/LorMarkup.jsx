@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { tokenizeLorText, formatKeywordEn } from '../utils/lorMarkupParser';
 import { getEntityPreview, getCachedEntityPreview } from '../utils/entityPreviewService';
 import LorMarkupPreviewTooltip from './LorMarkupPreviewTooltip';
+import { toChampionSlug } from '../utils/slug';
 
 /**
  * Tag styling map based on tag prefix
@@ -201,7 +202,7 @@ export default function LorMarkup({
     } else if (tagType === 'i') {
       targetPath = `/item/${id}`;
     } else if (tagType === 'c') {
-      targetPath = `/champion/${id}#relics`;
+      targetPath = `/champion/${toChampionSlug(id)}#relics`;
     } else if (tagType === 'm') {
       targetPath = `/map/${id}`;
     }
