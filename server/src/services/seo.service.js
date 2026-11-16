@@ -21,6 +21,9 @@ const loadJson = (filename) => {
 const champions = loadJson('champions.json');
 const relics = loadJson('relics.json');
 const maps = loadJson('maps.json');
+const powers = loadJson('powers.json');
+const items = loadJson('items.json');
+const cards = loadJson('cards.json');
 
 const escapeXml = (unsafe) => {
   return String(unsafe || '')
@@ -125,17 +128,17 @@ Sitemap: ${baseUrl}/sitemap.xml
   /**
    * Generates Rich Social Preview HTML (OpenGraph / Twitter Cards) for crawler bots
    */
-  generateSocialPreviewHtml: (targetParam, customBaseUrl) => {
+  generateSocialPreviewHtml: (targetParam, customBaseUrl, category = null) => {
     const baseUrl = (customBaseUrl || config.clientUrl || 'https://thepathofchampions.guide').replace(/\/+$/, '');
     let title = 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
     let description = 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
     let image = `${baseUrl}/og-image.webp`;
     let canonicalUrl = `${baseUrl}/`;
 
-    if (targetParam) {
-      const q = String(targetParam).toLowerCase().trim();
+    const q = String(targetParam || '').toLowerCase().trim();
 
-      // Check if target is a champion
+    // 1. Specific Entity Match by category or search target
+    if (category === 'champion' || (!category && q)) {
       const champ = champions.find(
         (c) =>
           (c.championID && c.championID.toLowerCase() === q) ||
@@ -149,33 +152,129 @@ Sitemap: ${baseUrl}/sitemap.xml
         const stars = champ.maxStar || 3;
         const tier = champ.tier ? ` - Tier ${champ.tier.split('//')[0].trim()}` : '';
 
-        title = `${champName} - Cẩm Nang Tướng, Sức Mạnh Sao & Cổ Vật Tối Ưu (${stars}★${tier}) | PoC Guide`;
+        title = `${champName} - Cẩm Nang Tướng, Sức Mạnh Sao & Cổ Vật (${stars}★${tier}) | PoC Guide`;
         description =
           champ.relicSets?.[0]?.descriptionRaw ||
           champ.descriptionRaw ||
           champ.description ||
           `Hướng dẫn lối chơi, cây chòm sao và gợi ý cổ vật chuẩn nhất cho ${champName} (${regionsStr}) trong Con Đường Anh Hùng.`;
+
         if (champ.assets?.[0]?.gameAbsolutePath) {
           image = champ.assets[0].gameAbsolutePath;
         } else if (champ.assets?.[0]?.avatar) {
           image = champ.assets[0].avatar;
         }
         canonicalUrl = `${baseUrl}/champion/${encodeURIComponent(champ.name || champ.championID)}`;
-      } else {
-        // Check if target is a relic
-        const relic = relics.find(
-          (r) =>
-            (r.relicCode && r.relicCode.toLowerCase() === q) ||
-            (r.name && r.name.toLowerCase() === q)
-        );
-
-        if (relic) {
-          title = `${relic.name} (${relic.rarity || 'Cổ vật'}) - Cẩm Nang Cổ Vật PoC Guide`;
-          description = relic.descriptionRaw || relic.description || 'Chi tiết hiệu ứng cổ vật và tướng tương thích.';
-          if (relic.assetAbsolutePath) image = relic.assetAbsolutePath;
-          canonicalUrl = `${baseUrl}/relic/${encodeURIComponent(relic.relicCode || relic.name)}`;
-        }
       }
+    }
+
+    if (!canonicalUrl.includes('/champion/') && (category === 'relic' || (!category && q))) {
+      const relic = relics.find(
+        (r) =>
+          (r.relicCode && r.relicCode.toLowerCase() === q) ||
+          (r.name && r.name.toLowerCase() === q)
+      );
+
+      if (relic) {
+        title = `${relic.name} (${relic.rarity || 'Cổ vật'}) - Cẩm Nang Cổ Vật PoC Guide`;
+        description = relic.descriptionRaw || relic.description || 'Chi tiết hiệu ứng cổ vật và tướng tương thích.';
+        image = relic.assetAbsolutePath || `https://images.lortpoc.com/relics/${relic.relicCode}.webp`;
+        canonicalUrl = `${baseUrl}/relic/${encodeURIComponent(relic.relicCode || relic.name)}`;
+      }
+    }
+
+    if (!canonicalUrl.includes('/champion/') && !canonicalUrl.includes('/relic/') && (category === 'power' || (!category && q))) {
+      const power = powers.find(
+        (p) =>
+          (p.powerCode && p.powerCode.toLowerCase() === q) ||
+          (p.name && p.name.toLowerCase() === q)
+      );
+
+      if (power) {
+        title = `${power.name} (${power.rarity || 'Sức mạnh'}) - Sức Mạnh Viễn Chinh PoC Guide`;
+        description = power.descriptionRaw || power.description || 'Chi tiết hiệu ứng sức mạnh viễn chinh và nâng cấp.';
+        image = `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${power.powerCode}.png`;
+        canonicalUrl = `${baseUrl}/power/${encodeURIComponent(power.powerCode || power.name)}`;
+      }
+    }
+
+    if (!canonicalUrl.includes('/champion/') && !canonicalUrl.includes('/relic/') && !canonicalUrl.includes('/power/') && (category === 'item' || (!category && q))) {
+      const item = items.find(
+        (it) =>
+          (it.itemCode && it.itemCode.toLowerCase() === q) ||
+          (it.name && it.name.toLowerCase() === q)
+      );
+
+      if (item) {
+        title = `${item.name} (${item.rarity || 'Vật phẩm'}) - Vật Phẩm Thẻ Bài PoC Guide`;
+        description = item.descriptionRaw || item.description || 'Chi tiết hiệu ứng vật phẩm gắn vào bài quân và phép.';
+        image = item.assetAbsolutePath || 'https://images.lortpoc.com/icon/itemIcon.webp';
+        canonicalUrl = `${baseUrl}/item/${encodeURIComponent(item.itemCode || item.name)}`;
+      }
+    }
+
+    if (!canonicalUrl.includes('/champion/') && !canonicalUrl.includes('/relic/') && !canonicalUrl.includes('/power/') && !canonicalUrl.includes('/item/') && (category === 'card' || (!category && q))) {
+      const card = cards.find(
+        (cd) =>
+          (cd.cardCode && cd.cardCode.toLowerCase() === q) ||
+          (cd.cardName && cd.cardName.toLowerCase() === q) ||
+          (cd.name && cd.name.toLowerCase() === q)
+      );
+
+      if (card) {
+        const cName = card.cardName || card.name || card.cardCode;
+        title = `${cName} (${card.cost ?? 0} Mana) - Thư Viện Lá Bài LoR PoC`;
+        description = card.descriptionRaw || card.description || 'Thông số chi tiết, chỉ số công thủ và từ khóa lá bài.';
+        image = card.gameAbsolutePath || card.assets?.[0]?.gameAbsolutePath || `https://dd.b.pvp.net/latest/set1/vi_vn/img/cards/${card.cardCode}.png`;
+        canonicalUrl = `${baseUrl}/card/${encodeURIComponent(card.cardCode || cName)}`;
+      }
+    }
+
+    if (!canonicalUrl.includes('/champion/') && !canonicalUrl.includes('/relic/') && !canonicalUrl.includes('/power/') && !canonicalUrl.includes('/item/') && !canonicalUrl.includes('/card/') && (category === 'map' || (!category && q))) {
+      const map = maps.find(
+        (m) =>
+          (m.adventureID && m.adventureID.toLowerCase() === q) ||
+          (m.mapID && m.mapID.toLowerCase() === q) ||
+          (m.adventureName && m.adventureName.toLowerCase() === q)
+      );
+
+      if (map) {
+        title = `${map.adventureName || map.name} (${map.difficultyStars || 3}★) - Cẩm Nang Cuộc Phiêu Lưu PoC`;
+        description = map.description || 'Hướng dẫn chọn tướng, khắc chế trùm và vượt ải bản đồ Con Đường Anh Hùng.';
+        image = map.assets?.banner || map.icon || `${baseUrl}/og-image.webp`;
+        canonicalUrl = `${baseUrl}/map/${encodeURIComponent(map.adventureID || map.mapID || map.adventureName)}`;
+      }
+    }
+
+    // 2. High-level Catalog Pages
+    if (category === 'tierlist') {
+      title = 'Bảng Xếp Hạng Tướng Con Đường Anh Hùng (Tier S+ đến C) - Meta Mới Nhất | PoC Guide';
+      description = 'Đánh giá sức mạnh meta toàn diện của 89 tướng trong Legends of Runeterra: The Path of Champions.';
+      canonicalUrl = `${baseUrl}/tierlist`;
+    } else if (category === 'champions_list') {
+      title = 'Danh Sách 89 Tướng Con Đường Anh Hùng - Chỉ Số & Lối Chơi | PoC Guide';
+      description = 'Tra cứu toàn bộ 89 vị tướng: Chỉ số Mana, Sao tối ưu, Bộ bài khởi điểm và Cây chòm sao 6 sao.';
+      canonicalUrl = `${baseUrl}/champions`;
+    } else if (category === 'relics_list') {
+      title = 'Danh Sách 155 Cổ Vật Relics - Hiệu Ứng & Phân Cấp | PoC Guide';
+      description = 'Khám phá 155 cổ vật Thường, Hiếm, Sử Thi và Cổ Vật Độc Quyền tương thích tốt nhất cho từng tướng.';
+      canonicalUrl = `${baseUrl}/relics`;
+    } else if (category === 'powers_list') {
+      title = 'Danh Sách 1,196 Sức Mạnh Viễn Chinh - Bổ Trợ & Hiệu Ứng | PoC Guide';
+      description = 'Tra cứu tất cả sức mạnh ngẫu nhiên trong hành trình Con Đường Anh Hùng.';
+      canonicalUrl = `${baseUrl}/powers`;
+    } else if (category === 'items_list') {
+      title = 'Danh Sách 187 Vật Phẩm Thẻ Bài - Trang Bị & Nâng Cấp | PoC Guide';
+      description = 'Chi tiết toàn bộ trang bị cường hóa chỉ số và từ khóa đặc biệt cho bài quân.';
+      canonicalUrl = `${baseUrl}/items`;
+    } else if (category === 'cards_list') {
+      title = 'Thư Viện 2,686 Lá Bài Runeterra - Toàn Bộ Bài Quân & Phép | PoC Guide';
+      description = 'Thư viện hình ảnh sắc nét và hiệu ứng của toàn bộ bài quân, phép thuật và địa danh trong LoR.';
+      canonicalUrl = `${baseUrl}/cards`;
+    } else if (category === 'maps_list') {
+      title = 'Danh Sách 48 Bản Đồ Phiêu Lưu & Trùm Cuối - PoC Guide';
+      description = 'Cẩm nang chinh phục 48 cuộc phiêu lưu từ 0.5 sao đến Ác Mộng 6.5 sao trong Con Đường Anh Hùng.';
+      canonicalUrl = `${baseUrl}/maps`;
     }
 
     return `<!DOCTYPE html>
@@ -186,27 +285,30 @@ Sitemap: ${baseUrl}/sitemap.xml
   <meta name="description" content="${escapeXml(description)}">
   <link rel="canonical" href="${escapeXml(canonicalUrl)}">
 
-  <!-- Open Graph / Discord / Facebook -->
+  <!-- Open Graph / Discord / Facebook / Zalo / Telegram -->
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="The Path of Champions Guide">
   <meta property="og:title" content="${escapeXml(title)}">
   <meta property="og:description" content="${escapeXml(description)}">
   <meta property="og:image" content="${escapeXml(image)}">
+  <meta property="og:image:secure_url" content="${escapeXml(image)}">
+  <meta property="og:image:alt" content="${escapeXml(title)}">
   <meta property="og:url" content="${escapeXml(canonicalUrl)}">
 
-  <!-- Twitter / X -->
+  <!-- Twitter / X Cards -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:title" content="${escapeXml(title)}">
   <meta property="twitter:description" content="${escapeXml(description)}">
   <meta property="twitter:image" content="${escapeXml(image)}">
+  <meta property="twitter:url" content="${escapeXml(canonicalUrl)}">
 
-  <!-- Client-side Redirect for real users -->
+  <!-- Client-side Redirect for human browsers -->
   <meta http-equiv="refresh" content="0; url=${escapeXml(canonicalUrl)}">
 </head>
 <body style="background:#07090e; color:#e2e8f0; font-family:sans-serif; padding:40px; text-align:center;">
   <h1>${escapeXml(title)}</h1>
   <p>${escapeXml(description)}</p>
-  <p><a href="${escapeXml(canonicalUrl)}" style="color:#e6b758;">Bấm vào đây nếu không tự động chuyển hướng...</a></p>
+  <p><a href="${escapeXml(canonicalUrl)}" style="color:#8CC0EB;">Bấm vào đây nếu không tự động chuyển hướng...</a></p>
 </body>
 </html>`;
   }
