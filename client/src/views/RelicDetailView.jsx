@@ -285,7 +285,7 @@ export default function RelicDetailView({
     : `Cẩm nang chi tiết cổ vật ${relicName} (${relicRarity}) trong Con Đường Anh Hùng. Hiệu ứng trang bị, chỉ số và danh sách tướng kết hợp mạnh nhất.`;
 
   const seoImage = relic?.imageUrl || relic?.image || '/assets/hero-bg.jpg';
-  const seoUrl = `https://thepathofchampions.guide/relic/${encodeURIComponent(relicCode)}`;
+  const seoUrl = `https://lortpoc.com/relic/${encodeURIComponent(relicCode)}`;
   const seoKeywords = getRelicKeywords(relic, language);
 
   const seoJsonLd = {
@@ -298,13 +298,13 @@ export default function RelicDetailView({
             '@type': 'ListItem',
             position: 1,
             name: isEn ? 'Home' : 'Trang Chủ',
-            item: 'https://thepathofchampions.guide/'
+            item: 'https://lortpoc.com/'
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: isEn ? 'Relics' : 'Cổ Vật',
-            item: 'https://thepathofchampions.guide/?tab=relics'
+            item: 'https://lortpoc.com/?tab=relics'
           },
           {
             '@type': 'ListItem',

@@ -391,7 +391,7 @@ export default function App() {
 
       const keywords = getChampionKeywords(selectedChampion, language);
       const champSlug = selectedChampion.championID || selectedChampion.name;
-      const url = `https://thepathofchampions.guide/champion/${encodeURIComponent(champSlug)}`;
+      const url = `https://lortpoc.com/champion/${encodeURIComponent(champSlug)}`;
 
       const jsonLd = {
         '@context': 'https://schema.org',
@@ -403,13 +403,13 @@ export default function App() {
                 '@type': 'ListItem',
                 position: 1,
                 name: isEn ? 'Home' : 'Trang Chủ',
-                item: 'https://thepathofchampions.guide/'
+                item: 'https://lortpoc.com/'
               },
               {
                 '@type': 'ListItem',
                 position: 2,
                 name: isEn ? 'Champions' : 'Tướng',
-                item: 'https://thepathofchampions.guide/?tab=champions'
+                item: 'https://lortpoc.com/?tab=champions'
               },
               {
                 '@type': 'ListItem',
@@ -444,9 +444,9 @@ export default function App() {
           description: isEn
             ? 'Browse all 89 champions in LoR: The Path of Champions. Filter by region, star rating, optimal relics, and tier list ranking.'
             : 'Tra cứu toàn bộ 89 tướng trong Con Đường Anh Hùng. Lọc theo vùng đất Runeterra, cấp sao tối đa, cổ vật tối ưu và thứ hạng sức mạnh.',
-          image: champions[0]?.assets?.[0]?.gameAbsolutePath || champions[0]?.assets?.[0]?.avatar || 'https://thepathofchampions.guide/home-hero.webp',
+          image: champions[0]?.assets?.[0]?.gameAbsolutePath || champions[0]?.assets?.[0]?.avatar || 'https://lortpoc.com/home-hero.webp',
           keywords: getTabKeywords('champions', language),
-          url: 'https://thepathofchampions.guide/?tab=champions'
+          url: 'https://lortpoc.com/?tab=champions'
         };
       case 'relics':
         return {
@@ -458,7 +458,7 @@ export default function App() {
             : 'Khám phá 155 cổ vật Thường, Hiếm và Sử Thi trong Con Đường Anh Hùng cùng hiệu ứng gia tăng sức mạnh và gợi ý tướng phù hợp.',
           image: 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png',
           keywords: getTabKeywords('relics', language),
-          url: 'https://thepathofchampions.guide/?tab=relics'
+          url: 'https://lortpoc.com/?tab=relics'
         };
       case 'powers':
         return {
@@ -470,7 +470,7 @@ export default function App() {
             : 'Hệ thống tra cứu 1,196 sức mạnh sao, bổng lộc phiêu lưu và nội tại của kẻ địch trong Con Đường Anh Hùng.',
           image: 'https://dd.b.pvp.net/7_11_0/adventure/vi_vn/img/powers/FP0000-full.png',
           keywords: getTabKeywords('powers', language),
-          url: 'https://thepathofchampions.guide/?tab=powers'
+          url: 'https://lortpoc.com/?tab=powers'
         };
       case 'items':
         return {
@@ -482,7 +482,7 @@ export default function App() {
             : 'Khám phá 187 vật phẩm trang bị gắn vào bài quân và phép thuật trong Con Đường Anh Hùng.',
           image: 'https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0000.png',
           keywords: getTabKeywords('items', language),
-          url: 'https://thepathofchampions.guide/?tab=items'
+          url: 'https://lortpoc.com/?tab=items'
         };
       case 'cards':
         return {
@@ -494,7 +494,7 @@ export default function App() {
             : 'Tra cứu toàn bộ 2,686 lá bài quân, phép thuật và địa danh trong Huyền Thoại Runeterra với ảnh gốc sắc nét.',
           image: 'https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01DE001.png',
           keywords: getTabKeywords('cards', language),
-          url: 'https://thepathofchampions.guide/?tab=cards'
+          url: 'https://lortpoc.com/?tab=cards'
         };
       case 'tierlist':
         return {
@@ -506,7 +506,7 @@ export default function App() {
             : 'Bảng xếp hạng sức mạnh và phân bậc meta từ S+ đến C của 89 tướng trong Con Đường Anh Hùng. Tìm kiếm vị tướng mạnh nhất phiên bản hiện tại.',
           image: 'https://images.lortpoc.com/backgrounds/1920px-01FR008T1-hd-full.webp',
           keywords: getTabKeywords('tierlist', language),
-          url: 'https://thepathofchampions.guide/?tab=tierlist'
+          url: 'https://lortpoc.com/?tab=tierlist'
         };
       case 'maps':
         return {
@@ -518,7 +518,7 @@ export default function App() {
             : 'Cẩm nang 48 cuộc phiêu lưu, bản đồ Ác Mộng và hướng dẫn khắc chế 338 trùm nguy hiểm trong Con Đường Anh Hùng.',
           image: 'https://images.lortpoc.com/backgrounds/zoe.webp',
           keywords: getTabKeywords('maps', language),
-          url: 'https://thepathofchampions.guide/?tab=maps'
+          url: 'https://lortpoc.com/?tab=maps'
         };
       case 'admin':
         if (filters.adminChampion) {
@@ -555,16 +555,16 @@ export default function App() {
           description: isEn
             ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Explore 89 champions, 155 relics, 1,196 powers, and adventures.'
             : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.',
-          image: 'https://thepathofchampions.guide/home-hero.webp',
+          image: 'https://lortpoc.com/home-hero.webp',
           keywords: getGlobalKeywords(language),
-          url: 'https://thepathofchampions.guide/',
+          url: 'https://lortpoc.com/',
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
               {
                 '@type': 'WebSite',
-                '@id': 'https://thepathofchampions.guide/#website',
-                url: 'https://thepathofchampions.guide/',
+                '@id': 'https://lortpoc.com/#website',
+                url: 'https://lortpoc.com/',
                 name: 'The Path of Champions Guide',
                 description: isEn
                   ? 'Comprehensive strategy and database for LoR: The Path of Champions'
@@ -574,14 +574,14 @@ export default function App() {
                   '@type': 'SearchAction',
                   target: {
                     '@type': 'EntryPoint',
-                    urlTemplate: 'https://thepathofchampions.guide/?q={search_term_string}'
+                    urlTemplate: 'https://lortpoc.com/?q={search_term_string}'
                   },
                   'query-input': 'required name=search_term_string'
                 }
               },
               {
                 '@type': 'VideoGame',
-                '@id': 'https://thepathofchampions.guide/#game',
+                '@id': 'https://lortpoc.com/#game',
                 name: 'Legends of Runeterra: The Path of Champions',
                 genre: ['Digital Card Game', 'Roguelike Deckbuilder'],
                 gamePlatform: ['PC', 'Android', 'iOS']

@@ -30,13 +30,17 @@ app.use(cors({
     if (
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
-      origin.endsWith('.lortpoc.com')
+      origin.endsWith('.lortpoc.com') ||
+      origin === 'https://lortpoc.com' ||
+      origin === 'https://www.lortpoc.com'
     ) {
       return callback(null, true);
     }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

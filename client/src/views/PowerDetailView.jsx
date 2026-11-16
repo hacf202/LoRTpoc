@@ -178,7 +178,7 @@ export default function PowerDetailView({
     ? `Detailed effects, rarity tier, and compatible champions for ${powerName} in LoR: The Path of Champions.`
     : `Chi tiết hiệu ứng, phân loại sức mạnh và danh sách tướng sở hữu ${powerName} trong Con Đường Anh Hùng.`;
 
-  const seoUrl = `https://thepathofchampions.guide/power/${encodeURIComponent(powerCode)}`;
+  const seoUrl = `https://lortpoc.com/power/${encodeURIComponent(powerCode)}`;
   const seoKeywords = getPowerKeywords(power, language);
 
   const seoJsonLd = {
@@ -191,13 +191,13 @@ export default function PowerDetailView({
             '@type': 'ListItem',
             position: 1,
             name: isEn ? 'Home' : 'Trang Chủ',
-            item: 'https://thepathofchampions.guide/'
+            item: 'https://lortpoc.com/'
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: isEn ? 'Powers' : 'Sức Mạnh',
-            item: 'https://thepathofchampions.guide/?tab=powers'
+            item: 'https://lortpoc.com/?tab=powers'
           },
           {
             '@type': 'ListItem',

@@ -119,7 +119,7 @@ export default function MapDetailView({
     ? `Full walkthrough for ${adventureName} (${adventureType}, ${mapStars} Stars) in The Path of Champions. Boss strategies, encounter powers, and rewards.`
     : `Cẩm nang vượt cuộc phiêu lưu ${adventureName} (${adventureType}, ${mapStars} Sao) trong Con Đường Anh Hùng. Chiến thuật diệt trùm, sức mạnh đặc biệt và phần thưởng.`;
 
-  const seoUrl = `https://thepathofchampions.guide/map/${encodeURIComponent(mapId)}`;
+  const seoUrl = `https://lortpoc.com/map/${encodeURIComponent(mapId)}`;
   const seoKeywords = getMapKeywords(map, language);
   const seoImage = bgImage || '/assets/hero-bg.jpg';
 
@@ -133,13 +133,13 @@ export default function MapDetailView({
             '@type': 'ListItem',
             position: 1,
             name: isEn ? 'Home' : 'Trang Chủ',
-            item: 'https://thepathofchampions.guide/'
+            item: 'https://lortpoc.com/'
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: isEn ? 'Adventures' : 'Cuộc Phiêu Lưu',
-            item: 'https://thepathofchampions.guide/?tab=maps'
+            item: 'https://lortpoc.com/?tab=maps'
           },
           {
             '@type': 'ListItem',

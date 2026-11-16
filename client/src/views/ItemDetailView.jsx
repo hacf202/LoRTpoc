@@ -144,7 +144,7 @@ export default function ItemDetailView({
     ? `Discover card item ${itemName} in Legends of Runeterra: The Path of Champions. Attach effects, rarity tier, and optimal champion targets.`
     : `Khám phá vật phẩm thẻ bài ${itemName} trong Con Đường Anh Hùng. Hiệu ứng trang bị, độ hiếm và mục tiêu gắn tối ưu nhất.`;
 
-  const seoUrl = `https://thepathofchampions.guide/item/${encodeURIComponent(itemCode)}`;
+  const seoUrl = `https://lortpoc.com/item/${encodeURIComponent(itemCode)}`;
   const seoKeywords = getItemKeywords(item, language);
 
   const seoJsonLd = {
@@ -157,13 +157,13 @@ export default function ItemDetailView({
             '@type': 'ListItem',
             position: 1,
             name: isEn ? 'Home' : 'Trang Chủ',
-            item: 'https://thepathofchampions.guide/'
+            item: 'https://lortpoc.com/'
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: isEn ? 'Items' : 'Vật Phẩm',
-            item: 'https://thepathofchampions.guide/?tab=items'
+            item: 'https://lortpoc.com/?tab=items'
           },
           {
             '@type': 'ListItem',

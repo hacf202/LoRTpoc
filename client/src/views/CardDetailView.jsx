@@ -167,7 +167,7 @@ export default function CardDetailView({
     ? `Explore card ${cardName} in Legends of Runeterra: The Path of Champions. Cost, attack, health, keywords, and deck synergies.`
     : `Thông tin chi tiết lá bài ${cardName} (${cardRegion}) trong Huyền Thoại Runeterra. Chỉ số năng lượng, hiệu ứng và bộ bài kết hợp tối ưu.`;
 
-  const seoUrl = `https://thepathofchampions.guide/card/${encodeURIComponent(cardCode)}`;
+  const seoUrl = `https://lortpoc.com/card/${encodeURIComponent(cardCode)}`;
   const seoKeywords = getCardKeywords(card, language);
 
   const seoJsonLd = {
@@ -180,13 +180,13 @@ export default function CardDetailView({
             '@type': 'ListItem',
             position: 1,
             name: isEn ? 'Home' : 'Trang Chủ',
-            item: 'https://thepathofchampions.guide/'
+            item: 'https://lortpoc.com/'
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: isEn ? 'Cards' : 'Lá Bài',
-            item: 'https://thepathofchampions.guide/?tab=cards'
+            item: 'https://lortpoc.com/?tab=cards'
           },
           {
             '@type': 'ListItem',

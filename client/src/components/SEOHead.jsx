@@ -19,12 +19,12 @@ export default function SEOHead({
 }) {
   const isEn = lang === 'en';
   const defaultTitle = isEn
-    ? 'The Path of Champions Guide - Strategy, Builds & Database'
-    : 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
+    ? 'LoR TPoC - LoR TPoC - lortpoc.com | lortpoc.com'
+    : 'LoR TPoC - Cẩm Nang Con Đường Anh Hùng & Bảng Xếp Hạng | lortpoc.com';
 
   let finalTitle = title || defaultTitle;
   if (!finalTitle.includes('PoC Guide') && !finalTitle.includes('POC GUIDE')) {
-    finalTitle = `${finalTitle} | PoC Guide`;
+    finalTitle = `${finalTitle} | lortpoc.com`;
   }
 
   const finalDesc =
@@ -39,7 +39,7 @@ export default function SEOHead({
     url ||
     (typeof window !== 'undefined'
       ? window.location.href.split('#')[0]
-      : 'https://thepathofchampions.guide/');
+      : 'https://lortpoc.com/');
 
   useEffect(() => {
     // 1. Update Document Title & Language
@@ -74,7 +74,7 @@ export default function SEOHead({
     setMeta('name', 'title', finalTitle);
     setMeta('name', 'description', finalDesc);
     setMeta('name', 'keywords', finalKeywords);
-    setMeta('name', 'author', 'The Path of Champions Community');
+    setMeta('name', 'author', 'LoR TPoC Community (lortpoc.com)');
     setMeta('name', 'robots', robots || 'index, follow');
 
     // 3. Canonical URL
@@ -85,7 +85,7 @@ export default function SEOHead({
     setMeta('property', 'og:description', finalDesc);
     setMeta('property', 'og:type', type);
     setMeta('property', 'og:url', currentUrl);
-    setMeta('property', 'og:site_name', 'The Path of Champions Guide');
+    setMeta('property', 'og:site_name', 'LoR TPoC - lortpoc.com');
     setMeta('property', 'og:locale', isEn ? 'en_US' : 'vi_VN');
     setMeta('property', 'og:locale:alternate', isEn ? 'vi_VN' : 'en_US');
 

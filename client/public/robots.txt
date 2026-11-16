@@ -1,8 +1,8 @@
-# Robots.txt for The Path of Champions Guide
+# Robots.txt for LoR TPoC (lortpoc.com)
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /admin/admin/admin
 
-Sitemap: https://thepathofchampions.guide/sitemap.xml
+Sitemap: https://lortpoc.com/sitemap.xml

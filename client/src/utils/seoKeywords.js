@@ -5,6 +5,9 @@
  */
 
 export const CORE_KEYWORDS_VI = [
+  'lortpoc',
+  'lortpoc.com',
+  'lor tpoc',
   'con đường anh hùng',
   'con đường anh hùng guide',
   'hướng dẫn con đường anh hùng',
@@ -31,6 +34,9 @@ export const CORE_KEYWORDS_VI = [
 ];
 
 export const CORE_KEYWORDS_EN = [
+  'lortpoc',
+  'lortpoc.com',
+  'lor tpoc',
   'The Path of Champions',
   'Path of Champions',
   'PoC Guide',
