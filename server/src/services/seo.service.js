@@ -41,48 +41,33 @@ export const seoService = {
 
     const entries = [];
 
-    // 1. Core Landing and Roster Pages
-    entries.push(`  <url>
-    <loc>${escapeXml(baseUrl)}/</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`);
+    // 1. Core Landing and Catalog Pages (Hierarchical Canonical URLs)
+    const catalogPages = [
+      { path: '/', priority: '1.0', changefreq: 'daily' },
+      { path: '/champions', priority: '0.95', changefreq: 'daily' },
+      { path: '/relics', priority: '0.9', changefreq: 'weekly' },
+      { path: '/tierlist', priority: '0.9', changefreq: 'weekly' },
+      { path: '/powers', priority: '0.85', changefreq: 'weekly' },
+      { path: '/items', priority: '0.85', changefreq: 'weekly' },
+      { path: '/cards', priority: '0.85', changefreq: 'weekly' },
+      { path: '/maps', priority: '0.85', changefreq: 'weekly' }
+    ];
 
-    entries.push(`  <url>
-    <loc>${escapeXml(baseUrl)}/?tab=champions</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>`);
-
-    entries.push(`  <url>
-    <loc>${escapeXml(baseUrl)}/?tab=relics</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`);
-
-    entries.push(`  <url>
-    <loc>${escapeXml(baseUrl)}/?tab=tierlist</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`);
-
-    entries.push(`  <url>
-    <loc>${escapeXml(baseUrl)}/?tab=maps</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`);
-
-    // 2. All 89 Champions (Deep Links for Indexing)
-    champions.forEach((champ) => {
-      const identifier = champ.championID || champ.cardCode || champ.name;
-      const url = `${baseUrl}/?tab=champions&amp;champion=${encodeURIComponent(identifier)}`;
+    catalogPages.forEach((page) => {
       entries.push(`  <url>
-    <loc>${url}</loc>
+    <loc>${escapeXml(baseUrl + page.path)}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`);
+    });
+
+    // 2. All 89 Champions (Canonical Clean Paths for Google/Bing Indexing)
+    champions.forEach((champ) => {
+      const identifier = champ.name || champ.championID || champ.cardCode;
+      const url = `${baseUrl}/champion/${encodeURIComponent(identifier)}`;
+      entries.push(`  <url>
+    <loc>${escapeXml(url)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -92,25 +77,25 @@ export const seoService = {
     // 3. All 155 Relics
     relics.forEach((relic) => {
       const identifier = relic.relicCode || relic.name;
-      const url = `${baseUrl}/?tab=relics&amp;relic=${encodeURIComponent(identifier)}`;
+      const url = `${baseUrl}/relic/${encodeURIComponent(identifier)}`;
       entries.push(`  <url>
-    <loc>${url}</loc>
+    <loc>${escapeXml(url)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>`);
     });
 
     // 4. All 48 Adventures / Maps
     maps.forEach((map) => {
-      const identifier = map.adventureID || map.adventureName;
+      const identifier = map.adventureID || map.mapID || map.adventureName;
       if (identifier) {
-        const url = `${baseUrl}/?tab=maps&amp;map=${encodeURIComponent(identifier)}`;
+        const url = `${baseUrl}/map/${encodeURIComponent(identifier)}`;
         entries.push(`  <url>
-    <loc>${url}</loc>
+    <loc>${escapeXml(url)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>`);
       }
     });
@@ -122,7 +107,7 @@ ${entries.join('\n')}
   },
 
   /**
-   * Generates standard robots.txt directing search bots to the sitemap
+   * Generates standard robots.txt directing search bots to the sitemap while protecting admin paths
    */
   generateRobotsTxt: (customBaseUrl) => {
     const baseUrl = (customBaseUrl || config.clientUrl || 'https://thepathofchampions.guide').replace(/\/+$/, '');
@@ -130,6 +115,8 @@ ${entries.join('\n')}
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin/
+Disallow: /admin/admin/admin
 
 Sitemap: ${baseUrl}/sitemap.xml
 `;
@@ -142,7 +129,7 @@ Sitemap: ${baseUrl}/sitemap.xml
     const baseUrl = (customBaseUrl || config.clientUrl || 'https://thepathofchampions.guide').replace(/\/+$/, '');
     let title = 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
     let description = 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
-    let image = `${baseUrl}/assets/hero-bg.jpg`;
+    let image = `${baseUrl}/og-image.webp`;
     let canonicalUrl = `${baseUrl}/`;
 
     if (targetParam) {
@@ -173,7 +160,7 @@ Sitemap: ${baseUrl}/sitemap.xml
         } else if (champ.assets?.[0]?.avatar) {
           image = champ.assets[0].avatar;
         }
-        canonicalUrl = `${baseUrl}/?tab=champions&champion=${encodeURIComponent(champ.championID || champ.name)}`;
+        canonicalUrl = `${baseUrl}/champion/${encodeURIComponent(champ.name || champ.championID)}`;
       } else {
         // Check if target is a relic
         const relic = relics.find(
@@ -186,7 +173,7 @@ Sitemap: ${baseUrl}/sitemap.xml
           title = `${relic.name} (${relic.rarity || 'Cổ vật'}) - Cẩm Nang Cổ Vật PoC Guide`;
           description = relic.descriptionRaw || relic.description || 'Chi tiết hiệu ứng cổ vật và tướng tương thích.';
           if (relic.assetAbsolutePath) image = relic.assetAbsolutePath;
-          canonicalUrl = `${baseUrl}/?tab=relics&relic=${encodeURIComponent(relic.relicCode || relic.name)}`;
+          canonicalUrl = `${baseUrl}/relic/${encodeURIComponent(relic.relicCode || relic.name)}`;
         }
       }
     }

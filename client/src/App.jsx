@@ -521,7 +521,8 @@ export default function App() {
               ? (isEn ? 'Create New Champion - Admin Portal' : 'Thêm Tướng Mới - Quản Trị Hệ Thống')
               : (isEn ? `Edit ${filters.adminChampion} - Admin Portal` : `Chỉnh Sửa ${filters.adminChampion} - Quản Trị Hệ Thống`),
             description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
-            keywords: 'poc admin cms, edit champion, poc guide admin'
+            keywords: 'poc admin cms, edit champion, poc guide admin',
+            robots: 'noindex, nofollow'
           };
         }
         if (filters.adminModule && filters.adminModule !== 'overview') {
@@ -529,13 +530,15 @@ export default function App() {
           return {
             title: isEn ? `${modLabel} - Admin Portal` : `Quản Trị ${modLabel} - PoC Guide CMS`,
             description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
-            keywords: 'poc admin cms, poc guide admin'
+            keywords: 'poc admin cms, poc guide admin',
+            robots: 'noindex, nofollow'
           };
         }
         return {
           title: isEn ? 'Admin Portal - PoC Guide CMS' : 'Cổng Quản Trị Hệ Thống - PoC Guide CMS',
           description: isEn ? 'PoC Guide Content Management System' : 'Hệ thống quản trị nội dung PoC Guide',
-          keywords: 'poc admin cms, poc guide admin'
+          keywords: 'poc admin cms, poc guide admin',
+          robots: 'noindex, nofollow'
         };
       default:
         return {
@@ -596,6 +599,7 @@ export default function App() {
           jsonLd={seoData.jsonLd}
           type={seoData.type || 'website'}
           lang={language}
+          robots={seoData.robots}
         />
       )}
 

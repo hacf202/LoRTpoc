@@ -10,11 +10,12 @@ export default function SEOHead({
   title,
   description,
   keywords,
-  image = '/assets/hero-bg.jpg',
+  image = '/og-image.webp',
   url,
   type = 'website',
   jsonLd = null,
-  lang = 'vi'
+  lang = 'vi',
+  robots = 'index, follow'
 }) {
   const isEn = lang === 'en';
   const defaultTitle = isEn
@@ -74,7 +75,7 @@ export default function SEOHead({
     setMeta('name', 'description', finalDesc);
     setMeta('name', 'keywords', finalKeywords);
     setMeta('name', 'author', 'The Path of Champions Community');
-    setMeta('name', 'robots', 'index, follow');
+    setMeta('name', 'robots', robots || 'index, follow');
 
     // 3. Canonical URL
     setLink('canonical', currentUrl);
