@@ -4,7 +4,11 @@
   "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
-      "includeFiles": "{server/src/data/**,client/dist/**,dist/**}"
+      "includeFiles": [
+        "server/src/data/**",
+        "client/dist/**",
+        "dist/**"
+      ]
     }
   },
   "rewrites": [
@@ -29,7 +33,7 @@
       "destination": "/api"
     },
     {
-      "source": "/((?!api|sitemap.xml|robots.txt|preview|share).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
