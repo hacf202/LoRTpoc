@@ -11,6 +11,7 @@ import { seoController } from './controllers/seo.controller.js';
 import { socialCrawlerMiddleware } from './middlewares/socialCrawler.middleware.js';
 import { notFoundHandler } from './middlewares/notFound.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { burstRateLimiter, apiRateLimiter } from './middlewares/rateLimit.middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,9 +72,9 @@ app.get('/robots.txt', seoController.getRobots);
 app.get('/preview', seoController.getSocialPreview);
 app.get('/share', seoController.getSocialPreview);
 
-// API Routes (mounted at both /api/v1 and /v1 for resilient serverless & reverse-proxy routing)
-app.use('/api/v1', apiRouter);
-app.use('/v1', apiRouter);
+// API Routes with Rate Limiting & Anti-Spam protection
+app.use('/api/v1', burstRateLimiter, apiRateLimiter, apiRouter);
+app.use('/v1', burstRateLimiter, apiRateLimiter, apiRouter);
 
 // Serve static client assets if present in distribution
 if (fs.existsSync(clientDistPath)) {
