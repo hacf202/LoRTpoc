@@ -404,6 +404,7 @@ export const championService = {
     };
     champions.push(newChampion);
     saveChampionsToFile();
+    await upsertDbDocument('champions', { championID: newChampion.championID }, newChampion);
     relationService.rebuild();
     return newChampion;
   },
