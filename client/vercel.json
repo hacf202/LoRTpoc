@@ -2,23 +2,23 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://server-bay-six-91.vercel.app/api/$1"
+      "destination": "https://api.lortpoc.com/api/$1"
     },
     {
       "source": "/sitemap.xml",
-      "destination": "https://server-bay-six-91.vercel.app/sitemap.xml"
+      "destination": "https://api.lortpoc.com/sitemap.xml"
     },
     {
       "source": "/robots.txt",
-      "destination": "https://server-bay-six-91.vercel.app/robots.txt"
+      "destination": "https://api.lortpoc.com/robots.txt"
     },
     {
       "source": "/preview",
-      "destination": "https://server-bay-six-91.vercel.app/preview"
+      "destination": "https://api.lortpoc.com/preview"
     },
     {
       "source": "/share",
-      "destination": "https://server-bay-six-91.vercel.app/share"
+      "destination": "https://api.lortpoc.com/share"
     },
     {
       "source": "/(.*)",
