@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
 import { toChampionSlug } from '../utils/slug';
 
@@ -95,7 +95,7 @@ export default function ChampionGridCard({ champion, onClick }) {
         <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-1.5 w-full min-w-0 overflow-hidden flex-nowrap">
           {rawRegions.map((regKey) => {
             const cleanKey = String(regKey).toLowerCase().trim();
-            const regionName = t(`regions.${cleanKey}`) || regKey;
+            const regionName = getRegionDisplayName(cleanKey, t);
             const iconUrl = getRegionIconUrl(cleanKey);
 
             return (

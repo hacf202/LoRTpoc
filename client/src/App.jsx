@@ -5,6 +5,7 @@ import EntityDetailModal from './components/EntityDetailModal';
 import SEOHead from './components/SEOHead';
 import { getGlobalKeywords, getChampionKeywords, getTabKeywords } from './utils/seoKeywords';
 import { toChampionSlug } from './utils/slug';
+import { getRegionDisplayName } from './utils/regionIcons';
 import HomeView from './views/HomeView';
 import ChampionsView from './views/ChampionsView';
 import ChampionDetailView from './views/ChampionDetailView';
@@ -383,7 +384,7 @@ export default function App() {
         ? selectedChampion.translations.en.name
         : selectedChampion.name;
       const regionsStr = Array.isArray(selectedChampion.regions)
-        ? selectedChampion.regions.map((r) => t(`regions.${r}`) || r).join(', ')
+        ? selectedChampion.regions.map((r) => getRegionDisplayName(r, t)).join(', ')
         : 'Runeterra';
       const stars = selectedChampion.maxStar || 3;
       const tierShort = selectedChampion.tier ? selectedChampion.tier.split('//')[0].trim() : null;

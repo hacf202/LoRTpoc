@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl, getTagLabel } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName, getTagLabel } from '../utils/regionIcons';
 
 const DEFAULT_REGIONS = [
   'bandlecity',
@@ -169,7 +169,7 @@ export default function ChampionFiltersSidebar({
           <div className="p-3 pt-0 max-h-56 overflow-y-auto no-scrollbar flex flex-col gap-1.5 border-t border-white/5">
             {DEFAULT_REGIONS.map((regKey) => {
               const isChecked = selectedRegions.includes(regKey);
-              const label = t(`regions.${regKey}`) || regKey;
+              const label = getRegionDisplayName(regKey, t);
               const iconUrl = getRegionIconUrl(regKey);
 
               return (

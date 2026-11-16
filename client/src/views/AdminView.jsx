@@ -3154,6 +3154,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       <option value="bandlecity">Bandle City</option>
                       <option value="targon">Targon</option>
                       <option value="piltoverzaun">Piltover & Zaun</option>
+                      <option value="spiritblossom">Hoa Linh Lục Địa</option>
                     </select>
 
                     <span className="text-xs text-slate-400 font-semibold whitespace-nowrap">

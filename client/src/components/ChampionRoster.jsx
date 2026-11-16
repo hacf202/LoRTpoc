@@ -5,7 +5,7 @@ import Pagination from './Pagination';
 import ListLoadingBar from './ListLoadingBar';
 import ListSkeleton from './ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl, getTagLabel } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName, getTagLabel } from '../utils/regionIcons';
 
 /**
  * Modern LoR Champion Roster with Vertical Left Sidebar, Multi-Select Filters,
@@ -412,7 +412,7 @@ export default function ChampionRoster({
                     className="w-3.5 h-3.5 object-contain"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
-                  <span>{t(`regions.${reg}`) || reg}</span>
+                  <span>{getRegionDisplayName(reg, t)}</span>
                   <button
                     type="button"
                     onClick={() => handleToggleRegion(reg)}

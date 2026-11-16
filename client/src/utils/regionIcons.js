@@ -43,6 +43,8 @@ const REGION_ALIAS_MAP = {
   'shadowisles': 'shadowisles',
   'hoa linh luc dia': 'spiritblossom',
   'hoalinhlucdia': 'spiritblossom',
+  'hoa linh lam': 'spiritblossom',
+  'hoalinhlam': 'spiritblossom',
   'spirit blossom': 'spiritblossom',
   'spiritblossom': 'spiritblossom',
   'piltover & zaun': 'piltoverzaun',
@@ -53,10 +55,8 @@ const REGION_ALIAS_MAP = {
   'runeterra': 'runeterra'
 };
 
-export const getRegionIconUrl = (regionKey) => {
-  if (!regionKey) return null;
-
-  // 1. Remove Vietnamese accents and normalize string
+export const normalizeRegionKey = (regionKey) => {
+  if (!regionKey) return '';
   const normalized = String(regionKey)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -65,19 +65,33 @@ export const getRegionIconUrl = (regionKey) => {
     .toLowerCase()
     .trim();
 
-  // 2. Check full alias map
   if (REGION_ALIAS_MAP[normalized]) {
-    return REGION_ICONS[REGION_ALIAS_MAP[normalized]] || null;
+    return REGION_ALIAS_MAP[normalized];
   }
 
-  // 3. Check stripped characters alias map
-  const clean = normalized.replace(/[^a-z]/g, '');
+  const clean = normalized.replace(/[^a-z0-9]/g, '');
   if (REGION_ALIAS_MAP[clean]) {
-    return REGION_ICONS[REGION_ALIAS_MAP[clean]] || null;
+    return REGION_ALIAS_MAP[clean];
   }
 
-  // 4. Check direct key in REGION_ICONS
-  return REGION_ICONS[clean] || null;
+  return clean;
+};
+
+export const getRegionDisplayName = (regionKey, t) => {
+  if (!regionKey) return '';
+  const normKey = normalizeRegionKey(regionKey);
+  if (t) {
+    const translated = t(`regions.${normKey}`);
+    if (translated) return translated;
+  }
+  return regionKey;
+};
+
+export const getRegionIconUrl = (regionKey) => {
+  if (!regionKey) return null;
+
+  const key = normalizeRegionKey(regionKey);
+  return REGION_ICONS[key] || null;
 };
 
 /**

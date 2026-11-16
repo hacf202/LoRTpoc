@@ -3,6 +3,7 @@ import { stripLorMarkup } from '../utils/lorMarkupParser';
 import { useLanguage } from '../context/LanguageContext';
 import { handleImageError } from '../utils/imageFallback';
 import { getMatchingNavShortcuts } from '../utils/navShortcuts';
+import { getRegionDisplayName } from '../utils/regionIcons';
 
 /**
  * Omnisearch Dropdown for Legends of Runeterra: The Path of Champions
@@ -114,7 +115,9 @@ const SearchDropdown = forwardRef(function SearchDropdown(
       if (rawDesc) {
         return stripLorMarkup(rawDesc);
       }
-      const regionsStr = Array.isArray(item.regions) ? item.regions.join(', ') : 'Runeterra';
+      const regionsStr = Array.isArray(item.regions)
+        ? item.regions.map((r) => getRegionDisplayName(r, t)).join(', ')
+        : 'Runeterra';
       return `${regionsStr} • ${item.stars || 3}★`;
     }
 

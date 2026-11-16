@@ -204,16 +204,32 @@ export const championService = {
     // 2. Multi-Select Regions Filter (e.g. "shurima,demacia" or ["shurima", "demacia"])
     const rawRegions = filter.regions || filter.region;
     if (rawRegions) {
+      const normalizeReg = (str) => {
+        if (!str) return '';
+        const s = String(str)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/đ/g, 'd')
+          .replace(/Đ/g, 'D')
+          .toLowerCase()
+          .trim();
+        if (s === 'hoa linh luc dia' || s === 'hoa linh lam' || s === 'spirit blossom' || s === 'spiritblossom') return 'spiritblossom';
+        if (s === 'quan dao bong dem' || s === 'shadow isles' || s === 'shadowisles') return 'shadowisles';
+        if (s === 'thanh pho bandle' || s === 'bandle city' || s === 'bandlecity') return 'bandlecity';
+        if (s === 'piltover & zaun' || s === 'piltover and zaun' || s === 'piltoverzaun') return 'piltoverzaun';
+        return s;
+      };
+
       const regionList = Array.isArray(rawRegions)
-        ? rawRegions.map((r) => String(r).toLowerCase().trim())
+        ? rawRegions.map(normalizeReg)
         : String(rawRegions)
             .split(',')
-            .map((r) => r.toLowerCase().trim())
+            .map(normalizeReg)
             .filter(Boolean);
 
       if (regionList.length > 0 && !regionList.includes('all')) {
         result = result.filter(
-          (c) => Array.isArray(c.regions) && c.regions.some((reg) => regionList.includes(reg.toLowerCase().trim()))
+          (c) => Array.isArray(c.regions) && c.regions.some((reg) => regionList.includes(normalizeReg(reg)))
         );
       }
     }

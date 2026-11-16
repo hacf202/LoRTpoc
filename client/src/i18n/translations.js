@@ -124,7 +124,8 @@ export const translations = {
       runeterra: 'Runeterra',
       shadowisles: 'Quần Đảo Bóng Đêm',
       shurima: 'Shurima',
-      spiritblossom: 'Hoa Linh Lam',
+      spiritblossom: 'Hoa Linh Lục Địa',
+      'spirit blossom': 'Hoa Linh Lục Địa',
       targon: 'Targon'
     },
     championModal: {
@@ -260,6 +261,7 @@ export const translations = {
       shadowisles: 'Shadow Isles',
       shurima: 'Shurima',
       spiritblossom: 'Spirit Blossom',
+      'spirit blossom': 'Spirit Blossom',
       targon: 'Targon'
     },
     championModal: {

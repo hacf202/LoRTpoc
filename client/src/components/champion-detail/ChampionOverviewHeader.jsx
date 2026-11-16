@@ -1,5 +1,5 @@
 import React from 'react';
-import { getRegionIconUrl } from '../../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName } from '../../utils/regionIcons';
 import { getTierTheme } from './constants';
 import { handleImageError } from '../../utils/imageFallback';
 
@@ -61,7 +61,7 @@ export default function ChampionOverviewHeader({
             {regions.map((reg) => {
               const cleanKey = String(reg).toLowerCase().trim();
               const iconUrl = getRegionIconUrl(cleanKey);
-              const regionName = (t && t(`regions.${cleanKey}`)) || reg;
+              const regionName = getRegionDisplayName(cleanKey, t);
               return (
                 <span
                   key={reg}

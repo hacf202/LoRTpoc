@@ -5,7 +5,7 @@ import DetailSkeleton from '../components/DetailSkeleton';
 import SEOHead from '../components/SEOHead';
 import { getRelicKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
 import { toChampionSlug } from '../utils/slug';
 
@@ -591,7 +591,7 @@ export default function RelicDetailView({
                                   ) : null;
                                 })}
                                 <span className="text-xs text-slate-300 capitalize">
-                                  {activeChampion.regions.join(' • ')}
+                                  {activeChampion.regions.map((r) => getRegionDisplayName(r, t)).join(' • ')}
                                 </span>
                               </div>
                             )}

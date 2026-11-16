@@ -6,7 +6,7 @@ import DetailSkeleton from '../components/DetailSkeleton';
 import SEOHead from '../components/SEOHead';
 import { getMapKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for map details (Rule 10)
@@ -624,7 +624,7 @@ export default function MapDetailView({
                                 {iconUrl && (
                                   <img src={iconUrl} alt={reg} className="w-4 h-4 object-contain" />
                                 )}
-                                <span className="text-xs font-bold text-white capitalize">{reg}</span>
+                                <span className="text-xs font-bold text-white capitalize">{getRegionDisplayName(reg, t)}</span>
                               </div>
                             );
                           })}

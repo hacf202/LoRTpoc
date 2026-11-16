@@ -5,7 +5,7 @@ import DetailSkeleton from '../components/DetailSkeleton';
 import SEOHead from '../components/SEOHead';
 import { getCardKeywords } from '../utils/seoKeywords';
 import { useLanguage } from '../context/LanguageContext';
-import { getRegionIconUrl } from '../utils/regionIcons';
+import { getRegionIconUrl, getRegionDisplayName } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
 
 // In-memory cache for card details (Rule 10)
@@ -332,7 +332,7 @@ export default function CardDetailView({
                               onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
                           )}
-                          <span>{reg}</span>
+                          <span>{getRegionDisplayName(reg, t)}</span>
                         </span>
                       );
                     })}
