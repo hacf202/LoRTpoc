@@ -180,27 +180,27 @@ export default function RelicDetailView({
     }
 
     // 2. If current selection is already valid in list, preserve it
-    setSelectedChampKey((prev) => {
-      const prevMatch = findChampion(prev, compatibleChamps);
-      if (prevMatch) {
-        return prevMatch.name || prevMatch.championID;
-      }
+    const prevMatch = findChampion(selectedChampKey, compatibleChamps);
+    if (prevMatch) {
+      return;
+    }
 
-      // 3. Fallback to first core or first champion
-      const firstCore = compatibleChamps.find((c) => c.isCore);
-      const chosen = firstCore || compatibleChamps[0];
-      const chosenKey = chosen.name || chosen.championID;
+    // 3. Fallback to first core or first champion
+    const firstCore = compatibleChamps.find((c) => c.isCore);
+    const chosen = firstCore || compatibleChamps[0];
+    const chosenKey = chosen ? (chosen.name || chosen.championID) : null;
 
-      // Sync default champion to URL hash
+    if (chosenKey) {
+      setSelectedChampKey(chosenKey);
+
+      // Sync default champion to URL hash outside of setState updater
       if (onHashChange) {
         onHashChange(chosenKey);
       } else if (typeof window !== 'undefined') {
         window.history.replaceState(window.history.state, '', `#${encodeURIComponent(chosenKey)}`);
       }
-
-      return chosenKey;
-    });
-  }, [compatibleChamps, currentHash, findChampion, onHashChange]);
+    }
+  }, [compatibleChamps, currentHash, findChampion, onHashChange, selectedChampKey]);
 
   // Listen for direct window hash changes (e.g. browser back/forward or typing in URL)
   useEffect(() => {
