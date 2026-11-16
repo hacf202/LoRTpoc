@@ -499,7 +499,7 @@ export default function ChampionRoster({
                 ))}
               </div>
             ) : (
-              <div className="my-auto py-16 px-4 text-center rounded-2xl bg-[#090d16] border border-white/10 animate-in fade-in duration-200">
+              <div className="w-full mt-2 py-10 px-4 text-center rounded-2xl bg-[#090d16] border border-white/10 animate-in fade-in duration-200">
                 <div className="w-12 h-12 mx-auto mb-3 text-slate-500">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                     <circle cx="11" cy="11" r="8" />

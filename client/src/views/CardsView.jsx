@@ -484,7 +484,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
             {loading && cards.length === 0 ? (
               <ListSkeleton type="card" count={12} />
             ) : cards.length === 0 ? (
-              <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
+              <div className="w-full mt-2 py-10 px-4 text-center rounded-2xl bg-[#0e1320] border border-white/10">
                 <h3 className="text-base font-bold text-white mb-1">
                   {isEn ? 'No cards found' : 'Không tìm thấy lá bài nào'}
                 </h3>

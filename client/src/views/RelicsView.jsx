@@ -425,7 +425,7 @@ export default function RelicsView({ filters = {}, updateFilters, onSelectRelic 
                   ))}
                 </div>
               ) : (
-                <div className="py-20 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
+                <div className="w-full mt-2 py-10 px-4 text-center rounded-2xl bg-[#0e1320] border border-white/10">
                   <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-[#070a10] border border-white/10 flex items-center justify-center text-slate-500">
                     <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                       <circle cx="11" cy="11" r="8" />

@@ -301,7 +301,7 @@ export default function UniversalCatalogView({
           })}
         </div>
       ) : (
-        <div className="py-16 text-center bg-[#0c1017]/40 border border-white/5 rounded-3xl p-8">
+        <div className="w-full mt-2 py-10 px-4 text-center bg-[#0c1017]/40 border border-white/5 rounded-2xl">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center text-slate-500">
             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8" />

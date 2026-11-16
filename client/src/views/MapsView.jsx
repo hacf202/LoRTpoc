@@ -384,7 +384,7 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
                   gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5"
                 />
               ) : maps.length === 0 ? (
-                <div className="py-16 text-center rounded-2xl bg-[#0e1320] border border-white/10 p-6">
+                <div className="w-full mt-2 py-10 px-4 text-center rounded-2xl bg-[#0e1320] border border-white/10">
                   <h3 className="text-base font-bold text-white mb-1">
                     {isEn ? 'No adventures found' : 'Không tìm thấy cuộc phiêu lưu nào'}
                   </h3>
