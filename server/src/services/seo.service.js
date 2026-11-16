@@ -130,14 +130,15 @@ Sitemap: ${baseUrl}/sitemap.xml
    */
   generateSocialPreviewHtml: (targetParam, customBaseUrl, category = null) => {
     const baseUrl = (customBaseUrl || config.clientUrl || 'https://thepathofchampions.guide').replace(/\/+$/, '');
+    const homeHeroImage = `${baseUrl}/home-hero.webp`;
     let title = 'The Path of Champions Guide - Cẩm Nang Con Đường Anh Hùng LoR';
     let description = 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.';
-    let image = `${baseUrl}/og-image.webp`;
+    let image = homeHeroImage;
     let canonicalUrl = `${baseUrl}/`;
 
     const q = String(targetParam || '').toLowerCase().trim();
 
-    // 1. Specific Entity Match by category or search target
+    // 1. Specific Entity Match by category or search target (Ảnh chi tiết của từng trang)
     if (category === 'champion' || (!category && q)) {
       const champ = champions.find(
         (c) =>
@@ -178,7 +179,7 @@ Sitemap: ${baseUrl}/sitemap.xml
       if (relic) {
         title = `${relic.name} (${relic.rarity || 'Cổ vật'}) - Cẩm Nang Cổ Vật PoC Guide`;
         description = relic.descriptionRaw || relic.description || 'Chi tiết hiệu ứng cổ vật và tướng tương thích.';
-        image = relic.assetAbsolutePath || `https://images.lortpoc.com/relics/${relic.relicCode}.webp`;
+        image = relic.assetAbsolutePath || relic.image || `https://images.lortpoc.com/relics/${relic.relicCode}.webp`;
         canonicalUrl = `${baseUrl}/relic/${encodeURIComponent(relic.relicCode || relic.name)}`;
       }
     }
@@ -193,7 +194,7 @@ Sitemap: ${baseUrl}/sitemap.xml
       if (power) {
         title = `${power.name} (${power.rarity || 'Sức mạnh'}) - Sức Mạnh Viễn Chinh PoC Guide`;
         description = power.descriptionRaw || power.description || 'Chi tiết hiệu ứng sức mạnh viễn chinh và nâng cấp.';
-        image = `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${power.powerCode}.png`;
+        image = power.image || power.assetFullAbsolutePath || power.assetAbsolutePath || `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${power.powerCode}.png`;
         canonicalUrl = `${baseUrl}/power/${encodeURIComponent(power.powerCode || power.name)}`;
       }
     }
@@ -208,7 +209,7 @@ Sitemap: ${baseUrl}/sitemap.xml
       if (item) {
         title = `${item.name} (${item.rarity || 'Vật phẩm'}) - Vật Phẩm Thẻ Bài PoC Guide`;
         description = item.descriptionRaw || item.description || 'Chi tiết hiệu ứng vật phẩm gắn vào bài quân và phép.';
-        image = item.assetAbsolutePath || 'https://images.lortpoc.com/icon/itemIcon.webp';
+        image = item.assetAbsolutePath || item.image || `https://images.lortpoc.com/items/${item.itemCode}.webp` || 'https://images.lortpoc.com/icon/itemIcon.webp';
         canonicalUrl = `${baseUrl}/item/${encodeURIComponent(item.itemCode || item.name)}`;
       }
     }
@@ -241,40 +242,68 @@ Sitemap: ${baseUrl}/sitemap.xml
       if (map) {
         title = `${map.adventureName || map.name} (${map.difficultyStars || 3}★) - Cẩm Nang Cuộc Phiêu Lưu PoC`;
         description = map.description || 'Hướng dẫn chọn tướng, khắc chế trùm và vượt ải bản đồ Con Đường Anh Hùng.';
-        image = map.assets?.banner || map.icon || `${baseUrl}/og-image.webp`;
+        image = map.background || map.assetAbsolutePath || map.image || map.assets?.banner || map.icon || homeHeroImage;
         canonicalUrl = `${baseUrl}/map/${encodeURIComponent(map.adventureID || map.mapID || map.adventureName)}`;
       }
     }
 
-    // 2. High-level Catalog Pages
+    // 2. High-level Catalog Pages (Trang danh sách: Lấy ảnh của phần tử đầu tiên trong danh sách)
     if (category === 'tierlist') {
       title = 'Bảng Xếp Hạng Tướng Con Đường Anh Hùng (Tier S+ đến C) - Meta Mới Nhất | PoC Guide';
       description = 'Đánh giá sức mạnh meta toàn diện của 89 tướng trong Legends of Runeterra: The Path of Champions.';
       canonicalUrl = `${baseUrl}/tierlist`;
+      const topChamp = champions.find(c => c.tier && (c.tier.includes('S+') || c.tier.includes('0'))) || champions[0];
+      if (topChamp) {
+        image = topChamp.assets?.[0]?.gameAbsolutePath || topChamp.assets?.[0]?.avatar || homeHeroImage;
+      }
     } else if (category === 'champions_list') {
       title = 'Danh Sách 89 Tướng Con Đường Anh Hùng - Chỉ Số & Lối Chơi | PoC Guide';
       description = 'Tra cứu toàn bộ 89 vị tướng: Chỉ số Mana, Sao tối ưu, Bộ bài khởi điểm và Cây chòm sao 6 sao.';
       canonicalUrl = `${baseUrl}/champions`;
+      const firstChamp = champions[0];
+      if (firstChamp) {
+        image = firstChamp.assets?.[0]?.gameAbsolutePath || firstChamp.assets?.[0]?.avatar || homeHeroImage;
+      }
     } else if (category === 'relics_list') {
       title = 'Danh Sách 155 Cổ Vật Relics - Hiệu Ứng & Phân Cấp | PoC Guide';
       description = 'Khám phá 155 cổ vật Thường, Hiếm, Sử Thi và Cổ Vật Độc Quyền tương thích tốt nhất cho từng tướng.';
       canonicalUrl = `${baseUrl}/relics`;
+      const firstRelic = relics[0];
+      if (firstRelic) {
+        image = firstRelic.assetAbsolutePath || firstRelic.image || `https://images.lortpoc.com/relics/${firstRelic.relicCode}.webp` || homeHeroImage;
+      }
     } else if (category === 'powers_list') {
       title = 'Danh Sách 1,196 Sức Mạnh Viễn Chinh - Bổ Trợ & Hiệu Ứng | PoC Guide';
       description = 'Tra cứu tất cả sức mạnh ngẫu nhiên trong hành trình Con Đường Anh Hùng.';
       canonicalUrl = `${baseUrl}/powers`;
+      const firstPower = powers[0];
+      if (firstPower) {
+        image = firstPower.image || firstPower.assetFullAbsolutePath || firstPower.assetAbsolutePath || `https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/${firstPower.powerCode}.png` || homeHeroImage;
+      }
     } else if (category === 'items_list') {
       title = 'Danh Sách 187 Vật Phẩm Thẻ Bài - Trang Bị & Nâng Cấp | PoC Guide';
       description = 'Chi tiết toàn bộ trang bị cường hóa chỉ số và từ khóa đặc biệt cho bài quân.';
       canonicalUrl = `${baseUrl}/items`;
+      const firstItem = items[0];
+      if (firstItem) {
+        image = firstItem.assetAbsolutePath || firstItem.image || `https://images.lortpoc.com/items/${firstItem.itemCode}.webp` || homeHeroImage;
+      }
     } else if (category === 'cards_list') {
       title = 'Thư Viện 2,686 Lá Bài Runeterra - Toàn Bộ Bài Quân & Phép | PoC Guide';
       description = 'Thư viện hình ảnh sắc nét và hiệu ứng của toàn bộ bài quân, phép thuật và địa danh trong LoR.';
       canonicalUrl = `${baseUrl}/cards`;
+      const firstCard = cards[0];
+      if (firstCard) {
+        image = firstCard.gameAbsolutePath || firstCard.assets?.[0]?.gameAbsolutePath || `https://dd.b.pvp.net/latest/set1/vi_vn/img/cards/${firstCard.cardCode}.png` || homeHeroImage;
+      }
     } else if (category === 'maps_list') {
       title = 'Danh Sách 48 Bản Đồ Phiêu Lưu & Trùm Cuối - PoC Guide';
       description = 'Cẩm nang chinh phục 48 cuộc phiêu lưu từ 0.5 sao đến Ác Mộng 6.5 sao trong Con Đường Anh Hùng.';
       canonicalUrl = `${baseUrl}/maps`;
+      const firstMap = maps[0];
+      if (firstMap) {
+        image = firstMap.background || firstMap.assetAbsolutePath || firstMap.image || firstMap.assets?.banner || firstMap.icon || homeHeroImage;
+      }
     }
 
     return `<!DOCTYPE html>

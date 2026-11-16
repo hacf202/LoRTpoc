@@ -444,6 +444,7 @@ export default function App() {
           description: isEn
             ? 'Browse all 89 champions in LoR: The Path of Champions. Filter by region, star rating, optimal relics, and tier list ranking.'
             : 'Tra cứu toàn bộ 89 tướng trong Con Đường Anh Hùng. Lọc theo vùng đất Runeterra, cấp sao tối đa, cổ vật tối ưu và thứ hạng sức mạnh.',
+          image: champions[0]?.assets?.[0]?.gameAbsolutePath || champions[0]?.assets?.[0]?.avatar || 'https://thepathofchampions.guide/home-hero.webp',
           keywords: getTabKeywords('champions', language),
           url: 'https://thepathofchampions.guide/?tab=champions'
         };
@@ -455,6 +456,7 @@ export default function App() {
           description: isEn
             ? 'Explore all 155 common, rare, and epic relics in The Path of Champions with full stat breakdown and best champion synergies.'
             : 'Khám phá 155 cổ vật Thường, Hiếm và Sử Thi trong Con Đường Anh Hùng cùng hiệu ứng gia tăng sức mạnh và gợi ý tướng phù hợp.',
+          image: 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png',
           keywords: getTabKeywords('relics', language),
           url: 'https://thepathofchampions.guide/?tab=relics'
         };
@@ -466,6 +468,7 @@ export default function App() {
           description: isEn
             ? 'Complete database of 1,196 star powers, encounter blessings, and enemy abilities in Legends of Runeterra: The Path of Champions.'
             : 'Hệ thống tra cứu 1,196 sức mạnh sao, bổng lộc phiêu lưu và nội tại của kẻ địch trong Con Đường Anh Hùng.',
+          image: 'https://dd.b.pvp.net/7_11_0/adventure/vi_vn/img/powers/FP0000-full.png',
           keywords: getTabKeywords('powers', language),
           url: 'https://thepathofchampions.guide/?tab=powers'
         };
@@ -477,6 +480,7 @@ export default function App() {
           description: isEn
             ? 'Explore 187 items attachable to cards, spells, and equipment in The Path of Champions with synergized champions.'
             : 'Khám phá 187 vật phẩm trang bị gắn vào bài quân và phép thuật trong Con Đường Anh Hùng.',
+          image: 'https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0000.png',
           keywords: getTabKeywords('items', language),
           url: 'https://thepathofchampions.guide/?tab=items'
         };
@@ -488,6 +492,7 @@ export default function App() {
           description: isEn
             ? 'Explore all 2,686 collectible cards and spells in Legends of Runeterra with high-resolution card artwork.'
             : 'Tra cứu toàn bộ 2,686 lá bài quân, phép thuật và địa danh trong Huyền Thoại Runeterra với ảnh gốc sắc nét.',
+          image: 'https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01DE001.png',
           keywords: getTabKeywords('cards', language),
           url: 'https://thepathofchampions.guide/?tab=cards'
         };
@@ -499,6 +504,7 @@ export default function App() {
           description: isEn
             ? 'Latest community and meta power rankings for all 89 champions in The Path of Champions. Discover the strongest champions in the current patch.'
             : 'Bảng xếp hạng sức mạnh và phân bậc meta từ S+ đến C của 89 tướng trong Con Đường Anh Hùng. Tìm kiếm vị tướng mạnh nhất phiên bản hiện tại.',
+          image: 'https://images.lortpoc.com/backgrounds/1920px-01FR008T1-hd-full.webp',
           keywords: getTabKeywords('tierlist', language),
           url: 'https://thepathofchampions.guide/?tab=tierlist'
         };
@@ -510,6 +516,7 @@ export default function App() {
           description: isEn
             ? 'Guide to all 48 world adventures, nightmare weekly maps, and 338 boss encounters in The Path of Champions.'
             : 'Cẩm nang 48 cuộc phiêu lưu, bản đồ Ác Mộng và hướng dẫn khắc chế 338 trùm nguy hiểm trong Con Đường Anh Hùng.',
+          image: 'https://images.lortpoc.com/backgrounds/zoe.webp',
           keywords: getTabKeywords('maps', language),
           url: 'https://thepathofchampions.guide/?tab=maps'
         };
@@ -548,6 +555,7 @@ export default function App() {
           description: isEn
             ? 'Comprehensive database and strategy guide for Legends of Runeterra: The Path of Champions. Explore 89 champions, 155 relics, 1,196 powers, and adventures.'
             : 'Hệ thống tra cứu chuyên sâu toàn bộ 89 tướng, 155 cổ vật, 1,196 sức mạnh và bảng xếp hạng meta Con Đường Anh Hùng.',
+          image: 'https://thepathofchampions.guide/home-hero.webp',
           keywords: getGlobalKeywords(language),
           url: 'https://thepathofchampions.guide/',
           jsonLd: {
