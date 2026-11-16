@@ -5,7 +5,7 @@ import DropDragSidePanel from '../components/admin/DropDragSidePanel';
 import RichMarkupTextarea from '../components/admin/RichMarkupTextarea';
 import ConstellationEditor from '../components/admin/ConstellationEditor';
 import { rankSearchResults } from '../utils/searchUtils';
-import { VALID_ADMIN_MODULES } from '../hooks/useUrlFilters';
+import { VALID_ADMIN_MODULES, ADMIN_ROUTE_PREFIX } from '../hooks/useUrlFilters';
 import { handleImageError } from '../utils/imageFallback';
 
 const DEFAULT_CHAMPION_TEMPLATE = {
@@ -1346,7 +1346,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         <nav className="p-3 space-y-1.5 flex-1 overflow-y-auto">
           {navModules.map((mod) => {
             const isActive = activeModule === mod.id && !editingChampion;
-            const targetHref = mod.id === 'overview' ? '/admin' : `/admin/${mod.id}`;
+            const targetHref = mod.id === 'overview' ? ADMIN_ROUTE_PREFIX : `${ADMIN_ROUTE_PREFIX}/${mod.id}`;
             return (
               <a
                 key={mod.id}
@@ -1436,7 +1436,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 </a>
                 <span className="text-slate-600">/</span>
                 <a
-                  href="/admin"
+                  href={ADMIN_ROUTE_PREFIX}
                   onClick={(e) => {
                     e.preventDefault();
                     goToModule('overview');
@@ -1449,7 +1449,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 </a>
                 <span className="text-slate-600">/</span>
                 <a
-                  href="/admin/champions"
+                  href={`${ADMIN_ROUTE_PREFIX}/champions`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleCancelEdit();
@@ -3038,7 +3038,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   </a>
                   <span className="text-slate-600">/</span>
                   <a
-                    href="/admin"
+                    href={ADMIN_ROUTE_PREFIX}
                     onClick={(e) => {
                       e.preventDefault();
                       goToModule('overview');
@@ -3073,7 +3073,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
               {activeModule === 'champions' && (
                 <a
-                  href="/admin/champion/new"
+                  href={`${ADMIN_ROUTE_PREFIX}/champion/new`}
                   onClick={(e) => {
                     e.preventDefault();
                     goToChampionCreate();
@@ -3189,7 +3189,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           <tr key={c.championID} className="hover:bg-[#141b2a]/60 transition-colors">
                             <td className="py-3 px-4">
                               <a
-                                href={`/admin/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                href={`${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(c.name || c.championID)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);
@@ -3239,7 +3239,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                             <td className="py-3 px-4 text-right space-x-2">
                               <a
-                                href={`/admin/champion/${encodeURIComponent(c.name || c.championID)}`}
+                                href={`${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(c.name || c.championID)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);

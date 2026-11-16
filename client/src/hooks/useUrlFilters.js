@@ -28,6 +28,8 @@ const DEFAULT_FILTERS = {
   adminChampion: ''
 };
 
+export const ADMIN_ROUTE_PREFIX = '/admin/admin/admin';
+
 export const VALID_ADMIN_MODULES = [
   'overview',
   'champions',
@@ -39,7 +41,7 @@ export const VALID_ADMIN_MODULES = [
   'logs'
 ];
 
-const VALID_TABS = ['home', 'champions', 'relics', 'powers', 'items', 'cards', 'maps', 'tierlist', 'admin'];
+const VALID_TABS = ['home', 'champions', 'relics', 'powers', 'items', 'cards', 'maps', 'tierlist'];
 
 /**
  * Parses path & search parameters into a normalized state object
@@ -51,17 +53,17 @@ export function parseCurrentLocation() {
   const params = new URLSearchParams(window.location.search);
   const parsed = { ...DEFAULT_FILTERS };
 
-  // 1. Check hierarchical admin paths:
-  //    - /admin/champion/:name or /admin/champions/:name
-  const adminChampMatch = pathname.match(/^\/admin\/(?:champion|champions)\/([^/]+)$/i);
+  // 1. Check hierarchical secret admin paths (/admin/admin/admin):
+  //    - /admin/admin/admin/champion/:name or /admin/admin/admin/champions/:name
+  const adminChampMatch = pathname.match(/^\/admin\/admin\/admin\/(?:champion|champions)\/([^/]+)$/i);
   if (adminChampMatch) {
     parsed.tab = 'admin';
     parsed.adminModule = 'champions';
     parsed.adminChampion = decodeURIComponent(adminChampMatch[1]).trim();
-  } else if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-    //    - /admin or /admin/:module
+  } else if (pathname === ADMIN_ROUTE_PREFIX || pathname.startsWith(ADMIN_ROUTE_PREFIX + '/')) {
+    //    - /admin/admin/admin or /admin/admin/admin/:module
     parsed.tab = 'admin';
-    const adminModMatch = pathname.match(/^\/admin(?:\/([^/]+))?$/i);
+    const adminModMatch = pathname.match(/^\/admin\/admin\/admin(?:\/([^/]+))?$/i);
     const sub = (adminModMatch && adminModMatch[1] ? adminModMatch[1].toLowerCase().trim() : '');
     if (VALID_ADMIN_MODULES.includes(sub)) {
       parsed.adminModule = sub;
@@ -249,11 +251,11 @@ export function buildHierarchicalUrl(state) {
 
   if (state.tab === 'admin') {
     if (state.adminChampion && state.adminChampion.trim()) {
-      targetPath = `/admin/champion/${encodeURIComponent(state.adminChampion.trim())}`;
+      targetPath = `${ADMIN_ROUTE_PREFIX}/champion/${encodeURIComponent(state.adminChampion.trim())}`;
     } else if (state.adminModule && state.adminModule !== 'overview' && VALID_ADMIN_MODULES.includes(state.adminModule)) {
-      targetPath = `/admin/${state.adminModule.trim().toLowerCase()}`;
+      targetPath = `${ADMIN_ROUTE_PREFIX}/${state.adminModule.trim().toLowerCase()}`;
     } else {
-      targetPath = '/admin';
+      targetPath = ADMIN_ROUTE_PREFIX;
     }
   } else if (state.champion && state.champion.trim()) {
     targetPath = `/champion/${encodeURIComponent(state.champion.trim())}`;
