@@ -253,20 +253,6 @@ export default function ChampionRelicBuildsTab({
               <LorMarkup text={suitableData.description} />
             </div>
           )}
-
-          {/* 5. Mobile-only: Danh sách chi tiết các cổ vật phù hợp (Icon + Tên + Rarity + Mô tả hiệu ứng) */}
-          <div className="sm:hidden grid grid-cols-1 gap-2 pt-1 border-t border-white/10">
-            {Array.from(new Set([...suitableData.mandatory, ...suitableData.options.flat()])).map((code) => (
-              <RelicMiniCard
-                key={code}
-                relicCode={code}
-                relicInfo={relicMap[code]}
-                isEn={isEn}
-                isCore={suitableData.mandatory.includes(code)}
-                onClick={() => navigateTo('relic', code)}
-              />
-            ))}
-          </div>
         </div>
       )}
 
