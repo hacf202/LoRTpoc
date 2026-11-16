@@ -366,7 +366,7 @@ export default function ItemsView({ filters = {}, updateFilters, onSelectItem })
               <ListSkeleton
                 type="entity"
                 count={12}
-                gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5"
+                gridClassName="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3.5"
               />
             ) : items.length === 0 ? (
               <div className="w-full mt-2 py-10 px-4 text-center rounded-2xl bg-[#0e1320] border border-white/10">
@@ -389,7 +389,7 @@ export default function ItemsView({ filters = {}, updateFilters, onSelectItem })
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3.5">
                 {items.map((item) => (
                   <EntityCard
                     key={item.itemCode || item.name}

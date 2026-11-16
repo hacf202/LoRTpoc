@@ -90,10 +90,10 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
   return (
     <div
       onClick={() => onClick?.(item)}
-      className="group relative flex items-center gap-3 p-3 rounded-xl sm:rounded-2xl bg-[#0e1320] hover:bg-[#141b2b] border border-white/10 hover:border-white/25 shadow-md hover:shadow-xl transition-all duration-200 ease-out cursor-pointer hover:-translate-y-1 select-none"
+      className="group relative flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-[#0e1320] hover:bg-[#141b2b] border border-white/10 hover:border-white/25 shadow-md hover:shadow-xl transition-all duration-200 ease-out cursor-pointer hover:-translate-y-1 select-none min-w-0"
     >
       {/* Entity Icon / Artwork */}
-      <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-108">
+      <div className="relative w-9 h-9 sm:w-14 sm:h-14 flex-shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-108">
         <img
           src={imageUrl}
           alt={name}
@@ -126,16 +126,16 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
             </>
           ) : (
             <>
-              <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border ${rarityStyle.badge}`}>
+              <span className={`px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-md border ${rarityStyle.badge}`}>
                 {rarityStyle.label}
               </span>
               {item.cost !== undefined && (
-                <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-[#0b2545] text-sky-200 border border-white/15 rounded-md">
+                <span className="px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold bg-[#0b2545] text-sky-200 border border-white/15 rounded-md">
                   {item.cost} Mana
                 </span>
               )}
               {item.difficulty !== undefined && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#452600] text-amber-200 border border-white/15 rounded-md">
+                <span className="px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold bg-[#452600] text-amber-200 border border-amber-500/30 rounded-md">
                   {item.difficulty}★
                 </span>
               )}
@@ -143,7 +143,7 @@ export default function EntityCard({ item, type = 'relic', onClick }) {
           )}
         </div>
 
-        <h3 className="text-xs sm:text-sm font-bold font-heading text-white group-hover:text-[#8CC0EB] transition-colors duration-200 truncate">
+        <h3 className="text-[11px] sm:text-sm font-bold font-heading text-white group-hover:text-[#8CC0EB] transition-colors duration-200 truncate">
           {name}
         </h3>
       </div>
