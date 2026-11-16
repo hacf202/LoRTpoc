@@ -150,28 +150,8 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
         })}
       </nav>
 
-      {/* Right Controls: Language Switcher, Admin Button & Mobile Menu Toggle */}
+      {/* Right Controls: Language Switcher & Mobile Menu Toggle */}
       <div className="flex items-center gap-3">
-        {/* Admin Access Button */}
-        <button
-          type="button"
-          onClick={() => {
-            onSelectTab?.('admin');
-            setIsMobileMenuOpen(false);
-          }}
-          className={`p-2 rounded-xl border text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-            activeTab === 'admin'
-              ? 'bg-[#FFEBCC] text-[#07090e] border-[#FFF9D2] shadow-[0_0_12px_rgba(255,235,204,0.3)]'
-              : 'bg-[#121826] text-slate-300 hover:text-white border-white/15 hover:border-white/30'
-          }`}
-          title="Khu vực quản trị (Admin Panel)"
-        >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <span className="hidden sm:inline font-heading text-[11px] uppercase tracking-wider">Admin</span>
-        </button>
-
         {/* Language Switcher Button (Global Icon) */}
         <button
           type="button"
