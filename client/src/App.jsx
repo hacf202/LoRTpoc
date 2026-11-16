@@ -444,7 +444,7 @@ export default function App() {
           description: isEn
             ? 'Browse all 89 champions in LoR: The Path of Champions. Filter by region, star rating, optimal relics, and tier list ranking.'
             : 'Tra cứu toàn bộ 89 tướng trong Con Đường Anh Hùng. Lọc theo vùng đất Runeterra, cấp sao tối đa, cổ vật tối ưu và thứ hạng sức mạnh.',
-          image: champions[0]?.assets?.[0]?.gameAbsolutePath || champions[0]?.assets?.[0]?.avatar || 'https://lortpoc.com/home-hero.webp',
+          image: allChampions[0]?.assets?.[0]?.gameAbsolutePath || allChampions[0]?.assets?.[0]?.avatar || 'https://lortpoc.com/home-hero.webp',
           keywords: getTabKeywords('champions', language),
           url: 'https://lortpoc.com/?tab=champions'
         };
