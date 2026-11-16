@@ -25,7 +25,8 @@ const DEFAULT_FILTERS = {
   map: '',
   hash: '',
   adminModule: 'overview',
-  adminChampion: ''
+  adminChampion: '',
+  notFoundPath: ''
 };
 
 export const ADMIN_ROUTE_PREFIX = '/admin/admin/admin';
@@ -105,26 +106,35 @@ export function parseCurrentLocation() {
         parsed.tab = cleanRoute;
       } else if (pathname === '/' || pathname === '/home') {
         parsed.tab = 'home';
+      } else {
+        parsed.tab = '404';
+        parsed.notFoundPath = pathname;
       }
 
       // 4. Fallback to legacy query parameters if present
       if (params.has('champion')) {
         parsed.champion = params.get('champion')?.trim() || '';
+        parsed.tab = 'champions';
       }
       if (params.has('relic')) {
         parsed.relic = params.get('relic')?.trim() || '';
+        parsed.tab = 'relics';
       }
       if (params.has('power')) {
         parsed.power = params.get('power')?.trim() || '';
+        parsed.tab = 'powers';
       }
       if (params.has('item')) {
         parsed.item = params.get('item')?.trim() || '';
+        parsed.tab = 'items';
       }
       if (params.has('card')) {
         parsed.card = params.get('card')?.trim() || '';
+        parsed.tab = 'cards';
       }
       if (params.has('map')) {
         parsed.map = params.get('map')?.trim() || '';
+        parsed.tab = 'maps';
       }
       if (params.has('tab')) {
         const legacyTab = params.get('tab')?.trim().toLowerCase();
@@ -269,6 +279,8 @@ export function buildHierarchicalUrl(state) {
     targetPath = `/card/${encodeURIComponent(state.card.trim())}`;
   } else if (state.map && state.map.trim()) {
     targetPath = `/map/${encodeURIComponent(state.map.trim())}`;
+  } else if (state.tab === '404') {
+    targetPath = state.notFoundPath || '/404';
   } else if (state.tab && state.tab !== 'home') {
     targetPath = `/${state.tab}`;
   }

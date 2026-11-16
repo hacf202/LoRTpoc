@@ -19,6 +19,8 @@ import MapsView from './views/MapsView';
 import MapDetailView from './views/MapDetailView';
 import TierListView from './views/TierListView';
 import AdminView from './views/AdminView';
+import NotFoundView from './views/NotFoundView';
+import ErrorBoundary from './components/ErrorBoundary';
 import { useLanguage } from './context/LanguageContext';
 import { useUrlFilters } from './hooks/useUrlFilters';
 
@@ -717,7 +719,7 @@ export default function App() {
           onSelectCard={(cardCode) => updateFilters({ card: cardCode, champion: '', hash: '' }, { push: true })}
         />
       ) : (
-        <>
+        <ErrorBoundary onNavigateTab={handleNavigateTab}>
           {/* 3.1 Landing Page (Home View) */}
           {activeTab === 'home' && (
             <HomeView
@@ -811,7 +813,15 @@ export default function App() {
               onNavigate={(tab) => updateFilters({ tab, champion: '', adminChampion: '' })}
             />
           )}
-        </>
+
+          {/* 3.10 404 Not Found Fallback */}
+          {(activeTab === '404' || !['home', 'champions', 'relics', 'powers', 'items', 'cards', 'maps', 'tierlist', 'admin'].includes(activeTab)) && (
+            <NotFoundView
+              notFoundPath={filters.notFoundPath}
+              onNavigateTab={handleNavigateTab}
+            />
+          )}
+        </ErrorBoundary>
       )}
 
       {/* 4. Detail Modals (For general items/relics/cards) */}
