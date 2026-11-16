@@ -16,18 +16,14 @@ const TYPE_CONFIG = {
 };
 
 export default function LorMarkupPreviewTooltip({ token, position }) {
-  if (!token || !position) return null;
-
   const { language } = useLanguage();
   const isEn = language === 'en';
 
-  const tagType = (token.tagType || '').toLowerCase();
-  const config = TYPE_CONFIG[tagType] || TYPE_CONFIG.k;
-  const typeLabel = isEn ? (config.labelEn || config.label) : config.label;
-
-  const [entityData, setEntityData] = useState(() => getCachedEntityPreview(tagType, token.id));
+  const tagType = (token?.tagType || '').toLowerCase();
+  const [entityData, setEntityData] = useState(() => (token ? getCachedEntityPreview(tagType, token.id) : null));
 
   useEffect(() => {
+    if (!token) return;
     let isMounted = true;
     const cached = getCachedEntityPreview(tagType, token.id);
     if (cached) {
@@ -44,7 +40,12 @@ export default function LorMarkupPreviewTooltip({ token, position }) {
     return () => {
       isMounted = false;
     };
-  }, [tagType, token.id, token.label]);
+  }, [tagType, token?.id, token?.label]);
+
+  if (!token || !position) return null;
+
+  const config = TYPE_CONFIG[tagType] || TYPE_CONFIG.k;
+  const typeLabel = isEn ? (config.labelEn || config.label) : config.label;
 
   // Hiển thị duy nhất một tên theo ngôn ngữ đang chọn
   let displayName = '';

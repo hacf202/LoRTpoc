@@ -91,6 +91,25 @@ export const ALL_CHAMPIONS_LIST = [
 ];
 
 /**
+ * Top international search terms across major global LoR player regions
+ * (Chinese, Japanese, Korean, Spanish, Portuguese, French, German)
+ */
+export const INTERNATIONAL_KEYWORDS = [
+  // Chinese (Simplified & Traditional)
+  '英雄之路', '英雄之路攻略', '英雄之路遗物', '英雄之路星力', '英雄之路星座', '英雄之路梯队', '符文大地传说 英雄之路', '符文大地傳說 英雄之路',
+  // Japanese
+  '英雄の道', '英雄の道 攻略', '英雄の道 レリック', '英雄の道 スターパワー', '英雄の道 ティア', 'レジェンドオブルーンテラ 英雄の道',
+  // Korean
+  '챔피언의 길', '챔피언의 길 공략', '챔피언의 길 유물', '챔피언의 길 별의 힘', '챔피언의 길 별자리', '챔피언의 길 티어', '레전드 오브 룬테라 챔피언의 길',
+  // Spanish & Portuguese
+  'El Camino de los Campeones', 'guía El Camino de los Campeones', 'reliquias Camino de los Campeones', 'tier list Camino de los Campeones',
+  'O Caminho dos Campeões', 'guia Caminho dos Campeões', 'relíquias Caminho dos Campeões',
+  // French & German
+  'La Voie des champions', 'guide La Voie des champions', 'reliques La Voie des champions',
+  'Der Pfad der Champions', 'Der Pfad der Champions Guide', 'Relikte Pfad der Champions'
+];
+
+/**
  * Generate combined global keywords string
  */
 export function getGlobalKeywords(lang = 'vi') {
@@ -99,7 +118,7 @@ export function getGlobalKeywords(lang = 'vi') {
   const secondary = isEn ? CORE_KEYWORDS_VI : CORE_KEYWORDS_EN;
   const popularChamps = ['Aurelion Sol', 'Jinx', 'Yasuo', 'Swain', 'Ahri', 'Viego', 'Lux', 'Ambessa', 'Warwick', 'Elder Dragon'];
   const champKeys = popularChamps.map((c) => (isEn ? `${c} PoC guide, ${c} build` : `hướng dẫn ${c} PoC, build ${c}`));
-  return [...primary, ...champKeys, ...secondary.slice(0, 10)].join(', ');
+  return [...primary, ...champKeys, ...secondary.slice(0, 10), ...INTERNATIONAL_KEYWORDS.slice(0, 12)].join(', ');
 }
 
 /**

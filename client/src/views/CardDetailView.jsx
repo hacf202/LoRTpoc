@@ -55,7 +55,7 @@ export default function CardDetailView({
   onSelectCard,
   onNavigateTab
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isEn = language === 'en';
 
   const [card, setCard] = useState(() => cardDetailCache.get(cardCode) || null);

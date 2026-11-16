@@ -77,12 +77,14 @@ export const normalizeRegionKey = (regionKey) => {
   return clean;
 };
 
-export const getRegionDisplayName = (regionKey, t) => {
+export const getRegionDisplayName = (regionKey, t = null) => {
   if (!regionKey) return '';
   const normKey = normalizeRegionKey(regionKey);
-  if (t) {
-    const translated = t(`regions.${normKey}`);
-    if (translated) return translated;
+  if (typeof t === 'function') {
+    try {
+      const translated = t(`regions.${normKey}`);
+      if (translated) return translated;
+    } catch (_) {}
   }
   return regionKey;
 };

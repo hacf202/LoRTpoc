@@ -378,7 +378,7 @@ export default function RelicsView({ filters = {}, updateFilters, onSelectRelic 
                     </span>
                     <button
                       type="button"
-                      onClick={() => setSortBy('name-asc')}
+                      onClick={() => handleSortChange('name-asc')}
                       className="hover:text-red-400 cursor-pointer ml-0.5"
                     >
                       ✕

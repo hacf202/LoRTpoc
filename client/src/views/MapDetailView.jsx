@@ -27,7 +27,7 @@ export default function MapDetailView({
   onNavigateChampion,
   onNavigateTab
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isEn = language === 'en';
 
   const [map, setMap] = useState(() => mapDetailCache.get(mapId) || null);
@@ -96,6 +96,7 @@ export default function MapDetailView({
   const mapName = isEn
     ? map?.translations?.en?.adventureName || map?.adventureName
     : map?.adventureName || map?.translations?.en?.adventureName;
+  const adventureName = mapName || '';
 
   const adventureType = isEn
     ? (map?.translations?.en?.typeAdventure || ADVENTURE_TYPE_EN[map?.typeAdventure] || map?.typeAdventure)

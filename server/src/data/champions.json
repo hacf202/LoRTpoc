@@ -924,7 +924,7 @@
       "Anh Rictus",
       "Bà già."
     ],
-    "description": "-Ambessa sở hữu sức mạnh vượt trội với khả năng tăng tiến sức mạnh nhanh chóng cho các bài quân cùng loại.\n-Sở hữu sức mạnh Huấn Luyện Đội Hình cho phép bài quân cùng tên nhận thêm máu và sức mạnh mỗi lần tấn công. Tấn công với càng nhiều bài quân cùng tên bài quân đó càng mạnh.\n-Sức mạnh phù hợp cho Ambessa là các sức mạnh triệu hồi 2 bài quân khi bắt đầu trận, [k:Slow|Chậm] Mà Chắc, Pháp Thuật, Thống Trị,...\n- Cổ vật Kéo Cắt Ma Quái, Bộ Bài Đầy Ấp kết hợp cực tốt với khả năng tăng tiến sức mạnh của [cd:98NX003|Ambessa|icon,img-full].",
+    "description": "Tướng dễ chơi, triển khai và set up dễ, đánh bằng cách dàn quân hoặc solo carry đều khỏe.\nAmbessa sở hữu sức mạnh vượt trội với khả năng tăng tiến sức mạnh nhanh chóng cho các bài quân cùng tên.\nSở hữu sức mạnh [p:P0438|Huấn Luyện Quân Đội II]  cho phép bài quân cùng tên nhận thêm máu và sức mạnh mỗi lần tấn công. Tấn công với càng nhiều bài quân cùng tên bài quân đó càng mạnh.\nTướng sở hữu cách đánh đơn giản có thể tiến công nhiều lần nhờ vào bài phép anh hùng hoặc lá [cd:04NX022T1|Đột Kích Nửa Đêm] được tạo khi Ambessa tiêu diệt bài quân. Lối đánh solo carry hoặc dàn quân và tấn công tổng lực đều rất khỏe và dễ triển khai.\nAmbessa tương tác cực tốt với các sức mạnh như [p:P0176|Lừa Lọc Chí Tử II] khi kết hợpc cùng C4,  [p:P0114|Chậm Mà Chắc] hoặc [p:P0118|Chia Sẻ Phú Quý] kết hợp với C2 dùng lá [cd:98NX007|Quân Dịch] lên tùy tùng để scale. Ngoài ra các sức mạnh tăng chỉ số cho quân hoặc giảm tiêu hao Ambessa đều dùng rất tốt. Đặc biệt có thể chọn [p:P0053|Trang Bị Đầy Đủ] hoặc [p:P0100|Lính Canh Tiên Phong] để có ngay 2 bài quân cùng tên để scale sức mạnh từ sớm.\nTướng có thể solo carry cực tốt nên có thể chọn các vật phẩm như [i:I0014|Rìu Đen], [i:I0050|Rựa Thợ Săn], [i:I0211|Vô Cực Kiếm], [i:I0210|Bùa Xanh], [i:I0212|Vuốt Rồng] cho tướng này.\nVề cách vận hành và triển khai thì cứ triệu hồi bài quân 1-2 tiêu hao giai đoạn đầu sau đó dùng [cd:98NX007|Quân Dịch]để nhân bản quân, rồi tấn công lên tích thêm chỉ số, lặp lại đến khi out scale đối thủ là được. Còn về lối đánh Ambessa carry thì chỉ cần tướng có đồ đẹp là được cứ thả ra và tấn công liên tục.",
     "descriptionRaw": "-Ambessa sở hữu sức mạnh vượt trội với khả năng tăng tiến sức mạnh nhanh chóng cho các bài quân cùng loại.\n-Sở hữu sức mạnh Huấn Luyện Đội Hình cho phép bài quân cùng tên nhận thêm máu và sức mạnh mỗi lần tấn công. Tấn công với càng nhiều bài quân cùng tên bài quân đó càng mạnh.\n-Sức mạnh phù hợp cho Ambessa là các sức mạnh triệu hồi 2 bài quân khi bắt đầu trận, Chậm Mà Chắc, Pháp Thuật, Thống Trị,...\n- Cổ vật Kéo Cắt Ma Quái, Bộ Bài Đầy Ấp kết hợp cực tốt với khả năng tăng tiến sức mạnh của Ambessa.",
     "assets": [
       {
@@ -934,20 +934,29 @@
       }
     ],
     "coreRelics": {
-      "mandatory": [],
+      "mandatory": [
+        "R0080"
+      ],
       "options": [
         [
-          "R0080",
-          "R0116",
+          "R0113",
+          "R0116"
+        ],
+        [
+          "R0113",
           "R0114"
         ],
         [
-          "R0060",
-          "R0164",
-          "R0049"
+          "R0125",
+          "R0186"
         ]
       ],
-      "description": ""
+      "description": "[r:R0080|Quái Thú Bên Trong] là cổ vật cực kỳ cần thiết đối với các tướng đánh thuần sát thương bằng bài quân như Ambessa.\nKhi kết hợp cùng với [r:R0113|Sách Ẩn] và [r:R0116|Bộ Bài Đầy Ắp] cho thêm rất nhiều chỉ số cho các bài quân khiến cho bài quân nào cũng có thể carry được, thêm nữa đó  là năng lượng để giúp bạn dùng lá [cd:98NX007|Quân Dịch] dễ hơn hoặc [cd:98NX004|Hành Quyết Công Khai] với 4 năng lượng.\n[r:R0113|Sách Ẩn] cùng [r:R0114|Khiên Đen] cho bài quân khả năng an toàn cực tốt khi đối đầu với các boss có các bài phép hiệu ứng như choáng, đóng băng, thu về,...thêm nữa mỗi lần dùng quân dịch triệu hồi bài quân mới bài quân đó sẽ có cả khiên và khiên phép luôn cực kỳ an toàn.\n[r:R0125|Lõi Công Nghệ Hoàn Hảo] và [p:P1052|Kinkou Bảo Hộ] cho thêm năng lượng mỗi khi bạn chọn mục tiêu và kích cả C4 [p:P0386|Đội Hình Phalanx] nữa giúp quân bạn chơi game dễ hơn trong nhiều trường hợp.",
+      "translations": {
+        "en": {
+          "description": "[r:R0080|The Beast Within] is an absolutely essential relic for champions that rely purely on unit-based combat damage, like Ambessa.\n\nWhen combined with [r:R0113|Secret Tome] and [r:R0116|Stacked Deck], it grants massive stat buffs to your board, turning virtually any unit into a potential carry. Furthermore, the extra mana makes it much easier to cast [cd:98NX007|Conscription] or a 4-cost [cd:98NX004|Public Execution].\n\nPairing [r:R0113|Secret Tome] with [r:R0114|Black Shield] offers excellent protection for your units when facing bosses that rely heavily on disruptive spell effects like Stun, Frostbite, or Recall. Additionally, every time you cast Conscription to summon a new copy of a unit, that copy will spawn with both Barrier and Spellshield, making your board incredibly resilient.\n\n[r:R0125|Perfected Hextech Core] and [p:P1052|Kinkou Protection] refund mana whenever you target an ally. This synergy perfectly triggers your 4-Star power [p:P0386|Phalanx Formation], significantly improving your board's survivability and making the game much easier to navigate in various situations."
+        }
+      }
     },
     "relicSets": [
       {
@@ -1024,10 +1033,10 @@
       "R0127"
     ],
     "ratings": {
-      "damage": 6,
-      "defense": 5,
-      "synergy": 4,
-      "difficulty": 5
+      "damage": 8.5,
+      "defense": 6.5,
+      "synergy": 8,
+      "difficulty": 6.5
     },
     "startingDeck": {
       "baseCards": [
@@ -1677,7 +1686,7 @@
     },
     "translations": {
       "en": {
-        "description": "-[cd:98NX003|Ambessa|icon,img-full] sở hữu sức mạnh vượt trội với khả năng tăng tiến sức mạnh nhanh chóng cho các bài quân cùng loại.\n-Sở hữu sức mạnh Huấn Luyện Đội Hình cho phép bài quân cùng tên nhận thêm máu và sức mạnh mỗi lần tấn công. Tấn công với càng nhiều bài quân cùng tên bài quân đó càng mạnh.\n-Sức mạnh phù hợp cho [cd:98NX003|Ambessa|icon,img-full] là các sức mạnh triệu hồi 2 bài quân khi bắt đầu trận, Chậm Mà Chắc, Pháp Thuật, Thống Trị,...\n- Cổ vật Kéo Cắt Ma Quái, Bộ Bài Đầy Ấp kết hợp cực tốt với khả năng tăng tiến sức mạnh của [cd:98NX003|Ambessa|icon,img-full].",
+        "description": "An easy-to-play champion with simple setup and deployment. She is incredibly strong whether you choose to swarm the board or rely on a solo-carry strategy.\n\nAmbessa boasts exceptional scaling potential, capable of rapidly buffing allies with the same name.\n\nHer Star Power, [p:P0438|Military Training II], grants bonus Power and Health to allies with the same name every time they attack. The more copies you swing with, the stronger they become.\n\nHer playstyle is straightforward but oppressive, allowing for multiple combat phases using her champion spell or [cd:04NX022T1|Midnight Raid], which is generated whenever Ambessa kills an enemy unit. Whether you focus on a solo-carry Ambessa or swarming the board for a massive all-out attack, both strategies are highly effective and easy to execute.\n\nAmbessa synergizes exceptionally well with powers like [p:P0176|Trifarian Might II] (when combined with her 4-Star power), as well as [p:P0114|Slow But Steady] or [p:P0118|Sharing is Caring]. You can leverage her 2-Star power by casting [cd:98NX007|Conscription] on a follower to rapidly scale your board. Additionally, any powers that grant stat buffs or reduce her cost are excellent choices. Notably, taking [p:P0053|Armed to the Teeth] or [p:P0100|Vanguard Lookouts] gives you two allies with the same name right at the start of the game, allowing you to begin your scaling engine immediately.\n\nBecause she excels as a solo carry, prioritizing items like [i:I0014|The Black Cleaver], [i:I0050|Hunter's Machete], [i:I0211|Infinity Edge], [i:I0210|Blue Buff], or [i:I0212|Dragon's Claw] for her is highly recommended.\n\nGameplay and Execution: Start by summoning 1-cost or 2-cost units in the early game. Use [cd:98NX007|Conscription] to create exact copies of them, then swing in to stack their stats. Repeat this loop until you completely out-scale your opponent. If you're pivoting to an Ambessa carry playstyle, simply ensure she has good items, drop her onto the board, and launch relentless consecutive attacks to close out the game.",
         "descriptionRaw": "-Ambessa sở hữu sức mạnh vượt trội với khả năng tăng tiến sức mạnh nhanh chóng cho các bài quân cùng loại.\\n-Sở hữu sức mạnh Huấn Luyện Đội Hình cho phép bài quân cùng tên nhận thêm máu và sức mạnh mỗi lần tấn công. Tấn công với càng nhiều bài quân cùng tên bài quân đó càng mạnh.\\n-Sức mạnh phù hợp cho Ambessa là các sức mạnh triệu hồi 2 bài quân khi bắt đầu trận, Chậm Mà Chắc, Pháp Thuật, Thống Trị,...\\n- Cổ vật Kéo Cắt Ma Quái, Bộ Bài Đầy Ấp kết hợp cực tốt với khả năng tăng tiến sức mạnh của Ambessa.",
         "name": "Ambessa",
         "regions": [
@@ -2885,6 +2894,82 @@
           }
         }
       },
+      "R0114": {
+        "relicCode": "R0114",
+        "name": "Khiên Đen",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0114.png",
+        "description": "[k:Power|Sức Mạnh]: Khi triệu hồi 1 đồng minh, ban [k:SpellShield|Khiên Phép] cho đồng minh đó.",
+        "descriptionRaw": "Sức Mạnh: Khi triệu hồi 1 đồng minh, ban Khiên Phép cho đồng minh đó.",
+        "translations": {
+          "en": {
+            "name": "Black Shield",
+            "description": "[k:Power|Power]: When you summon an ally, grant it [k:SpellShield|SpellShield].",
+            "descriptionRaw": "Power: When you summon an ally, grant it SpellShield.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "R0060": {
+        "relicCode": "R0060",
+        "name": "Đệ Tử Bóng Đêm",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0060.png",
+        "description": "Ta được giảm 1 tiêu hao với mỗi đồng minh trên bàn.\n[k:Play|Xuất Trận]: Gây 3 sát thương lên tất cả đồng minh khác.",
+        "descriptionRaw": "Ta được giảm 1 tiêu hao với mỗi đồng minh trên bàn.Xuất Trận: Gây 3 sát thương lên tất cả đồng minh khác.",
+        "translations": {
+          "en": {
+            "name": "Disciple of Shadows",
+            "description": "I cost 1 less for each ally in play.\n[k:Play|Play]: Deal 3 to all other allies.",
+            "descriptionRaw": "I cost 1 less for each ally in play.Play: Deal 3 to all other allies.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "R0164": {
+        "relicCode": "R0164",
+        "name": "Mệnh Lệnh Biệt Kích",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_4_0/adventure/vi_vn/img/relics/R0164.png",
+        "description": "Ban +1|+0 và [k:Quick Strike|Đột Kích].\n[k:PathPower|Sức Mạnh]: [k:RoundStart|Bắt Đầu Vòng Đấu]: Nếu ngươi có lượt tấn công, ban [k:Scout|Trinh Sát] cho một đồng minh ngẫu nhiên.",
+        "descriptionRaw": "Ban +1|+0 và Đột Kích.Sức Mạnh: Bắt Đầu Vòng Đấu: Nếu ngươi có lượt tấn công, ban Trinh Sát cho một đồng minh ngẫu nhiên.",
+        "translations": {
+          "en": {
+            "name": "Ranger's Command",
+            "description": "+1|+0 and [k:Quick Strike|Quick Attack].\n[k:PathPower|Power]: [k:RoundStart|Round Start]: If you have the attack token, grant a random ally [k:Scout|Scout].",
+            "descriptionRaw": "+1|+0 and Quick Attack.Power: Round Start: If you have the attack token, grant a random ally Scout.",
+            "rarity": "EPIC"
+          }
+        }
+      },
+      "R0049": {
+        "relicCode": "R0049",
+        "name": "Mai Giáp Hóa Hư Không",
+        "rarity": "HIẾM",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0049.png",
+        "description": "[k:Evolve|Tiến Hóa]\nKhi bài quân BẤT KỲ hy sinh, ban cho ta đặc điểm của bài quân đó.",
+        "descriptionRaw": "Tiến HóaKhi bài quân BẤT KỲ hy sinh, ban cho ta đặc điểm của bài quân đó.",
+        "translations": {
+          "en": {
+            "name": "Voidborne Carapace",
+            "description": "[k:Evolve|Evolve]\nWhen ANY unit dies, grant me its keywords.",
+            "descriptionRaw": "EvolveWhen ANY unit dies, grant me its keywords.",
+            "rarity": "Rare"
+          }
+        }
+      },
       "R0040": {
         "relicCode": "R0040",
         "name": "Gươm Truy Tung",
@@ -2903,25 +2988,6 @@
             "descriptionRaw": "When I'm summoned, I strike the weakest enemy.",
             "rarity": "Rare",
             "source": "Reward from Jinx's 2* Campaign"
-          }
-        }
-      },
-      "R0114": {
-        "relicCode": "R0114",
-        "name": "Khiên Đen",
-        "rarity": "SỬ THI",
-        "type": [
-          "Chung"
-        ],
-        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0114.png",
-        "description": "[k:Power|Sức Mạnh]: Khi triệu hồi 1 đồng minh, ban [k:SpellShield|Khiên Phép] cho đồng minh đó.",
-        "descriptionRaw": "Sức Mạnh: Khi triệu hồi 1 đồng minh, ban Khiên Phép cho đồng minh đó.",
-        "translations": {
-          "en": {
-            "name": "Black Shield",
-            "description": "[k:Power|Power]: When you summon an ally, grant it [k:SpellShield|SpellShield].",
-            "descriptionRaw": "Power: When you summon an ally, grant it SpellShield.",
-            "rarity": "Epic"
           }
         }
       },
@@ -3056,25 +3122,6 @@
             "name": "Hidden Tome",
             "description": "[k:Power|Power]: When you play or level up a champion, refill your spell mana.",
             "descriptionRaw": "Power: When you play or level up a champion, refill your spell mana.",
-            "rarity": "Epic"
-          }
-        }
-      },
-      "R0060": {
-        "relicCode": "R0060",
-        "name": "Đệ Tử Bóng Đêm",
-        "rarity": "SỬ THI",
-        "type": [
-          "Chung"
-        ],
-        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0060.png",
-        "description": "Ta được giảm 1 tiêu hao với mỗi đồng minh trên bàn.\n[k:Play|Xuất Trận]: Gây 3 sát thương lên tất cả đồng minh khác.",
-        "descriptionRaw": "Ta được giảm 1 tiêu hao với mỗi đồng minh trên bàn.Xuất Trận: Gây 3 sát thương lên tất cả đồng minh khác.",
-        "translations": {
-          "en": {
-            "name": "Disciple of Shadows",
-            "description": "I cost 1 less for each ally in play.\n[k:Play|Play]: Deal 3 to all other allies.",
-            "descriptionRaw": "I cost 1 less for each ally in play.Play: Deal 3 to all other allies.",
             "rarity": "Epic"
           }
         }

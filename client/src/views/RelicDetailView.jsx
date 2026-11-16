@@ -58,7 +58,7 @@ export default function RelicDetailView({
   currentHash = '',
   onHashChange
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isEn = language === 'en';
 
   const [relic, setRelic] = useState(() => relicDetailCache.get(relicCode) || null);
@@ -432,12 +432,12 @@ export default function RelicDetailView({
                       </span>
                     )}
 
-                    {Array.isArray(relic.type) && relic.type.map((t) => (
+                    {Array.isArray(relic.type) && relic.type.map((relicType) => (
                       <span
-                        key={t}
+                        key={relicType}
                         className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-semibold text-slate-300"
                       >
-                        {t}
+                        {relicType}
                       </span>
                     ))}
 

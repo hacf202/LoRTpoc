@@ -377,7 +377,7 @@ export default function PowersView({ filters = {}, updateFilters, onSelectPower 
                     </span>
                     <button
                       type="button"
-                      onClick={() => setSortBy('name-asc')}
+                      onClick={() => handleSortChange('name-asc')}
                       className="hover:text-red-400 cursor-pointer ml-0.5"
                     >
                       ✕
