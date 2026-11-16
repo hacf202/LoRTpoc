@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { clearServerCache } from '../middlewares/cache.middleware.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,17 +29,17 @@ function readJson(fileName) {
 }
 
 export const relationService = {
-  init() {
-    this.rebuild();
+  async init() {
+    await this.rebuild();
   },
 
-  rebuild() {
+  async rebuild(customData = null) {
     clearServerCache();
-    const relics = readJson('relics.json');
-    const items = readJson('items.json');
-    const powers = readJson('powers.json');
-    const cards = readJson('cards.json');
-    const champions = readJson('champions.json');
+    const relics = customData?.relics || (await loadCollectionFromDb('relics', 'relics.json'));
+    const items = customData?.items || (await loadCollectionFromDb('items', 'items.json'));
+    const powers = customData?.powers || (await loadCollectionFromDb('powers', 'powers.json'));
+    const cards = customData?.cards || (await loadCollectionFromDb('cards', 'cards.json'));
+    const champions = customData?.champions || (await loadCollectionFromDb('champions', 'champions.json'));
 
     // 1. Rebuild Entity Lookup HashMaps
     relicsMap.clear();

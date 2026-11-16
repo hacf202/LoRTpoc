@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,15 @@ try {
 }
 
 export const bonusStarService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('bonusStars', 'bonusStars.json');
+    if (Array.isArray(data) && data.length > 0) {
+      bonusStars = data;
+      console.log(`[BonusStarService] Loaded ${bonusStars.length} bonus stars from MongoDB.`);
+    }
+    return bonusStars;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...bonusStars];
 

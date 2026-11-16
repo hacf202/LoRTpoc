@@ -5,6 +5,7 @@ import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { matchSearchQuery, rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
 import { relationService } from './relation.service.js';
+import { loadCollectionFromDb, upsertDbDocument, deleteDbDocument } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -407,6 +408,15 @@ export const championService = {
     return newChampion;
   },
 
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('champions', 'champions.json');
+    if (Array.isArray(data) && data.length > 0) {
+      champions = data;
+      console.log(`[ChampionService] Loaded ${champions.length} champions from MongoDB.`);
+    }
+    return champions;
+  },
+
   update: async (id, data) => {
     const cleanId = String(id).toLowerCase().trim();
     const index = champions.findIndex(
@@ -425,6 +435,7 @@ export const championService = {
       championID: champions[index].championID // Keep primary ID immutable
     };
     saveChampionsToFile();
+    await upsertDbDocument('champions', { championID: champions[index].championID }, champions[index]);
     relationService.rebuild();
     return champions[index];
   },
@@ -439,8 +450,10 @@ export const championService = {
     );
     if (index === -1) return false;
 
+    const targetChamp = champions[index];
     champions.splice(index, 1);
     saveChampionsToFile();
+    await deleteDbDocument('champions', { championID: targetChamp.championID });
     relationService.rebuild();
     return true;
   },

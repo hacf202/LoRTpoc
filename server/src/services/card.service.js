@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,19 @@ try {
 }
 
 export const cardService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('cards', 'cards.json');
+    if (Array.isArray(data) && data.length > 0) {
+      cards = data;
+      console.log(`[CardService] Loaded ${cards.length} cards from MongoDB.`);
+    }
+    const champData = await loadCollectionFromDb('champions', 'champions.json');
+    if (Array.isArray(champData) && champData.length > 0) {
+      champions = champData;
+    }
+    return cards;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...cards];
 

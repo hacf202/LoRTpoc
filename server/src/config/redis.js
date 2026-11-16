@@ -8,25 +8,34 @@ const redisUrl = process.env.REDIS_URL;
 if (redisUrl) {
   try {
     redisClient = new Redis(redisUrl, {
-      maxRetriesPerRequest: 1,
-      connectTimeout: 5000,
-      commandTimeout: 3000,
-      enableOfflineQueue: false,
+      maxRetriesPerRequest: 2,
+      connectTimeout: 8000,
+      commandTimeout: 5000,
+      enableOfflineQueue: true,
+      maxOfflineQueueSize: 500,
       retryStrategy(times) {
-        if (times > 3) return null;
-        return Math.min(times * 200, 1000);
+        if (times > 5) return null;
+        return Math.min(times * 300, 2000);
       },
     });
 
-    redisClient.on('connect', () => {
+    redisClient.on('ready', () => {
       isRedisConnected = true;
-      console.log('✅ Redis connected successfully via REDIS_URL');
+      console.log('✅ Redis is authenticated and READY to cache queries.');
+    });
+
+    redisClient.on('close', () => {
+      isRedisConnected = false;
+    });
+
+    redisClient.on('reconnecting', () => {
+      isRedisConnected = false;
     });
 
     redisClient.on('error', (err) => {
       isRedisConnected = false;
       if (err.code !== 'ECONNREFUSED' && err.code !== 'ENOTFOUND') {
-        console.warn('⚠️ Redis error:', err.message);
+        console.warn('⚠️ Redis connection error:', err.message);
       }
     });
   } catch (err) {
@@ -34,6 +43,10 @@ if (redisUrl) {
   }
 } else {
   console.log('ℹ️ REDIS_URL not configured. Operating in In-Memory cache mode.');
+}
+
+export function isRedisReady() {
+  return Boolean(redisClient && redisClient.status === 'ready');
 }
 
 export { redisClient, isRedisConnected };

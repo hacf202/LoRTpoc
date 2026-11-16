@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,19 @@ try {
 }
 
 export const itemService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('items', 'items.json');
+    if (Array.isArray(data) && data.length > 0) {
+      items = data;
+      console.log(`[ItemService] Loaded ${items.length} items from MongoDB.`);
+    }
+    const champData = await loadCollectionFromDb('champions', 'champions.json');
+    if (Array.isArray(champData) && champData.length > 0) {
+      champions = champData;
+    }
+    return items;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...items];
 

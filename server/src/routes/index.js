@@ -24,16 +24,20 @@ router.use('/auth', authRoutes);
 // 2. SEO routes under API namespace
 router.use('/seo', seoRoutes);
 
-// 3. Core LoR PoC Resources with fresh HTTP cache (60s public cache, bypass on auth/no-cache)
-router.use('/champions', httpCache(60), championRoutes);
-router.use('/relics', httpCache(60), relicRoutes);
-router.use('/items', httpCache(60), itemRoutes);
-router.use('/maps', httpCache(60), mapRoutes);
-router.use('/powers', httpCache(60), powerRoutes);
-router.use('/cards', httpCache(60), cardRoutes);
-router.use('/constellations', httpCache(60), constellationRoutes);
-router.use('/bonus-stars', httpCache(60), bonusStarRoutes);
-router.use('/tierlist', httpCache(60), tierlistRoutes);
-router.use('/search', searchRoutes);
+// 3. Cache TTL configuration (Default: 24h for static game collections, 1h for search queries)
+const DATA_CACHE_TTL = Number(process.env.DATA_CACHE_TTL) || 86400; // 24 hours (86,400s)
+const SEARCH_CACHE_TTL = Number(process.env.SEARCH_CACHE_TTL) || 3600; // 1 hour (3,600s)
+
+// 4. Core LoR PoC Resources with Redis Cache (Automatically invalidated upon admin updates)
+router.use('/champions', httpCache(DATA_CACHE_TTL), championRoutes);
+router.use('/relics', httpCache(DATA_CACHE_TTL), relicRoutes);
+router.use('/items', httpCache(DATA_CACHE_TTL), itemRoutes);
+router.use('/maps', httpCache(DATA_CACHE_TTL), mapRoutes);
+router.use('/powers', httpCache(DATA_CACHE_TTL), powerRoutes);
+router.use('/cards', httpCache(DATA_CACHE_TTL), cardRoutes);
+router.use('/constellations', httpCache(DATA_CACHE_TTL), constellationRoutes);
+router.use('/bonus-stars', httpCache(DATA_CACHE_TTL), bonusStarRoutes);
+router.use('/tierlist', httpCache(DATA_CACHE_TTL), tierlistRoutes);
+router.use('/search', httpCache(SEARCH_CACHE_TTL), searchRoutes);
 
 export default router;

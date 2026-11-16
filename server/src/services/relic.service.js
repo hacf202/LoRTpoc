@@ -5,6 +5,7 @@ import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { matchSearchQuery, rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
 import { relationService } from './relation.service.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +24,19 @@ relics.forEach((r) => {
 });
 
 export const relicService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('relics', 'relics.json');
+    if (Array.isArray(data) && data.length > 0) {
+      relics = data;
+      relicMap.clear();
+      relics.forEach((r) => {
+        if (r.relicCode) relicMap.set(r.relicCode, r);
+      });
+      console.log(`[RelicService] Loaded ${relics.length} relics from MongoDB.`);
+    }
+    return relics;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...relics];
 

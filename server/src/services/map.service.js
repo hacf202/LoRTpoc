@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
 import { matchSearchQuery, rankSearchResults } from '../utils/normalizeText.js';
 import { paginateList } from '../utils/paginate.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,37 @@ try {
 }
 
 export const mapService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('maps', 'maps.json');
+    if (Array.isArray(data) && data.length > 0) {
+      maps = data;
+      console.log(`[MapService] Loaded ${maps.length} maps from MongoDB.`);
+    }
+    const rawBosses = await loadCollectionFromDb('bosses', 'bosses.json');
+    if (Array.isArray(rawBosses) && rawBosses.length > 0) {
+      bossesMap.clear();
+      rawBosses.forEach((b) => {
+        if (b.bossID) bossesMap.set(b.bossID, b);
+      });
+    }
+    const rawPowers = await loadCollectionFromDb('powers', 'powers.json');
+    if (Array.isArray(rawPowers) && rawPowers.length > 0) {
+      powersMap.clear();
+      rawPowers.forEach((p) => {
+        if (p.powerCode) powersMap.set(p.powerCode, p);
+      });
+    }
+    const rawChamps = await loadCollectionFromDb('champions', 'champions.json');
+    if (Array.isArray(rawChamps) && rawChamps.length > 0) {
+      championsMap.clear();
+      rawChamps.forEach((c) => {
+        if (c.championID) championsMap.set(c.championID, c);
+        if (c.name) championsMap.set(c.name.toLowerCase(), c);
+      });
+    }
+    return maps;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...maps];
 

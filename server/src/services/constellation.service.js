@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { pickFields, pickListFields } from '../utils/fieldPicker.js';
+import { loadCollectionFromDb } from '../config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +17,15 @@ try {
 }
 
 export const constellationService = {
+  loadFromDb: async () => {
+    const data = await loadCollectionFromDb('constellations', 'constellations.json');
+    if (Array.isArray(data) && data.length > 0) {
+      constellations = data;
+      console.log(`[ConstellationService] Loaded ${constellations.length} constellations from MongoDB.`);
+    }
+    return constellations;
+  },
+
   getAll: async (filter = {}) => {
     let result = [...constellations];
 
