@@ -6,6 +6,7 @@ import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl } from '../utils/regionIcons';
 import { handleImageError } from '../utils/imageFallback';
+import { useQueryCache } from '../hooks/useQueryCache';
 
 /**
  * Modern LoR Cards Vault View (/cards)
@@ -22,15 +23,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   const isEn = language === 'en';
 
   const rosterTopRef = useRef(null);
-
-  // In-memory Query Cache ref (Rule 10)
-  const queryCache = useRef(new Map());
-
-  // Data state
-  const [cards, setCards] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   // Parse filters from URL state
   const selectedRegions = (filters.regions || (filters.region && filters.region !== 'all' ? filters.region : ''))
@@ -59,7 +51,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
 
   // Filters & Search state with Rule 9 Debounce (350ms)
   const [searchInput, setSearchInput] = useState(filters.q || '');
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isSearchDebouncing, setIsSearchDebouncing] = useState(false);
 
   // UI state
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -71,32 +63,37 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
 
   // Debounce search input by 350ms with subtle loading transition (Rule 9)
   useEffect(() => {
-    setIsTransitioning(true);
+    const clean = searchInput.trim();
+    if ((filters.q || '') !== clean) {
+      setIsSearchDebouncing(true);
+    }
     const timer = setTimeout(() => {
-      const clean = searchInput.trim();
       if ((filters.q || '') !== clean) {
         updateFilters?.({ q: clean, page: 1 });
-      } else {
-        setIsTransitioning(false);
       }
+      setIsSearchDebouncing(false);
     }, 350);
 
     return () => clearTimeout(timer);
   }, [searchInput, filters.q, updateFilters]);
 
-  // Query Fetcher with Cache-First Strategy & Smooth Loading (Rules 9 & 10)
-  useEffect(() => {
-    let isCancelled = false;
-    setLoading(true);
-    setIsTransitioning(true);
+  // Query dimensions (normalized for deterministic cache keys)
+  const querySearch = (filters.q || '').trim();
+  const queryRegion = selectedRegions.slice().sort().join(',');
+  const queryCost = selectedCosts.slice().sort().join(',');
+  const queryType = selectedTypes.slice().sort().join(',');
+  const queryRarity = selectedRarities.slice().sort().join(',');
 
-    const querySearch = (filters.q || '').trim();
-    const queryRegion = selectedRegions.slice().sort().join(',');
-    const queryCost = selectedCosts.slice().sort().join(',');
-    const queryType = selectedTypes.slice().sort().join(',');
-    const queryRarity = selectedRarities.slice().sort().join(',');
-
-    const cacheKey = JSON.stringify({
+  // Unified Query Cache Hook (Rule 10: In-Memory LRU Cache & Rule 9: Smooth Transitions)
+  const {
+    data: cards,
+    total: totalItems,
+    totalPages,
+    loading,
+    isTransitioning: queryTransitioning
+  } = useQueryCache({
+    namespace: 'cards',
+    key: {
       search: querySearch,
       region: queryRegion,
       cost: queryCost,
@@ -105,100 +102,31 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
       sort: sortBy,
       page: currentPage,
       limit: itemsPerPage
-    });
+    },
+    fetcher: async ({ signal }) => {
+      const params = new URLSearchParams();
+      if (querySearch) params.append('search', querySearch);
+      if (queryRegion) params.append('region', queryRegion);
+      if (queryCost) params.append('cost', queryCost);
+      if (queryType) params.append('type', queryType);
+      if (queryRarity) params.append('rarity', queryRarity);
+      if (sortBy) params.append('sort', sortBy);
+      params.append('fields', 'cardCode,name,cost,regions,rarity,type,gameAbsolutePath,descriptionRaw,description,translations');
+      params.append('page', String(currentPage));
+      params.append('limit', String(itemsPerPage));
 
-    // Check In-Memory Cache first with subtle smooth transition
-    if (queryCache.current.has(cacheKey)) {
-      const cached = queryCache.current.get(cacheKey);
-      const timer = setTimeout(() => {
-        if (!isCancelled) {
-          setCards(cached.data);
-          setTotalItems(cached.total);
-          setTotalPages(cached.totalPages);
-          setLoading(false);
-          setIsTransitioning(false);
-        }
-      }, 180);
-      return () => {
-        isCancelled = true;
-        clearTimeout(timer);
+      const res = await fetch(`/api/v1/cards?${params.toString()}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return {
+        data: json.data || [],
+        total: json.total || 0,
+        totalPages: json.pagination?.totalPages || 1
       };
     }
+  });
 
-    // Cache miss: Fetch from server on demand with smooth transition timing
-    const fetchCards = async () => {
-      const startTime = performance.now();
-      try {
-        const params = new URLSearchParams();
-        if (querySearch) params.append('search', querySearch);
-        if (queryRegion) params.append('region', queryRegion);
-        if (queryCost) params.append('cost', queryCost);
-        if (queryType) params.append('type', queryType);
-        if (queryRarity) params.append('rarity', queryRarity);
-        if (sortBy) params.append('sort', sortBy);
-        params.append('fields', 'cardCode,name,cost,regions,rarity,type,gameAbsolutePath,descriptionRaw,description,translations');
-        params.append('page', String(currentPage));
-        params.append('limit', String(itemsPerPage));
-
-        const res = await fetch(`/api/v1/cards?${params.toString()}`);
-
-        const elapsed = performance.now() - startTime;
-        const remainingDelay = Math.max(0, 320 - elapsed);
-        if (remainingDelay > 0) {
-          await new Promise((resolve) => setTimeout(resolve, remainingDelay));
-        }
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && !isCancelled) {
-            const resultData = json.data || [];
-            const resultTotal = json.total || 0;
-            const resultTotalPages = json.pagination?.totalPages || 1;
-
-            // Store in cache with 50-item LRU cap to prevent memory bloat
-            if (queryCache.current.size >= 50) {
-              const oldestKey = queryCache.current.keys().next().value;
-              queryCache.current.delete(oldestKey);
-            }
-            queryCache.current.set(cacheKey, {
-              data: resultData,
-              total: resultTotal,
-              totalPages: resultTotalPages
-            });
-
-            setCards(resultData);
-            setTotalItems(resultTotal);
-            setTotalPages(resultTotalPages);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch cards:', err);
-      } finally {
-        if (!isCancelled) {
-          setLoading(false);
-          setIsTransitioning(false);
-        }
-      }
-    };
-
-    fetchCards();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [
-    filters.q,
-    filters.regions,
-    filters.region,
-    filters.costs,
-    filters.cost,
-    filters.types,
-    filters.type,
-    filters.rarities,
-    filters.rarity,
-    sortBy,
-    currentPage
-  ]);
+  const isTransitioning = isSearchDebouncing || queryTransitioning;
 
   // Filter Toggles (Multi-Select)
   const handleToggleRegion = useCallback((val) => {

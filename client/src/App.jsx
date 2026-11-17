@@ -25,12 +25,14 @@ import NotFoundView from './views/NotFoundView';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useLanguage } from './context/LanguageContext';
 import { useUrlFilters } from './hooks/useUrlFilters';
+import { usePresenceTracker } from './hooks/usePresenceTracker';
 
 export default function App() {
   const { language, t } = useLanguage();
   const [filters, updateFilters] = useUrlFilters();
 
   const activeTab = filters.tab || 'home';
+  usePresenceTracker(activeTab, language);
   const searchTerm = filters.q;
   const selectedRegion = filters.region;
   const selectedStars = filters.stars;
@@ -50,15 +52,15 @@ export default function App() {
 
   const searchInputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const championDetailsCache = useRef(new Map());
 
   // Fetch compact champions list for the roster (reduces payload by 94%)
-  const fetchAllChampions = useCallback(async () => {
+  const fetchAllChampions = useCallback(async (isBypassCache = false) => {
     try {
       setRosterLoading(true);
-      const res = await fetch(
-        `/api/v1/champions?fields=name,cardCode,championID,cost,regions,maxStar,tier,assets,translations&_t=${Date.now()}`,
-        { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } }
-      );
+      const url = '/api/v1/champions?fields=name,cardCode,championID,cost,regions,maxStar,tier,assets,translations';
+      const fetchOptions = isBypassCache ? { cache: 'reload' } : {};
+      const res = await fetch(url, fetchOptions);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -77,7 +79,8 @@ export default function App() {
 
     // Lắng nghe sự kiện cập nhật dữ liệu từ trang quản trị Admin để tự động làm mới đồng bộ
     const handleDataUpdated = () => {
-      fetchAllChampions();
+      championDetailsCache.current.clear();
+      fetchAllChampions(true);
     };
 
     window.addEventListener('poc-data-updated', handleDataUpdated);
@@ -100,22 +103,29 @@ export default function App() {
       return;
     }
 
+    const targetId = champ.championID || champ.cardCode || champ.name;
+    const cacheKey = (targetId || '').toLowerCase();
+
+    // Check in-memory detail cache first (instant response)
+    if (championDetailsCache.current.has(cacheKey)) {
+      setSelectedChampion(championDetailsCache.current.get(cacheKey));
+      setChampionDetailLoading(false);
+      return;
+    }
+
     setChampionDetailLoading(true);
     setSelectedChampion(champ);
     const startTime = performance.now();
     try {
-      const targetId = champ.championID || champ.cardCode || champ.name;
-      const res = await fetch(
-        `/api/v1/champions/${encodeURIComponent(targetId)}?_t=${Date.now()}`,
-        { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } }
-      );
+      const res = await fetch(`/api/v1/champions/${encodeURIComponent(targetId)}`);
       const elapsed = performance.now() - startTime;
-      const remaining = Math.max(0, 380 - elapsed);
+      const remaining = Math.max(0, 320 - elapsed);
       if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
 
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.data) {
+          championDetailsCache.current.set(cacheKey, data.data);
           setSelectedChampion(data.data);
         }
       }

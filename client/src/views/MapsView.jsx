@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import ListLoadingBar from '../components/ListLoadingBar';
 import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
+import { useQueryCache } from '../hooks/useQueryCache';
 
 /**
  * Modern LoR Adventures / Maps Vault View (/maps)
@@ -22,21 +23,12 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const rosterTopRef = useRef(null);
 
-  // In-memory Query Cache ref (Rule 10)
-  const queryCache = useRef(new Map());
-
-  // Data state
-  const [maps, setMaps] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
   // Mobile drawer state
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   // Local search input for immediate UX typing (Rule 9)
   const [searchInput, setSearchInput] = useState(filters.q || filters.search || '');
+  const [isSearchDebouncing, setIsSearchDebouncing] = useState(false);
 
   // Parse multi-select filter dimensions from URL (memoized to prevent render loops)
   const selectedDifficulties = useMemo(
@@ -69,108 +61,60 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
   useEffect(() => {
     const currentQuery = (filters.q || filters.search || '').trim();
     if (searchInput.trim() !== currentQuery) {
-      setIsTransitioning(true);
+      setIsSearchDebouncing(true);
     }
     const timer = setTimeout(() => {
       if (searchInput.trim() !== currentQuery) {
         updateFilters?.({ q: searchInput.trim(), page: 1 });
-      } else {
-        setIsTransitioning(false);
       }
+      setIsSearchDebouncing(false);
     }, 350);
     return () => clearTimeout(timer);
   }, [searchInput, filters.q, filters.search, updateFilters]);
 
-  // Smooth Data Fetcher with In-Memory Query Cache (Rules 9 & 10)
-  useEffect(() => {
-    let isCancelled = false;
-    setLoading(true);
-    setIsTransitioning(true);
+  // Query dimensions (normalized for deterministic cache keys)
+  const queryDiff = selectedDifficulties.slice().sort().join(',');
+  const queryType = selectedTypes.slice().sort().join(',');
+  const querySearch = (filters.q || filters.search || '').trim();
 
-    const queryDiff = selectedDifficulties.slice().sort().join(',');
-    const queryType = selectedTypes.slice().sort().join(',');
-    const querySearch = (filters.q || filters.search || '').trim();
-
-    const cacheKey = JSON.stringify({
+  // Unified Query Cache Hook (Rule 10: In-Memory LRU Cache & Rule 9: Smooth Transitions)
+  const {
+    data: maps,
+    total: totalItems,
+    totalPages,
+    loading,
+    isTransitioning: queryTransitioning
+  } = useQueryCache({
+    namespace: 'maps',
+    key: {
       q: querySearch,
       diff: queryDiff,
       type: queryType,
       sort: sortBy,
       page: currentPage
-    });
+    },
+    fetcher: async ({ signal }) => {
+      const params = new URLSearchParams();
+      if (querySearch) params.append('q', querySearch);
+      if (queryDiff) params.append('difficulty', queryDiff);
+      if (queryType) params.append('type', queryType);
+      if (sortBy) params.append('sort', sortBy);
+      params.append('fields', 'adventureID,adventureName,difficulty,background,assetAbsolutePath,typeAdventure,Bosses,translations');
+      params.append('page', String(currentPage));
+      params.append('limit', '24');
 
-    // Cache-First (Rule 10): serve from cache with subtle smooth transition
-    if (queryCache.current.has(cacheKey)) {
-      const cached = queryCache.current.get(cacheKey);
-      const timer = setTimeout(() => {
-        if (!isCancelled) {
-          setMaps(cached.data);
-          setTotalItems(cached.pagination?.total || cached.data.length);
-          setTotalPages(cached.pagination?.totalPages || 1);
-          setIsTransitioning(false);
-          setLoading(false);
-        }
-      }, 180);
-      return () => {
-        isCancelled = true;
-        clearTimeout(timer);
+      const res = await fetch(`/api/v1/maps?${params.toString()}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return {
+        data: json.data || [],
+        total: json.pagination?.total || (Array.isArray(json.data) ? json.data.length : 0),
+        totalPages: json.pagination?.totalPages || 1
       };
     }
+  });
 
-    const fetchAdventures = async () => {
-      const startTime = performance.now();
-      try {
-        const params = new URLSearchParams();
-        if (querySearch) params.append('q', querySearch);
-        if (queryDiff) params.append('difficulty', queryDiff);
-        if (queryType) params.append('type', queryType);
-        if (sortBy) params.append('sort', sortBy);
-        params.append('fields', 'adventureID,adventureName,difficulty,background,assetAbsolutePath,typeAdventure,Bosses,translations');
-        params.append('page', String(currentPage));
-        params.append('limit', '24');
-
-        const res = await fetch(`/api/v1/maps?${params.toString()}`);
-
-        const elapsed = performance.now() - startTime;
-        const remainingDelay = Math.max(0, 320 - elapsed);
-        if (remainingDelay > 0) {
-          await new Promise((resolve) => setTimeout(resolve, remainingDelay));
-        }
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const json = await res.json();
-        if (json.success && Array.isArray(json.data) && !isCancelled) {
-          // Store in cache with 50-item LRU cap to prevent memory bloat
-          if (queryCache.current.size >= 50) {
-            const oldestKey = queryCache.current.keys().next().value;
-            queryCache.current.delete(oldestKey);
-          }
-          queryCache.current.set(cacheKey, {
-            data: json.data,
-            pagination: json.pagination
-          });
-          setMaps(json.data);
-          setTotalItems(json.pagination?.total || 0);
-          setTotalPages(json.pagination?.totalPages || 1);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          console.error('Failed to fetch adventures:', err);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsTransitioning(false);
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchAdventures();
-    return () => {
-      isCancelled = true;
-    };
-  }, [filters.q, filters.search, selectedDifficulties, selectedTypes, sortBy, currentPage]);
+  const isTransitioning = isSearchDebouncing || queryTransitioning;
 
   // Filter Toggle Handlers with immediate transition feedback
   const handleToggleDifficulty = useCallback(

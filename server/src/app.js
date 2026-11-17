@@ -57,6 +57,7 @@ app.use(express.urlencoded({ extended: true }));
 // HTTP Request Logger piped through Winston
 app.use(
   morgan(':method :url :status :response-time ms - :res[content-length]', {
+    skip: (req) => req.url.includes('/presence/ping'),
     stream: {
       write: (message) => logger.http(message.trim())
     }

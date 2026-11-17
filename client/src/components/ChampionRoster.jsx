@@ -6,11 +6,12 @@ import ListLoadingBar from './ListLoadingBar';
 import ListSkeleton from './ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionIconUrl, getRegionDisplayName, getTagLabel } from '../utils/regionIcons';
+import { useQueryCache } from '../hooks/useQueryCache';
 
 /**
  * Modern LoR Champion Roster with Vertical Left Sidebar, Multi-Select Filters,
- * Full Accent-Insensitive Search, Sorting, and Server-Side Pagination
- * Compliant with 3-Breakpoint Rule: Mobile (<640px), Tablet (640-1279px), PC (>=1280px)
+ * Full Accent-Insensitive Search, Sorting, Server-Side Pagination, and In-Memory Query Cache
+ * Compliant with Rule 9 (Debounce 350ms & Subtle Transitions) & Rule 10 (On-Demand Paginated Fetch & LRU Cache)
  */
 export default function ChampionRoster({
   filters = {},
@@ -31,23 +32,8 @@ export default function ChampionRoster({
     tags: []
   });
 
-  // Champion data and loading state
-  const [champions, setChampions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: filters.page || 1,
-    limit: filters.limit || 24,
-    total: 0,
-    totalPages: 1,
-    hasMore: false
-  });
-
   // Mobile drawer state
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-
-  // Local search state for input debouncing
-  const [localSearch, setLocalSearch] = useState(filters.q || '');
 
   // Parse arrays from URL comma-separated strings
   const selectedRegions = (filters.regions || (filters.region && filters.region !== 'all' ? filters.region : ''))
@@ -74,6 +60,91 @@ export default function ChampionRoster({
   const currentPage = filters.page || 1;
   const currentLimit = 24;
 
+  // Local search state for input debouncing (Rule 9)
+  const [localSearch, setLocalSearch] = useState(filters.q || '');
+  const [isSearchDebouncing, setIsSearchDebouncing] = useState(false);
+
+  // Synchronize local search when filters.q changes externally (e.g. browser navigation or reset)
+  useEffect(() => {
+    setLocalSearch(filters.q || '');
+  }, [filters.q]);
+
+  // Sync local search with debounce (350ms - Rule 9) to URL
+  useEffect(() => {
+    const currentQuery = (filters.q || '').trim();
+    if (localSearch.trim() !== currentQuery) {
+      setIsSearchDebouncing(true);
+    }
+    const timer = setTimeout(() => {
+      if (localSearch.trim() !== currentQuery) {
+        updateFilters?.({ q: localSearch.trim(), page: 1 });
+      }
+      setIsSearchDebouncing(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, filters.q, updateFilters]);
+
+  // Query dimensions (normalized for deterministic cache keys)
+  const querySearch = (filters.q || '').trim();
+  const queryRegions = selectedRegions.slice().sort().join(',');
+  const queryCosts = selectedCosts.slice().sort().join(',');
+  const queryStars = selectedStars.slice().sort().join(',');
+  const queryTags = selectedTags.slice().sort().join(',');
+
+  // 1. Unified Query Cache Hook (Rules 9 & 10: In-Memory LRU Cache & Subtle Smooth Transitions)
+  const {
+    data: champions,
+    pagination: queryPagination,
+    loading,
+    isTransitioning: cacheTransitioning
+  } = useQueryCache({
+    namespace: 'champions',
+    key: {
+      search: querySearch,
+      regions: queryRegions,
+      costs: queryCosts,
+      stars: queryStars,
+      tags: queryTags,
+      sort: sortBy,
+      page: currentPage,
+      limit: currentLimit
+    },
+    fetcher: async ({ signal }) => {
+      const params = new URLSearchParams();
+      params.set('summary', 'true');
+      params.set('page', String(currentPage));
+      params.set('limit', String(currentLimit));
+
+      if (querySearch) params.set('search', querySearch);
+      if (selectedRegions.length > 0) params.set('regions', selectedRegions.join(','));
+      if (selectedCosts.length > 0) params.set('costs', selectedCosts.join(','));
+      if (selectedStars.length > 0) params.set('stars', selectedStars.join(','));
+      if (selectedTags.length > 0) params.set('tags', selectedTags.join(','));
+      if (sortBy) params.set('sort', sortBy);
+
+      const res = await fetch(`/api/v1/champions?${params.toString()}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return {
+        data: json.data || [],
+        total: json.pagination?.total || 0,
+        totalPages: json.pagination?.totalPages || 1,
+        pagination: json.pagination
+      };
+    }
+  });
+
+  const pagination = queryPagination || {
+    page: currentPage,
+    limit: currentLimit,
+    total: champions.length,
+    totalPages: 1,
+    hasMore: false
+  };
+
+  const isTransitioning = isSearchDebouncing || cacheTransitioning;
+
   const hasActiveFilters = Boolean(
     localSearch.trim() ||
     selectedRegions.length > 0 ||
@@ -92,7 +163,7 @@ export default function ChampionRoster({
     selectedTags.length +
     (sortBy !== 'name-asc' ? 1 : 0);
 
-  // 1. Fetch Filter Options on Mount
+  // 2. Fetch Filter Options on Mount
   useEffect(() => {
     let isMounted = true;
     fetch('/api/v1/champions/filters')
@@ -108,105 +179,6 @@ export default function ChampionRoster({
       isMounted = false;
     };
   }, []);
-
-  // 2. Fetch Paginated Champions based on Current Filters
-  useEffect(() => {
-    let isMounted = true;
-    const abortController = new AbortController();
-
-    const fetchChampions = async () => {
-      setIsTransitioning(true);
-      if (champions.length === 0) {
-        setLoading(true);
-      }
-      const startTime = performance.now();
-
-      try {
-        const params = new URLSearchParams();
-        params.set('summary', 'true');
-        params.set('page', String(currentPage));
-        params.set('limit', String(currentLimit));
-
-        if (localSearch.trim()) {
-          params.set('search', localSearch.trim());
-        }
-        if (selectedRegions.length > 0) {
-          params.set('regions', selectedRegions.join(','));
-        }
-        if (selectedCosts.length > 0) {
-          params.set('costs', selectedCosts.join(','));
-        }
-        if (selectedStars.length > 0) {
-          params.set('stars', selectedStars.join(','));
-        }
-        if (selectedTags.length > 0) {
-          params.set('tags', selectedTags.join(','));
-        }
-        if (sortBy) {
-          params.set('sort', sortBy);
-        }
-
-        const res = await fetch(`/api/v1/champions?${params.toString()}`, {
-          signal: abortController.signal
-        });
-
-        // Enforce smooth minimum 320ms duration to eliminate jarring instant flash (Rule 9)
-        const elapsed = performance.now() - startTime;
-        const remainingDelay = Math.max(0, 320 - elapsed);
-        if (remainingDelay > 0) {
-          await new Promise((resolve) => setTimeout(resolve, remainingDelay));
-        }
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && isMounted) {
-            setChampions(json.data || []);
-            if (json.pagination) {
-              setPagination(json.pagination);
-            }
-          }
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Failed to fetch champions:', err);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-          setIsTransitioning(false);
-        }
-      }
-    };
-
-    fetchChampions();
-
-    return () => {
-      isMounted = false;
-      abortController.abort();
-    };
-  }, [localSearch, filters.regions, filters.region, filters.costs, filters.stars, filters.tags, sortBy, currentPage, currentLimit]);
-
-  // Synchronize local search when filters.q changes externally (e.g. browser navigation)
-  useEffect(() => {
-    setLocalSearch(filters.q || '');
-  }, [filters.q]);
-
-  // Sync local search with debounce (350ms - Rule 9) to URL
-  useEffect(() => {
-    const currentQuery = (filters.q || '').trim();
-    if (localSearch.trim() !== currentQuery) {
-      setIsTransitioning(true);
-    }
-    const timer = setTimeout(() => {
-      if (localSearch.trim() !== currentQuery) {
-        updateFilters?.({ q: localSearch.trim(), page: 1 });
-      } else {
-        setIsTransitioning(false);
-      }
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [localSearch, filters.q, updateFilters]);
 
   // Handlers for toggling multi-select filter items with immediate transition feedback
   const handleToggleRegion = useCallback(

@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import ListLoadingBar from '../components/ListLoadingBar';
 import ListSkeleton from '../components/ListSkeleton';
 import { useLanguage } from '../context/LanguageContext';
+import { useQueryCache } from '../hooks/useQueryCache';
 
 /**
  * Modern LoR Items Vault View (/items)
@@ -21,15 +22,6 @@ export default function ItemsView({ filters = {}, updateFilters, onSelectItem })
   const isEn = language === 'en';
 
   const rosterTopRef = useRef(null);
-
-  // In-memory Query Cache ref (Rule 10)
-  const queryCache = useRef(new Map());
-
-  // Data state
-  const [items, setItems] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   // Parse filters from URL state
   const selectedRarities = (filters.rarity || filters.rarities || '')
@@ -48,7 +40,7 @@ export default function ItemsView({ filters = {}, updateFilters, onSelectItem })
 
   // Filters & Search state with Rule 9 Debounce (350ms)
   const [searchInput, setSearchInput] = useState(filters.q || '');
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isSearchDebouncing, setIsSearchDebouncing] = useState(false);
 
   // UI state
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -60,116 +52,64 @@ export default function ItemsView({ filters = {}, updateFilters, onSelectItem })
 
   // Debounce search input by 350ms with subtle loading transition (Rule 9)
   useEffect(() => {
-    setIsTransitioning(true);
+    const clean = searchInput.trim();
+    if ((filters.q || '') !== clean) {
+      setIsSearchDebouncing(true);
+    }
     const timer = setTimeout(() => {
-      const clean = searchInput.trim();
       if ((filters.q || '') !== clean) {
         updateFilters?.({ q: clean, page: 1 });
-      } else {
-        setIsTransitioning(false);
       }
+      setIsSearchDebouncing(false);
     }, 350);
 
     return () => clearTimeout(timer);
   }, [searchInput, filters.q, updateFilters]);
 
-  // Query Fetcher with Cache-First Strategy & Smooth Loading (Rules 9 & 10)
-  useEffect(() => {
-    let isCancelled = false;
-    setLoading(true);
-    setIsTransitioning(true);
+  // Query dimensions (normalized for deterministic cache keys)
+  const querySearch = (filters.q || '').trim();
+  const queryRarity = selectedRarities.slice().sort().join(',');
+  const queryType = selectedTypes.slice().sort().join(',');
 
-    const querySearch = (filters.q || '').trim();
-    const queryRarity = selectedRarities.slice().sort().join(',');
-    const queryType = selectedTypes.slice().sort().join(',');
-
-    const cacheKey = JSON.stringify({
+  // Unified Query Cache Hook (Rule 10: In-Memory LRU Cache & Rule 9: Smooth Transitions)
+  const {
+    data: items,
+    total: totalItems,
+    totalPages,
+    loading,
+    isTransitioning: queryTransitioning
+  } = useQueryCache({
+    namespace: 'items',
+    key: {
       search: querySearch,
       rarity: queryRarity,
       type: queryType,
       sort: sortBy,
       page: currentPage,
       limit: itemsPerPage
-    });
+    },
+    fetcher: async ({ signal }) => {
+      const params = new URLSearchParams();
+      if (querySearch) params.append('search', querySearch);
+      if (queryRarity) params.append('rarity', queryRarity);
+      if (queryType) params.append('type', queryType);
+      if (sortBy) params.append('sort', sortBy);
+      params.append('fields', 'itemCode,name,rarity,assetAbsolutePath,descriptionRaw,description,translations');
+      params.append('page', String(currentPage));
+      params.append('limit', String(itemsPerPage));
 
-    // Check In-Memory Cache first with subtle smooth transition
-    if (queryCache.current.has(cacheKey)) {
-      const cached = queryCache.current.get(cacheKey);
-      const timer = setTimeout(() => {
-        if (!isCancelled) {
-          setItems(cached.data);
-          setTotalItems(cached.total);
-          setTotalPages(cached.totalPages);
-          setLoading(false);
-          setIsTransitioning(false);
-        }
-      }, 180);
-      return () => {
-        isCancelled = true;
-        clearTimeout(timer);
+      const res = await fetch(`/api/v1/items?${params.toString()}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return {
+        data: json.data || [],
+        total: json.pagination?.total || 0,
+        totalPages: json.pagination?.totalPages || 1
       };
     }
+  });
 
-    // Cache miss: Fetch from server on demand with smooth transition timing
-    const fetchItems = async () => {
-      const startTime = performance.now();
-      try {
-        const params = new URLSearchParams();
-        if (querySearch) params.append('search', querySearch);
-        if (queryRarity) params.append('rarity', queryRarity);
-        if (queryType) params.append('type', queryType);
-        if (sortBy) params.append('sort', sortBy);
-        params.append('fields', 'itemCode,name,rarity,assetAbsolutePath,descriptionRaw,description,translations');
-        params.append('page', String(currentPage));
-        params.append('limit', String(itemsPerPage));
-
-        const res = await fetch(`/api/v1/items?${params.toString()}`);
-
-        const elapsed = performance.now() - startTime;
-        const remainingDelay = Math.max(0, 320 - elapsed);
-        if (remainingDelay > 0) {
-          await new Promise((resolve) => setTimeout(resolve, remainingDelay));
-        }
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && !isCancelled) {
-            const resultData = json.data || [];
-            const resultTotal = json.pagination?.total || 0;
-            const resultTotalPages = json.pagination?.totalPages || 1;
-
-            // Store in cache with 50-item LRU cap to prevent memory bloat
-            if (queryCache.current.size >= 50) {
-              const oldestKey = queryCache.current.keys().next().value;
-              queryCache.current.delete(oldestKey);
-            }
-            queryCache.current.set(cacheKey, {
-              data: resultData,
-              total: resultTotal,
-              totalPages: resultTotalPages
-            });
-
-            setItems(resultData);
-            setTotalItems(resultTotal);
-            setTotalPages(resultTotalPages);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch items:', err);
-      } finally {
-        if (!isCancelled) {
-          setLoading(false);
-          setIsTransitioning(false);
-        }
-      }
-    };
-
-    fetchItems();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [filters.q, filters.rarity, filters.type, sortBy, currentPage]);
+  const isTransitioning = isSearchDebouncing || queryTransitioning;
 
   // Filter Toggles
   const handleToggleRarity = useCallback((val) => {

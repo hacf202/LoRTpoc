@@ -12,6 +12,7 @@ import bonusStarRoutes from './bonusStar.route.js';
 import tierlistRoutes from './tierlist.route.js';
 import searchRoutes from './search.route.js';
 import seoRoutes from './seo.route.js';
+import presenceRoutes from './presence.route.js';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 router.use('/auth', authRoutes);
+router.use('/presence', presenceRoutes);
 
 // 2. SEO routes under API namespace
 router.use('/seo', seoRoutes);
