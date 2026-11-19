@@ -1,4 +1,4 @@
-import { redisClient, isRedisConnected } from '../config/redis.js';
+import { redisClient, isRedisReady } from '../config/redis.js';
 
 /**
  * High-Performance Distributed Redis + In-Memory Fallback Cache Middleware
@@ -46,7 +46,7 @@ export async function invalidateServerCache(prefix = null) {
   }
 
   // 2. Clear Redis Cache
-  if (isRedisConnected && redisClient) {
+  if (isRedisReady() && redisClient) {
     try {
       const pattern = prefix ? `poc:cache:*${prefix}*` : 'poc:cache:*';
       const keys = await redisClient.keys(pattern);
@@ -76,6 +76,10 @@ export const httpCache = (durationSeconds = 60) => {
           const basePath = req.baseUrl || req.path;
           if (basePath) {
             invalidateServerCache(basePath);
+            if (basePath.includes('/champions')) {
+              invalidateServerCache('/search');
+              invalidateServerCache('/tierlist');
+            }
           }
         }
       });
@@ -104,7 +108,7 @@ export const httpCache = (durationSeconds = 60) => {
     const redisKey = `poc:cache:${cacheKey}`;
 
     // 3. Try Redis Cache
-    if (isRedisConnected && redisClient) {
+    if (isRedisReady() && redisClient) {
       try {
         const cachedRaw = await redisClient.get(redisKey);
         if (cachedRaw) {

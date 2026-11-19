@@ -6,6 +6,7 @@ import { matchSearchQuery, rankSearchResults } from '../utils/searchUtils.js';
 import { paginateList } from '../utils/paginate.js';
 import { relationService } from './relation.service.js';
 import { loadCollectionFromDb, upsertDbDocument, deleteDbDocument } from '../config/dbDataLoader.js';
+import { invalidateServerCache } from '../middlewares/cache.middleware.js';
 import { toChampionSlug } from '../utils/slug.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -427,10 +428,22 @@ export const championService = {
       assets: cleanData.assets || [],
       ...cleanData
     };
-    champions.push(newChampion);
-    saveChampionsToFile();
+
+    // 1. Persist directly to MongoDB (Source of Truth)
     await upsertDbDocument('champions', { championID: newChampion.championID }, newChampion);
+
+    // 2. Update memory & relations
+    champions.push(newChampion);
     relationService.rebuild();
+
+    // 3. Invalidate server caches
+    await invalidateServerCache('/champions');
+    await invalidateServerCache('/search');
+    await invalidateServerCache('/tierlist');
+
+    // 4. Save local JSON backup
+    saveChampionsToFile();
+
     return newChampion;
   },
 
@@ -454,15 +467,27 @@ export const championService = {
     if (index === -1) return null;
 
     const cleanData = sanitizeChampionPayload(data);
-
-    champions[index] = {
+    const updatedChamp = {
       ...champions[index],
       ...cleanData,
       championID: champions[index].championID // Keep primary ID immutable
     };
-    saveChampionsToFile();
-    await upsertDbDocument('champions', { championID: champions[index].championID }, champions[index]);
+
+    // 1. Persist directly to MongoDB first (Source of Truth)
+    await upsertDbDocument('champions', { championID: updatedChamp.championID }, updatedChamp);
+
+    // 2. Update memory & relations
+    champions[index] = updatedChamp;
     relationService.rebuild();
+
+    // 3. Invalidate server caches across Redis & memory
+    await invalidateServerCache('/champions');
+    await invalidateServerCache('/search');
+    await invalidateServerCache('/tierlist');
+
+    // 4. Save local JSON backup
+    saveChampionsToFile();
+
     return champions[index];
   },
 
@@ -477,10 +502,22 @@ export const championService = {
     if (index === -1) return false;
 
     const targetChamp = champions[index];
-    champions.splice(index, 1);
-    saveChampionsToFile();
+
+    // 1. Delete from MongoDB first
     await deleteDbDocument('champions', { championID: targetChamp.championID });
+
+    // 2. Remove from memory & rebuild relations
+    champions.splice(index, 1);
     relationService.rebuild();
+
+    // 3. Invalidate server caches
+    await invalidateServerCache('/champions');
+    await invalidateServerCache('/search');
+    await invalidateServerCache('/tierlist');
+
+    // 4. Save local JSON backup
+    saveChampionsToFile();
+
     return true;
   },
 

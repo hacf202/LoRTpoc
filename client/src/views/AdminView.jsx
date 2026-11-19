@@ -1122,6 +1122,18 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       const json = await res.json();
       if (res.ok && json.success) {
         setSaveSuccessMsg(isNewChampion ? 'Tạo mới tướng thành công!' : 'Cập nhật dữ liệu tướng thành công!');
+        if (json.data) {
+          setChampions((prev) => {
+            const idx = prev.findIndex((c) => c.championID === json.data.championID);
+            if (idx >= 0) {
+              const next = [...prev];
+              next[idx] = json.data;
+              return next;
+            }
+            return [json.data, ...prev];
+          });
+          setEditingChampion(json.data);
+        }
         await fetchChampions();
         window.dispatchEvent(new CustomEvent('poc-data-updated', { detail: { type: 'champions', data: json.data } }));
         setTimeout(() => {
