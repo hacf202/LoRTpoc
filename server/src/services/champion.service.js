@@ -137,13 +137,7 @@ function saveChampionsToFile() {
     // 2. Format keys with basic info at the top
     const formatted = champions.map(orderChampionKeys);
 
-    // 3. Backup current file
-    if (fs.existsSync(dataFilePath)) {
-      const backupPath = `${dataFilePath}.bak`;
-      fs.copyFileSync(dataFilePath, backupPath);
-    }
-
-    // 4. Safe sync write
+    // 3. Safe sync write for offline JSON backup (Không tạo file .bak thừa)
     fs.writeFileSync(dataFilePath, JSON.stringify(formatted, null, 2), 'utf8');
     champions = formatted;
 
@@ -429,19 +423,32 @@ export const championService = {
       ...cleanData
     };
 
-    // 1. Persist directly to MongoDB (Source of Truth)
-    await upsertDbDocument('champions', { championID: newChampion.championID }, newChampion);
+    // 1. BẮT BUỘC lưu trực tiếp vào CSDL MongoDB (Source of Truth)
+    const dbSuccess = await upsertDbDocument('champions', { championID: newChampion.championID }, newChampion);
+    if (!dbSuccess) {
+      throw new Error('Không thể lưu tướng vào Cơ sở dữ liệu (MongoDB). Vui lòng kiểm tra trạng thái kết nối CSDL.');
+    }
 
-    // 2. Update memory & relations
+    // 2. Đồng bộ chòm sao vào CSDL MongoDB nếu có
+    if (newChampion.constellation && Array.isArray(newChampion.constellation.nodes) && newChampion.constellation.nodes.length > 0) {
+      await upsertDbDocument('constellations', { constellationID: newChampion.championID }, {
+        ...newChampion.constellation,
+        constellationID: newChampion.championID,
+        championName: newChampion.name
+      });
+      await invalidateServerCache('/constellations');
+    }
+
+    // 3. Cập nhật bộ nhớ RAM & quan hệ
     champions.push(newChampion);
     relationService.rebuild();
 
-    // 3. Invalidate server caches
+    // 4. Xóa cache Redis & Memory
     await invalidateServerCache('/champions');
     await invalidateServerCache('/search');
     await invalidateServerCache('/tierlist');
 
-    // 4. Save local JSON backup
+    // 5. Cập nhật file JSON dự phòng (Offline Backup)
     saveChampionsToFile();
 
     return newChampion;
@@ -473,19 +480,32 @@ export const championService = {
       championID: champions[index].championID // Keep primary ID immutable
     };
 
-    // 1. Persist directly to MongoDB first (Source of Truth)
-    await upsertDbDocument('champions', { championID: updatedChamp.championID }, updatedChamp);
+    // 1. BẮT BUỘC lưu trực tiếp vào CSDL MongoDB (Source of Truth)
+    const dbSuccess = await upsertDbDocument('champions', { championID: updatedChamp.championID }, updatedChamp);
+    if (!dbSuccess) {
+      throw new Error('Không thể cập nhật tướng vào Cơ sở dữ liệu (MongoDB). Vui lòng kiểm tra trạng thái kết nối CSDL.');
+    }
 
-    // 2. Update memory & relations
+    // 2. Đồng bộ chòm sao vào CSDL MongoDB nếu có
+    if (updatedChamp.constellation && Array.isArray(updatedChamp.constellation.nodes) && updatedChamp.constellation.nodes.length > 0) {
+      await upsertDbDocument('constellations', { constellationID: updatedChamp.championID }, {
+        ...updatedChamp.constellation,
+        constellationID: updatedChamp.championID,
+        championName: updatedChamp.name
+      });
+      await invalidateServerCache('/constellations');
+    }
+
+    // 3. Cập nhật bộ nhớ RAM & quan hệ
     champions[index] = updatedChamp;
     relationService.rebuild();
 
-    // 3. Invalidate server caches across Redis & memory
+    // 4. Xóa cache Redis & Memory
     await invalidateServerCache('/champions');
     await invalidateServerCache('/search');
     await invalidateServerCache('/tierlist');
 
-    // 4. Save local JSON backup
+    // 5. Cập nhật file JSON dự phòng (Offline Backup)
     saveChampionsToFile();
 
     return champions[index];
@@ -503,19 +523,26 @@ export const championService = {
 
     const targetChamp = champions[index];
 
-    // 1. Delete from MongoDB first
-    await deleteDbDocument('champions', { championID: targetChamp.championID });
+    // 1. BẮT BUỘC xóa trực tiếp khỏi CSDL MongoDB (Source of Truth)
+    const dbDeleted = await deleteDbDocument('champions', { championID: targetChamp.championID });
+    if (!dbDeleted) {
+      throw new Error('Không thể xóa tướng khỏi Cơ sở dữ liệu (MongoDB).');
+    }
 
-    // 2. Remove from memory & rebuild relations
+    // 2. Xóa chòm sao tương ứng trong MongoDB
+    await deleteDbDocument('constellations', { constellationID: targetChamp.championID });
+
+    // 3. Xóa khỏi bộ nhớ RAM & quan hệ
     champions.splice(index, 1);
     relationService.rebuild();
 
-    // 3. Invalidate server caches
+    // 4. Xóa cache Redis & Memory
     await invalidateServerCache('/champions');
     await invalidateServerCache('/search');
     await invalidateServerCache('/tierlist');
+    await invalidateServerCache('/constellations');
 
-    // 4. Save local JSON backup
+    // 5. Cập nhật file JSON dự phòng (Offline Backup)
     saveChampionsToFile();
 
     return true;

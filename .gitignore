@@ -18,6 +18,8 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+*.bak
+*.bak.*
 
 # Database Backups
 backups/

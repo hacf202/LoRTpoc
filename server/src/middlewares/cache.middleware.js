@@ -157,7 +157,7 @@ export const httpCache = (durationSeconds = 60) => {
         };
 
         // Save to Redis if available
-        if (isRedisConnected && redisClient) {
+        if (isRedisReady() && redisClient) {
           redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
         }
 
