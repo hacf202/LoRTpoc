@@ -48,7 +48,10 @@ export default function RelicMiniCard({ relicCode, relicInfo, isEn, isCore, onCl
                 </span>
               )}
             </div>
-            <h4 className="text-xs sm:text-sm font-bold text-white truncate block mt-0.5 group-hover:text-sky-300 transition-colors" title={name}>
+            <h4
+              className="text-xs sm:text-sm font-bold text-white line-clamp-2 leading-snug break-words mt-0.5 group-hover:text-sky-300 transition-colors"
+              title={name}
+            >
               {name}
             </h4>
           </div>

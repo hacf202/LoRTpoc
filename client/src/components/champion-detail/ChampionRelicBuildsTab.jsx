@@ -47,214 +47,244 @@ export default function ChampionRelicBuildsTab({
   return (
     <div id="relics" className="flex flex-col gap-6">
       {/* 1. Suitable Relics Section (Các Cổ Vật Phù Hợp - Dạng Sơ Đồ Cây A + B or | + C / + D) */}
-      {(suitableData.mandatory.length > 0 || suitableData.options.length > 0) && (
-        <div className="p-2 sm:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border-2 border-[#8CC0EB]/35 shadow-xl space-y-3 sm:space-y-4">
-          <div className="flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/10">
-            <h3 className="text-base sm:text-lg font-bold font-heading text-[#FFF9D2]">
-              {isEn ? 'Suitable Relics' : 'Các Cổ Vật Phù Hợp'}
-            </h3>
-          </div>
+      {(suitableData.mandatory.length > 0 || suitableData.options.length > 0) && (() => {
+        const mandatoryCount = suitableData.mandatory.length;
+        const maxOptionItems = suitableData.options.length > 0
+          ? Math.max(...suitableData.options.map((opt) => opt.length), 1)
+          : 0;
+        const hasBoth = mandatoryCount > 0 && suitableData.options.length > 0;
+        const totalColumns = mandatoryCount + maxOptionItems;
 
-          {/* --- MOBILE VIEW: Sơ đồ cây phân nhánh tối giản - Chỉ hiển thị Icon, không chữ --- */}
-          <div className="sm:hidden w-full overflow-x-auto py-2">
-            <div className="flex items-center justify-center min-w-fit mx-auto gap-0 px-2 select-none">
-              {/* 1. Vế trái: Cổ vật cố định bắt buộc (Mandatory) */}
-              {suitableData.mandatory.length > 0 && (
-                <div className="flex items-center gap-2 shrink-0 pr-1">
-                  {suitableData.mandatory.map((code, idx) => {
-                    const item = relicMap[code];
-                    const relicName =
-                      (isEn ? item?.translations?.en?.name : item?.name) || item?.name || code;
-                    return (
+        return (
+          <div className="p-2 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border-2 border-[#8CC0EB]/35 shadow-xl space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-white/10 flex-wrap gap-2">
+              <h3 className="text-base sm:text-lg font-bold font-heading text-[#FFF9D2]">
+                {isEn ? 'Suitable Relics' : 'Các Cổ Vật Phù Hợp'}
+              </h3>
+              {hasBoth && (
+                <span className="text-[11px] sm:text-xs text-sky-300/80 font-sans hidden sm:inline-block">
+                  {isEn ? 'Core Relics + Situational Options' : 'Cổ vật cốt lõi + Nhánh tùy chọn'}
+                </span>
+              )}
+            </div>
+
+            {/* --- MOBILE VIEW: Sơ đồ cây phân nhánh tối giản - Chỉ hiển thị Icon, không chữ --- */}
+            <div className="sm:hidden w-full overflow-x-auto py-2">
+              <div className="flex items-center justify-center min-w-fit mx-auto gap-0 px-2 select-none">
+                {/* 1. Vế trái: Cổ vật cố định bắt buộc (Mandatory) */}
+                {suitableData.mandatory.length > 0 && (
+                  <div className="flex items-center gap-2 shrink-0 pr-1">
+                    {suitableData.mandatory.map((code, idx) => {
+                      const item = relicMap[code];
+                      const relicName =
+                        (isEn ? item?.translations?.en?.name : item?.name) || item?.name || code;
+                      return (
+                        <React.Fragment key={code}>
+                          {idx > 0 && (
+                            <span className="text-base font-black text-[#8CC0EB] px-0.5 select-none">
+                              +
+                            </span>
+                          )}
+                          <div
+                            onClick={() => navigateTo('relic', code)}
+                            title={relicName}
+                            className="group relative flex items-center justify-center w-12 h-12 p-0.5 cursor-pointer active:scale-95 transition-all shrink-0 bg-[#090d16] rounded-lg border border-[#8CC0EB]/40 shadow-sm"
+                          >
+                            <img
+                              src={`https://images.lortpoc.com/relics/${code}.webp`}
+                              alt={relicName}
+                              className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform"
+                              onError={(e) => handleImageError(e, 'relic')}
+                            />
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 2. Đường kẻ ngang nối từ vế trái sang trục dọc */}
+                {hasBoth && (
+                  <div className="w-5 h-0.5 bg-sky-400/60 shrink-0" />
+                )}
+
+                {/* 3. Vế phải: Trục dọc và các nhánh tùy chọn (Options) */}
+                {suitableData.options.length > 0 && (
+                  <div className="flex flex-col justify-center gap-2.5 relative py-1 shrink-0">
+                    {suitableData.options.map((optItems, optIdx) => {
+                      const isFirst = optIdx === 0;
+                      const isLast = optIdx === suitableData.options.length - 1;
+                      const isSingle = suitableData.options.length === 1;
+
+                      return (
+                        <div
+                          key={optIdx}
+                          className="relative flex items-center gap-2 pl-4 sm:pl-6 group"
+                        >
+                          {/* Trục dọc: Chỉ nối từ tâm hàng đầu tiên đến tâm hàng cuối cùng */}
+                          {!isSingle && isFirst && (
+                            <div className="absolute left-0 top-1/2 -bottom-2.5 w-0.5 bg-sky-400/60" />
+                          )}
+                          {!isSingle && isLast && (
+                            <div className="absolute left-0 top-0 bottom-1/2 w-0.5 bg-sky-400/60" />
+                          )}
+                          {!isSingle && !isFirst && !isLast && (
+                            <div className="absolute left-0 top-0 -bottom-2.5 w-0.5 bg-sky-400/60" />
+                          )}
+
+                          {/* Nhánh ngang nối từ trục dọc vào hàng icon */}
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 sm:w-6 h-0.5 bg-sky-400/60 group-hover:bg-sky-400 transition-colors" />
+
+                          {/* Danh sách icon trong nhánh này */}
+                          <div className="flex items-center gap-2">
+                            {optItems.map((code, sIdx) => {
+                              const item = relicMap[code];
+                              const relicName =
+                                (isEn ? item?.translations?.en?.name : item?.name) || item?.name || code;
+                              return (
+                                <React.Fragment key={code}>
+                                  {sIdx > 0 && (
+                                    <span className="text-sm font-black text-sky-400 px-0.5 select-none shrink-0">
+                                      +
+                                    </span>
+                                  )}
+                                  <div
+                                    onClick={() => navigateTo('relic', code)}
+                                    title={relicName}
+                                    className="group/item relative flex items-center justify-center w-12 h-12 p-0.5 cursor-pointer active:scale-95 transition-all shrink-0 bg-[#090d16] rounded-lg border border-white/20 shadow-sm"
+                                  >
+                                    <img
+                                      src={`https://images.lortpoc.com/relics/${code}.webp`}
+                                      alt={relicName}
+                                      className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover/item:scale-110 transition-transform"
+                                      onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
+                                    />
+                                  </div>
+                                </React.Fragment>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* --- DESKTOP & TABLET VIEW: Sơ đồ rẽ nhánh chuẩn mực, co giãn linh hoạt (Flexible Balanced Tree) --- */}
+            <div className="hidden sm:block w-full overflow-x-auto no-scrollbar py-1">
+              <div
+                className="flex items-stretch gap-0 w-full"
+                style={{
+                  minWidth: hasBoth ? `${Math.max(totalColumns * 250 + 40, 680)}px` : '100%'
+                }}
+              >
+                {/* 1. Vế trái: Cổ vật cố định bắt buộc (Mandatory) */}
+                {mandatoryCount > 0 && (
+                  <div
+                    className="flex items-center gap-2.5 lg:gap-3 self-center"
+                    style={{
+                      flex: hasBoth ? `${mandatoryCount} 1 0%` : '1 1 0%'
+                    }}
+                  >
+                    {suitableData.mandatory.map((code, idx) => (
                       <React.Fragment key={code}>
                         {idx > 0 && (
-                          <span className="text-base font-black text-[#8CC0EB] px-0.5 select-none">
+                          <span className="text-lg lg:text-xl font-black text-[#8CC0EB] text-center select-none shrink-0 px-0.5">
                             +
                           </span>
                         )}
-                        <div
-                          onClick={() => navigateTo('relic', code)}
-                          title={relicName}
-                          className="group relative flex items-center justify-center w-12 h-12 p-0.5 cursor-pointer active:scale-95 transition-all shrink-0"
-                        >
-                          <img
-                            src={`https://images.lortpoc.com/relics/${code}.webp`}
-                            alt={relicName}
-                            className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform"
-                            onError={(e) => handleImageError(e, 'relic')}
+                        <div className="flex-1 min-w-[200px] h-full flex flex-col justify-center">
+                          <RelicMiniCard
+                            relicCode={code}
+                            relicInfo={relicMap[code]}
+                            isEn={isEn}
+                            isCore={true}
+                            onClick={() => navigateTo('relic', code)}
                           />
                         </div>
                       </React.Fragment>
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* 2. Đường kẻ ngang nối từ vế trái sang trục dọc */}
-              {suitableData.mandatory.length > 0 && suitableData.options.length > 0 && (
-                <div className="w-5 h-0.5 bg-sky-400/60 shrink-0" />
-              )}
+                {/* 2. Đường kẻ ngang nối từ vế trái sang trục dọc vế phải */}
+                {hasBoth && (
+                  <div className="w-6 lg:w-8 h-0.5 bg-sky-400/60 shrink-0 self-center" />
+                )}
 
-              {/* 3. Vế phải: Trục dọc và các nhánh tùy chọn (Options) */}
-              {suitableData.options.length > 0 && (
-                <div className="flex flex-col justify-center gap-2.5 relative py-1 shrink-0">
-                  {suitableData.options.map((optItems, optIdx) => {
-                    const isFirst = optIdx === 0;
-                    const isLast = optIdx === suitableData.options.length - 1;
-                    const isSingle = suitableData.options.length === 1;
+                {/* 3. Vế phải: Nhánh các tùy chọn linh hoạt (Options) */}
+                {suitableData.options.length > 0 && (
+                  <div
+                    className="grid grid-cols-1 gap-3 relative"
+                    style={{
+                      flex: hasBoth ? `${maxOptionItems} 1 0%` : '1 1 0%',
+                      gridTemplateRows: `repeat(${suitableData.options.length}, minmax(0, 1fr))`
+                    }}
+                  >
+                    {suitableData.options.map((optItems, optIdx) => {
+                      const isFirst = optIdx === 0;
+                      const isLast = optIdx === suitableData.options.length - 1;
+                      const isSingle = suitableData.options.length === 1;
 
-                    return (
-                      <div
-                        key={optIdx}
-                        className="relative flex items-center gap-2 pl-4 sm:pl-6 group"
-                      >
-                        {/* Trục dọc: Chỉ nối từ tâm hàng đầu tiên đến tâm hàng cuối cùng */}
-                        {!isSingle && isFirst && (
-                          <div className="absolute left-0 top-1/2 -bottom-2.5 w-0.5 bg-sky-400/60" />
-                        )}
-                        {!isSingle && isLast && (
-                          <div className="absolute left-0 top-0 bottom-1/2 w-0.5 bg-sky-400/60" />
-                        )}
-                        {!isSingle && !isFirst && !isLast && (
-                          <div className="absolute left-0 top-0 -bottom-2.5 w-0.5 bg-sky-400/60" />
-                        )}
+                      return (
+                        <div
+                          key={optIdx}
+                          className="relative flex items-stretch pl-6 lg:pl-8 group h-full"
+                        >
+                          {/* Trục dọc liền mạch không thừa: Chỉ chạy từ tâm món đầu tới tâm món cuối */}
+                          {!isSingle && isFirst && (
+                            <div className="absolute left-0 top-1/2 -bottom-3 w-0.5 bg-sky-400/60" />
+                          )}
+                          {!isSingle && isLast && (
+                            <div className="absolute left-0 top-0 bottom-1/2 w-0.5 bg-sky-400/60" />
+                          )}
+                          {!isSingle && !isFirst && !isLast && (
+                            <div className="absolute left-0 top-0 -bottom-3 w-0.5 bg-sky-400/60" />
+                          )}
 
-                        {/* Nhánh ngang nối từ trục dọc vào hàng icon */}
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 sm:w-6 h-0.5 bg-sky-400/60 group-hover:bg-sky-400 transition-colors" />
+                          {/* Đường nhánh ngang nối trực tiếp từ trục dọc vào thẻ */}
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-6 lg:w-8 h-0.5 bg-sky-400/60 group-hover:bg-sky-400 transition-colors" />
 
-                        {/* Danh sách icon trong nhánh này */}
-                        <div className="flex items-center gap-2">
-                          {optItems.map((code, sIdx) => {
-                            const item = relicMap[code];
-                            const relicName =
-                              (isEn ? item?.translations?.en?.name : item?.name) || item?.name || code;
-                            return (
+                          {/* Hàng thẻ trong nhánh này: Co giãn đều đặn theo số lượng item */}
+                          <div className="flex items-center gap-2.5 w-full h-full">
+                            {optItems.map((code, sIdx) => (
                               <React.Fragment key={code}>
                                 {sIdx > 0 && (
-                                  <span className="text-sm font-black text-sky-400 px-0.5 select-none shrink-0">
+                                  <span className="text-base font-black text-sky-400 select-none shrink-0 px-0.5">
                                     +
                                   </span>
                                 )}
-                                <div
-                                  onClick={() => navigateTo('relic', code)}
-                                  title={relicName}
-                                  className="group/item relative flex items-center justify-center w-12 h-12 p-0.5 cursor-pointer active:scale-95 transition-all shrink-0"
-                                >
-                                  <img
-                                    src={`https://images.lortpoc.com/relics/${code}.webp`}
-                                    alt={relicName}
-                                    className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover/item:scale-110 transition-transform"
-                                    onError={(e) => handleImageError(e, 'relic', 'https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0000.png')}
+                                <div className="flex-1 min-w-[200px] h-full">
+                                  <RelicMiniCard
+                                    relicCode={code}
+                                    relicInfo={relicMap[code]}
+                                    isEn={isEn}
+                                    isCore={false}
+                                    onClick={() => navigateTo('relic', code)}
                                   />
                                 </div>
                               </React.Fragment>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* --- DESKTOP VIEW (PC): Sơ đồ rẽ nhánh đầy đủ, sạch sẽ, không có chữ --- */}
-          <div className="hidden sm:flex flex-col xl:flex-row items-stretch xl:items-center gap-4 xl:gap-0">
-            {/* 1. Vế trái: Cổ vật cố định bắt buộc (A hoặc A + B) */}
-            {suitableData.mandatory.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-                {suitableData.mandatory.map((code, idx) => (
-                  <React.Fragment key={code}>
-                    {idx > 0 && (
-                      <span className="text-xl font-black text-[#8CC0EB] text-center select-none shrink-0 px-1">
-                        +
-                      </span>
-                    )}
-                    <div className="flex-1 sm:w-[280px] h-full flex flex-col justify-center">
-                      <RelicMiniCard
-                        relicCode={code}
-                        relicInfo={relicMap[code]}
-                        isEn={isEn}
-                        isCore={true}
-                        onClick={() => navigateTo('relic', code)}
-                      />
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
-            )}
-
-            {/* 2. Đường kẻ ngang nối từ vế trái sang trục dọc */}
-            {suitableData.mandatory.length > 0 && suitableData.options.length > 0 && (
-              <div className="hidden xl:block w-7 h-0.5 bg-sky-400/60 shrink-0 self-center" />
-            )}
-
-            {/* 3. Vế phải: Nhánh các tùy chọn linh hoạt (sơ đồ rẽ nhánh sạch, các hàng bằng nhau tuyệt đối để trục ngang khớp chuẩn tâm) */}
-            {suitableData.options.length > 0 && (
-              <div
-                className="flex-1 grid grid-cols-1 gap-3 relative"
-                style={{
-                  gridTemplateRows: `repeat(${suitableData.options.length}, minmax(0, 1fr))`
-                }}
-              >
-                {suitableData.options.map((optItems, optIdx) => {
-                  const isFirst = optIdx === 0;
-                  const isLast = optIdx === suitableData.options.length - 1;
-                  const isSingle = suitableData.options.length === 1;
-
-                  return (
-                    <div
-                      key={optIdx}
-                      className="relative flex flex-col sm:flex-row items-stretch gap-2 xl:pl-7 group"
-                    >
-                      {/* Trục dọc liền mạch không thừa: Chỉ chạy từ tâm món đầu tới tâm món cuối */}
-                      {!isSingle && isFirst && (
-                        <div className="hidden xl:block absolute left-0 top-1/2 -bottom-3 w-0.5 bg-sky-400/60" />
-                      )}
-                      {!isSingle && isLast && (
-                        <div className="hidden xl:block absolute left-0 top-0 bottom-1/2 w-0.5 bg-sky-400/60" />
-                      )}
-                      {!isSingle && !isFirst && !isLast && (
-                        <div className="hidden xl:block absolute left-0 top-0 -bottom-3 w-0.5 bg-sky-400/60" />
-                      )}
-
-                      {/* Đường nhánh ngang nối trực tiếp từ trục dọc vào thẻ */}
-                      <div className="hidden xl:block absolute left-0 top-1/2 -translate-y-1/2 w-7 h-0.5 bg-sky-400/60 group-hover:bg-sky-400 transition-colors" />
-
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-stretch">
-                        {optItems.map((code, sIdx) => (
-                          <div key={code} className="flex items-center gap-2 h-full">
-                            {sIdx > 0 && (
-                              <span className="text-base font-black text-sky-400 select-none shrink-0">+</span>
-                            )}
-                            <div className="flex-1 min-w-0 h-full">
-                              <RelicMiniCard
-                                relicCode={code}
-                                relicInfo={relicMap[code]}
-                                isEn={isEn}
-                                isCore={false}
-                                onClick={() => navigateTo('relic', code)}
-                              />
-                            </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4. Mô tả giải thích chiến thuật / lý do phù hợp (Hiển thị đầy đủ cả trên Mobile & PC) */}
+            {suitableData.description && (
+              <div className="p-2.5 sm:p-4 rounded-xl bg-[#080c14] border border-white/10 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                <LorMarkup text={suitableData.description} />
               </div>
             )}
           </div>
-
-          {/* 4. Mô tả giải thích chiến thuật / lý do phù hợp (Hiển thị đầy đủ cả trên Mobile & PC) */}
-          {suitableData.description && (
-            <div className="p-2.5 sm:p-4 rounded-xl bg-[#080c14] border border-white/10 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
-              <LorMarkup text={suitableData.description} />
-            </div>
-          )}
-        </div>
-      )}
+        );
+      })()}
 
       {/* 2. Other Relic Sets Section (Các Bộ Cổ Vật Khác) - NẰM Ở GIỮA */}
       <div className="p-2 sm:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-3 sm:space-y-5">
