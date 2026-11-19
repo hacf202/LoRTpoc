@@ -599,17 +599,17 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
     if (found) {
       handleOpenEdit(found);
-    } else if (!loadingChampions) {
-      // Khi người dùng gõ URL trực tiếp hoặc F5 từ route /admin/champion/:name
-      adminFetch(`/api/v1/champions/${encodeURIComponent(targetParam)}`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (data?.success && data?.data) {
-            handleOpenEdit(data.data);
-          }
-        })
-        .catch((err) => console.error('Failed to load champion from URL:', err));
     }
+
+    // Luôn luôn gọi adminFetch để lấy dữ liệu tươi mới nhất từ CSDL MongoDB (chống stale cache)
+    adminFetch(`/api/v1/champions/${encodeURIComponent(targetParam)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && data?.data) {
+          handleOpenEdit(data.data);
+        }
+      })
+      .catch((err) => console.error('Failed to load champion from URL:', err));
   }, [
     filters?.adminModule,
     filters?.adminChampion,

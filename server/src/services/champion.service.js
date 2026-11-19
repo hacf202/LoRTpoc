@@ -8,6 +8,7 @@ import { relationService } from './relation.service.js';
 import { loadCollectionFromDb, upsertDbDocument, deleteDbDocument } from '../config/dbDataLoader.js';
 import { invalidateServerCache } from '../middlewares/cache.middleware.js';
 import { toChampionSlug } from '../utils/slug.js';
+import { getDb } from '../config/mongo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -380,7 +381,41 @@ export const championService = {
     const targetSlug = toChampionSlug(rawId);
     const targetNorm = targetSlug.replace(/-/g, '');
 
-    // 1. Exact match on ID, Code, Name, English name, or clean slug
+    // 1. Direct query MongoDB (Source of Truth) for absolute freshest data
+    const db = getDb();
+    if (db) {
+      try {
+        const doc = await db.collection('champions').findOne(
+          {
+            $or: [
+              { championID: { $regex: `^${cleanId}$`, $options: 'i' } },
+              { cardCode: { $regex: `^${cleanId}$`, $options: 'i' } },
+              { name: { $regex: `^${cleanId}$`, $options: 'i' } },
+              { 'translations.en.name': { $regex: `^${cleanId}$`, $options: 'i' } }
+            ]
+          },
+          { projection: { _id: 0 } }
+        );
+
+        if (doc) {
+          // Sync with in-memory array
+          const idx = champions.findIndex(
+            (c) => c.championID?.toLowerCase() === doc.championID?.toLowerCase()
+          );
+          if (idx >= 0) {
+            champions[idx] = doc;
+          } else {
+            champions.push(doc);
+          }
+          const hydrated = relationService.hydrateChampion(doc);
+          return fields ? pickFields(hydrated, fields, 'championID') : hydrated;
+        }
+      } catch (err) {
+        console.warn('⚠️ [MongoDB] getById direct query error, falling back to memory:', err.message);
+      }
+    }
+
+    // 2. Exact match on ID, Code, Name, English name, or clean slug in memory
     let champion = champions.find(
       (c) =>
         c.championID?.toLowerCase() === cleanId ||
@@ -391,7 +426,7 @@ export const championService = {
         toChampionSlug(c.translations?.en?.name) === targetSlug
     );
 
-    // 2. Normalized match (handles slugs without hyphens or alternate formats)
+    // 3. Normalized match (handles slugs without hyphens or alternate formats)
     if (!champion && targetNorm) {
       champion = champions.find(
         (c) =>
@@ -402,7 +437,7 @@ export const championService = {
       );
     }
 
-    // 3. Fallback: Prefix/partial match for multi-title names (e.g. "yasuo" matching "Yasuo")
+    // 4. Fallback: Prefix/partial match for multi-title names (e.g. "yasuo" matching "Yasuo")
     if (!champion && targetNorm) {
       champion = champions.find((c) => toChampionSlug(c.name).replace(/-/g, '').startsWith(targetNorm));
     }

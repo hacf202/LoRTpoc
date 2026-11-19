@@ -49,4 +49,22 @@ export function isRedisReady() {
   return Boolean(redisClient && redisClient.status === 'ready');
 }
 
+/**
+ * Ensures Redis is ready to accept commands.
+ * Waits up to timeoutMs if Redis is currently connecting.
+ */
+export async function ensureRedisReady(timeoutMs = 2500) {
+  if (!redisClient) return false;
+  if (redisClient.status === 'ready') return true;
+  if (redisClient.status === 'end') return false;
+
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (redisClient.status === 'ready') return true;
+    if (redisClient.status === 'end') return false;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  return redisClient.status === 'ready';
+}
+
 export { redisClient, isRedisConnected };

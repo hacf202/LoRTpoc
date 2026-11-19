@@ -1,4 +1,4 @@
-import { redisClient, isRedisReady } from '../config/redis.js';
+import { redisClient, isRedisReady, ensureRedisReady } from '../config/redis.js';
 
 /**
  * High-Performance Distributed Redis + In-Memory Fallback Cache Middleware
@@ -46,12 +46,15 @@ export async function invalidateServerCache(prefix = null) {
   }
 
   // 2. Clear Redis Cache
-  if (isRedisReady() && redisClient) {
+  if (redisClient) {
     try {
-      const pattern = prefix ? `poc:cache:*${prefix}*` : 'poc:cache:*';
-      const keys = await redisClient.keys(pattern);
-      if (keys.length > 0) {
-        await redisClient.del(keys);
+      const ready = await ensureRedisReady(2500);
+      if (ready) {
+        const pattern = prefix ? `poc:cache:*${prefix}*` : 'poc:cache:*';
+        const keys = await redisClient.keys(pattern);
+        if (keys.length > 0) {
+          await redisClient.del(keys);
+        }
       }
     } catch (err) {
       console.warn('⚠️ Failed to invalidate Redis cache:', err.message);

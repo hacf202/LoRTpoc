@@ -12,6 +12,7 @@ import { socialCrawlerMiddleware } from './middlewares/socialCrawler.middleware.
 import { notFoundHandler } from './middlewares/notFound.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { burstRateLimiter, apiRateLimiter } from './middlewares/rateLimit.middleware.js';
+import { ensureDatabaseConnected } from './config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,6 +54,16 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Database auto-connection & live dataset sync middleware (Safe for Serverless cold-starts & long-running servers)
+app.use(async (req, res, next) => {
+  try {
+    await ensureDatabaseConnected();
+  } catch (err) {
+    console.warn('⚠️ [Database Sync] Connection error:', err.message);
+  }
+  next();
+});
 
 // HTTP Request Logger piped through Winston
 app.use(
