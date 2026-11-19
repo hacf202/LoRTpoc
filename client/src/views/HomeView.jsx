@@ -228,7 +228,7 @@ export default function HomeView({
               ? 'scale-85 sm:scale-75 md:scale-70 opacity-90 mb-3 sm:mb-5 -mt-6 sm:-mt-18 md:-mt-24'
               : 'scale-100 opacity-100 mb-5 sm:mb-12 md:mb-14 mt-0 sm:-mt-8 md:-mt-16'
           }`}>
-            <h1 className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-black uppercase text-white tracking-tight sm:tracking-normal drop-shadow-[0_4px_45px_rgba(0,0,0,0.98)] leading-tight sm:leading-[0.92] space-y-0.5 sm:space-y-2">
+            <h1 className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-extrabold sm:font-bold uppercase text-white tracking-tight sm:tracking-normal drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] leading-tight sm:leading-[0.92] space-y-0.5 sm:space-y-2">
               <span className="block whitespace-nowrap">{t('hero.titleLine1')}</span>
               <span className="block whitespace-nowrap text-white/95">{t('hero.titleLine2')}</span>
             </h1>
@@ -317,11 +317,11 @@ export default function HomeView({
         
         {/* Compact Section Header: 1 Dòng KHÁM PHÁ THÊM nổi bật */}
         <div className="flex items-center justify-center gap-4 sm:gap-6">
-          <div className="h-px bg-gradient-to-r from-transparent via-[#8CC0EB]/30 to-[#8CC0EB]/50 flex-1 max-w-xs sm:max-w-sm" />
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-wider text-[#FFF9D2] drop-shadow-[0_2px_15px_rgba(140,192,235,0.25)] select-none">
+          <div className="h-px bg-white/10 flex-1 max-w-xs sm:max-w-sm" />
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wider text-[#FFF9D2] select-none">
             {t('home.exploreMore')}
           </h2>
-          <div className="h-px bg-gradient-to-l from-transparent via-[#8CC0EB]/30 to-[#8CC0EB]/50 flex-1 max-w-xs sm:max-w-sm" />
+          <div className="h-px bg-white/10 flex-1 max-w-xs sm:max-w-sm" />
         </div>
 
         {/* 4 Categorized Hub Groups */}
@@ -330,7 +330,7 @@ export default function HomeView({
             
             {/* Group Header */}
             <div className="pb-2.5 sm:pb-3 border-b border-white/10">
-              <h3 className="text-base sm:text-xl font-extrabold uppercase text-white tracking-wide">
+              <h3 className="text-base sm:text-xl font-bold uppercase text-white tracking-wide">
                 {group.title}
               </h3>
             </div>

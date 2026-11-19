@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import DropdownFilter from './DropdownFilter';
+import MultiSelectFilter from './MultiSelectFilter';
 
 export const DIFFICULTY_OPTIONS = [
   { value: 'low', labelVi: '0.5★ - 2★ (Cơ Bản)', labelEn: '0.5★ - 2★ (Starter)' },
@@ -17,15 +19,6 @@ export const TYPE_OPTIONS = [
   { value: 'Huyền Thoại Arcane', labelVi: 'Arcane', labelEn: 'Arcane' }
 ];
 
-/**
- * Filter Sidebar for Adventures / Maps Vault
- * Styled identically to RelicFiltersSidebar & PowerFiltersSidebar:
- * - Search bar with inner icon
- * - Sort dropdown
- * - Collapsible filter sections (Difficulty & Adventure Type)
- * - Reset Filters button with rose accent
- * - Mobile slide-out drawer
- */
 export default function MapFiltersSidebar({
   searchTerm = '',
   onSearchChange,
@@ -43,17 +36,25 @@ export default function MapFiltersSidebar({
   const { language } = useLanguage();
   const isEn = language === 'en';
 
-  const [openSections, setOpenSections] = useState({
-    difficulty: true,
-    type: true
-  });
+  const sortOptions = [
+    { value: 'difficulty-asc', label: isEn ? 'Difficulty (Low → High)' : 'Độ khó (Thấp → Cao)' },
+    { value: 'difficulty-desc', label: isEn ? 'Difficulty (High → Low)' : 'Độ khó (Cao → Thấp)' },
+    { value: 'name-asc', label: isEn ? 'Name (A - Z)' : 'Tên (A - Z)' },
+    { value: 'name-desc', label: isEn ? 'Name (Z - A)' : 'Tên (Z - A)' }
+  ];
 
-  const toggleSection = (key) => {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  const difficultyOptions = DIFFICULTY_OPTIONS.map((opt) => ({
+    value: opt.value,
+    label: isEn ? opt.labelEn : opt.labelVi
+  }));
+
+  const typeOptions = TYPE_OPTIONS.map((opt) => ({
+    value: opt.value,
+    label: isEn ? opt.labelEn : opt.labelVi
+  }));
 
   const content = (
-    <div className="flex flex-col gap-3.5 text-sans select-none">
+    <div className="flex flex-col gap-3 text-sans select-none">
       {/* 1. Search Bar */}
       <div>
         <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-heading">
@@ -64,7 +65,7 @@ export default function MapFiltersSidebar({
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={isEn ? 'Adventure name, boss, type...' : 'Tên phiêu lưu, trùm, quy tắc...'}
+            placeholder={isEn ? 'Adventure name or boss...' : 'Tên bản đồ hoặc trùm...'}
             className="w-full h-9 pl-8 pr-7 text-xs bg-[#090d16] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white placeholder-slate-500 outline-none transition-colors"
           />
           <svg
@@ -81,169 +82,67 @@ export default function MapFiltersSidebar({
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 text-slate-400 hover:text-white cursor-pointer text-xs"
+              className="absolute right-2 p-1 text-slate-400 hover:text-white cursor-pointer"
+              title={isEn ? 'Clear' : 'Xóa'}
             >
-              ✕
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           )}
         </div>
       </div>
 
       {/* 2. Sort Dropdown */}
-      <div>
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-heading">
-          {isEn ? 'Sort by' : 'Sắp xếp theo'}
-        </label>
-        <select
-          value={sortBy}
-          onChange={(e) => onSortChange(e.target.value)}
-          className="w-full h-9 px-2.5 text-xs bg-[#090d16] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white outline-none cursor-pointer transition-colors"
-        >
-          <option value="difficulty-asc">{isEn ? 'Difficulty (Low → High)' : 'Độ khó (Thấp → Cao)'}</option>
-          <option value="difficulty-desc">{isEn ? 'Difficulty (High → Low)' : 'Độ khó (Cao → Thấp)'}</option>
-          <option value="name-asc">{isEn ? 'Name (A - Z)' : 'Tên (A - Z)'}</option>
-          <option value="name-desc">{isEn ? 'Name (Z - A)' : 'Tên (Z - A)'}</option>
-        </select>
-      </div>
+      <DropdownFilter
+        label={isEn ? 'Sort By' : 'Sắp Xếp'}
+        options={sortOptions}
+        selectedValue={sortBy}
+        onChange={onSortChange}
+        placeholder={isEn ? 'Select sort order...' : 'Chọn thứ tự sắp xếp...'}
+      />
 
-      {/* 3. Filter Section: Difficulty (Độ Khó) */}
-      <div className="rounded-xl border border-white/10 bg-[#090d16] overflow-hidden">
-        <button
-          type="button"
-          onClick={() => toggleSection('difficulty')}
-          className="w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/5 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <span>{isEn ? 'Difficulty' : 'Độ Khó'}</span>
-            {selectedDifficulties.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#8CC0EB] text-[#07090e] text-[10px] font-black">
-                {selectedDifficulties.length}
-              </span>
-            )}
-          </div>
-          <svg
-            className={`w-3.5 h-3.5 text-slate-400 transition-transform ${openSections.difficulty ? 'rotate-180' : ''}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
+      {/* 3. Difficulty Multi-Select */}
+      <MultiSelectFilter
+        label={isEn ? 'Difficulty Tier' : 'Bậc Độ Khó'}
+        options={difficultyOptions}
+        selectedValues={selectedDifficulties}
+        onChange={(newValues) => {
+          newValues.forEach((v) => {
+            if (!selectedDifficulties.includes(v)) onToggleDifficulty(v);
+          });
+          selectedDifficulties.forEach((v) => {
+            if (!newValues.includes(v)) onToggleDifficulty(v);
+          });
+        }}
+        placeholder={isEn ? 'All Difficulties' : 'Tất cả độ khó'}
+        badgeLabel={isEn ? 'tiers' : 'bậc'}
+      />
 
-        {openSections.difficulty && (
-          <div className="p-3 pt-0 flex flex-col gap-1.5 border-t border-white/5">
-            {DIFFICULTY_OPTIONS.map((d) => {
-              const isChecked = selectedDifficulties.includes(d.value);
-              return (
-                <label
-                  key={d.value}
-                  className={`flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-all ${
-                    isChecked
-                      ? 'bg-[#8CC0EB]/15 text-[#8CC0EB] font-bold border border-[#8CC0EB]/40'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => onToggleDifficulty(d.value)}
-                      className="hidden"
-                    />
-                    <div
-                      className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors shrink-0 ${
-                        isChecked ? 'bg-[#8CC0EB] border-[#8CC0EB]' : 'border-white/30 bg-[#070a10]'
-                      }`}
-                    >
-                      {isChecked && (
-                        <svg className="w-2.5 h-2.5 text-[#07090e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5}>
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </div>
-                    <span>{isEn ? d.labelEn : d.labelVi}</span>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* 4. Filter Section: Adventure Type (Loại Phiêu Lưu) */}
-      <div className="rounded-xl border border-white/10 bg-[#090d16] overflow-hidden">
-        <button
-          type="button"
-          onClick={() => toggleSection('type')}
-          className="w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/5 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <span>{isEn ? 'Adventure Type' : 'Loại Phiêu Lưu'}</span>
-            {selectedTypes.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#8CC0EB] text-[#07090e] text-[10px] font-black">
-                {selectedTypes.length}
-              </span>
-            )}
-          </div>
-          <svg
-            className={`w-3.5 h-3.5 text-slate-400 transition-transform ${openSections.type ? 'rotate-180' : ''}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-
-        {openSections.type && (
-          <div className="p-3 pt-0 flex flex-col gap-1.5 border-t border-white/5">
-            {TYPE_OPTIONS.map((t) => {
-              const isChecked = selectedTypes.includes(t.value);
-              return (
-                <label
-                  key={t.value}
-                  className={`flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-all ${
-                    isChecked
-                      ? 'bg-[#8CC0EB]/15 text-[#8CC0EB] font-bold border border-[#8CC0EB]/40'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => onToggleType(t.value)}
-                      className="hidden"
-                    />
-                    <div
-                      className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors shrink-0 ${
-                        isChecked ? 'bg-[#8CC0EB] border-[#8CC0EB]' : 'border-white/30 bg-[#070a10]'
-                      }`}
-                    >
-                      {isChecked && (
-                        <svg className="w-2.5 h-2.5 text-[#07090e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5}>
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </div>
-                    <span>{isEn ? t.labelEn : t.labelVi}</span>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {/* 4. Type Multi-Select */}
+      <MultiSelectFilter
+        label={isEn ? 'Adventure Mode' : 'Chế Độ Phiêu Lưu'}
+        options={typeOptions}
+        selectedValues={selectedTypes}
+        onChange={(newValues) => {
+          newValues.forEach((v) => {
+            if (!selectedTypes.includes(v)) onToggleType(v);
+          });
+          selectedTypes.forEach((v) => {
+            if (!newValues.includes(v)) onToggleType(v);
+          });
+        }}
+        placeholder={isEn ? 'All Modes' : 'Tất cả chế độ'}
+        badgeLabel={isEn ? 'modes' : 'chế độ'}
+      />
 
       {/* 5. Reset Filters Button */}
       {hasActiveFilters && (
         <button
           type="button"
           onClick={onResetFilters}
-          className="w-full py-2.5 rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+          className="mt-2 w-full py-2 px-3 rounded-xl border border-rose-500/30 hover:border-rose-400 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -268,16 +167,16 @@ export default function MapFiltersSidebar({
             className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
             onClick={onCloseMobile}
           />
-          <div className="fixed inset-y-0 right-0 max-w-xs w-full bg-[#0c101c] border-l border-white/10 p-4 overflow-y-auto shadow-2xl flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
-                <h3 className="text-sm font-bold font-heading text-white uppercase tracking-wider">
+          <div className="fixed inset-y-0 right-0 max-w-[300px] w-full bg-[#0c101c] border-l border-white/10 p-2 sm:p-4 shadow-2xl flex flex-col justify-between">
+            <div className="flex-1 overflow-y-visible pr-1">
+              <div className="flex items-center justify-between pb-2 mb-2 sm:pb-3 sm:mb-3 border-b border-white/10">
+                <h3 className="text-xs sm:text-sm font-bold font-heading text-white uppercase tracking-wider">
                   {isEn ? 'Filter Adventures' : 'Bộ Lọc Phiêu Lưu'}
                 </h3>
                 <button
                   type="button"
                   onClick={onCloseMobile}
-                  className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
                 >
                   ✕
                 </button>
@@ -285,11 +184,20 @@ export default function MapFiltersSidebar({
               {content}
             </div>
 
-            <div className="pt-4 border-t border-white/10 mt-6">
+            <div className="pt-3 border-t border-white/10 mt-3 shrink-0 flex items-center gap-2">
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={onResetFilters}
+                  className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-rose-500/40 text-slate-300 hover:text-rose-300 font-semibold text-xs cursor-pointer transition-colors"
+                >
+                  {isEn ? 'Reset' : 'Đặt Lại'}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onCloseMobile}
-                className="w-full py-2.5 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase tracking-wider cursor-pointer"
+                className="flex-1 py-2 rounded-xl bg-[#8CC0EB] text-[#07090e] font-bold text-xs uppercase tracking-wider cursor-pointer shadow-md hover:bg-[#a0cef2] transition-colors"
               >
                 {isEn ? 'View Results' : 'Xem Kết Quả'}
               </button>

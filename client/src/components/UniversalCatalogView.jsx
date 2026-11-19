@@ -157,7 +157,7 @@ export default function UniversalCatalogView({
       </div>
 
       {/* 2. Control & Filter Bar */}
-      <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-[#0e1320] border border-white/15 shadow-2xl flex flex-col gap-4">
+      <div className="mb-6 sm:mb-8 p-2 sm:p-5 rounded-xl sm:rounded-2xl bg-[#0e1320] border border-white/15 shadow-xl flex flex-col gap-3 sm:gap-4">
         {/* Top Controls: Search + Sort */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Search Box */}

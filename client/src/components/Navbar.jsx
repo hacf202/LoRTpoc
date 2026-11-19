@@ -104,7 +104,7 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-4 sm:py-5 flex items-center justify-between transition-transform duration-300 ease-in-out select-none ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full px-2 sm:px-6 md:px-12 py-2 sm:py-4 flex items-center justify-between transition-transform duration-300 ease-in-out select-none ${
           isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
         } ${
           isScrolled
@@ -122,7 +122,7 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
         <img
           src="/logo.webp"
           alt="Logo"
-          className="w-8 h-8 sm:w-9 sm:h-9 object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-[0_0_12px_rgba(140,192,235,0.35)]"
+          className="w-8 h-8 sm:w-9 sm:h-9 object-contain transition-transform duration-200 group-hover:scale-105"
         />
       </a>
 
@@ -137,7 +137,7 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
               onClick={(e) => handleNavClick(e, item)}
               className={`text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer relative py-1 font-heading ${
                 isActive
-                  ? 'text-white drop-shadow-[0_0_12px_rgba(140,192,235,0.5)]'
+                  ? 'text-white'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -194,13 +194,13 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-[#07090e] border-b-2 border-white/20 p-5 flex flex-col gap-3 shadow-2xl">
+        <div className="md:hidden absolute top-full left-0 w-full bg-[#07090e] border-b border-white/15 p-2 sm:p-4 flex flex-col gap-1.5 shadow-2xl">
           {navItems.map((item) => (
             <a
               key={item.id}
               href={item.path}
               onClick={(e) => handleNavClick(e, item)}
-              className="text-left text-sm font-semibold py-2 px-3 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              className="text-left text-xs sm:text-sm font-semibold py-2 px-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
             >
               {item.label}
             </a>
@@ -209,7 +209,7 @@ export default function Navbar({ onLogoClick, activeTab = 'champions', onSelectT
       )}
     </header>
     {/* Layout Spacer to preserve natural document flow */}
-    <div className="h-[72px] sm:h-[76px] w-full shrink-0 pointer-events-none" aria-hidden="true" />
+    <div className="h-[52px] sm:h-[68px] w-full shrink-0 pointer-events-none" aria-hidden="true" />
   </>
   );
 }

@@ -130,7 +130,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
 
   // Filter Toggles (Multi-Select)
   const handleToggleRegion = useCallback((val) => {
-    setIsTransitioning(true);
     const next = selectedRegions.includes(val)
       ? selectedRegions.filter((r) => r !== val)
       : [...selectedRegions, val];
@@ -138,7 +137,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedRegions, updateFilters]);
 
   const handleToggleCost = useCallback((val) => {
-    setIsTransitioning(true);
     const next = selectedCosts.includes(val)
       ? selectedCosts.filter((c) => c !== val)
       : [...selectedCosts, val];
@@ -146,7 +144,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedCosts, updateFilters]);
 
   const handleToggleType = useCallback((val) => {
-    setIsTransitioning(true);
     const cleanVal = val.toLowerCase();
     const next = selectedTypes.includes(cleanVal)
       ? selectedTypes.filter((t) => t !== cleanVal)
@@ -155,7 +152,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedTypes, updateFilters]);
 
   const handleToggleRarity = useCallback((val) => {
-    setIsTransitioning(true);
     const cleanVal = val.toLowerCase();
     const next = selectedRarities.includes(cleanVal)
       ? selectedRarities.filter((r) => r !== cleanVal)
@@ -164,12 +160,10 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [selectedRarities, updateFilters]);
 
   const handleSortChange = useCallback((val) => {
-    setIsTransitioning(true);
     updateFilters?.({ sort: val, page: 1 });
   }, [updateFilters]);
 
   const handleResetFilters = useCallback(() => {
-    setIsTransitioning(true);
     setSearchInput('');
     updateFilters?.({
       q: '',
@@ -185,7 +179,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
   }, [updateFilters]);
 
   const handlePageChange = useCallback((page) => {
-    setIsTransitioning(true);
     updateFilters?.({ page });
     if (rosterTopRef.current) {
       rosterTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -199,6 +192,14 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
     selectedTypes.length > 0 ||
     selectedRarities.length > 0 ||
     sortBy !== 'cost-asc';
+
+  const activeFiltersCount =
+    (searchInput.trim() ? 1 : 0) +
+    selectedRegions.length +
+    selectedCosts.length +
+    selectedTypes.length +
+    selectedRarities.length +
+    (sortBy !== 'cost-asc' ? 1 : 0);
 
   return (
     <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center">
@@ -214,8 +215,60 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
           </div>
         </div>
 
-        {/* 2. Main Layout Container: 2 Columns */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+        {/* 2. Mobile Action Bar (<640px): Quick Search & Mobile Drawer Trigger */}
+        <div className="sm:hidden flex items-center gap-2 mb-4">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder={isEn ? 'Search cards...' : 'Tìm kiếm lá bài...'}
+              className="w-full h-10 pl-9 pr-7 text-xs bg-[#090d16] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white placeholder-slate-500 outline-none"
+            />
+            <svg
+              className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            {searchInput && (
+              <button
+                type="button"
+                onClick={() => setSearchInput('')}
+                className="absolute right-3 top-3 text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className={`h-10 px-3 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
+              activeFiltersCount > 0
+                ? 'bg-[#8CC0EB] text-[#07090e] border-[#BFDDF0]'
+                : 'bg-[#090d16] text-white border-white/15 hover:border-white/25'
+            }`}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span>{isEn ? 'Filters' : 'Bộ Lọc'}</span>
+            {activeFiltersCount > 0 && (
+              <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-[#07090e] text-[#8CC0EB] text-[10px] font-black">
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* 3. Main Layout Container: 2 Columns */}
+        <div className="flex items-start gap-5 lg:gap-6 w-full min-h-[720px] sm:min-h-[820px]">
         {/* Left Column: Filter Sidebar */}
         <CardFiltersSidebar
           searchTerm={searchInput}
@@ -238,55 +291,6 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
 
         {/* Right Column: Cards Grid + Pagination */}
         <main className="flex-1 w-full min-w-0">
-          {/* Mobile Quick Search Bar & Filter Toggle Button */}
-          <div className="lg:hidden flex items-center gap-2 mb-3">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder={isEn ? 'Search cards...' : 'Tìm kiếm lá bài...'}
-                className="w-full h-9 pl-8 pr-7 text-xs bg-[#0e1320] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white placeholder-slate-500 outline-none transition-colors"
-              />
-              <svg
-                className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={() => setSearchInput('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white cursor-pointer"
-                >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsMobileDrawerOpen(true)}
-              className="h-9 px-3 rounded-xl bg-[#0e1320] border border-white/15 hover:border-[#8CC0EB] text-[#8CC0EB] flex items-center gap-1.5 text-xs font-bold uppercase cursor-pointer shrink-0 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              <span>{isEn ? 'Filter' : 'Lọc'}</span>
-              {hasActiveFilters && (
-                <span className="w-2 h-2 rounded-full bg-[#8CC0EB]" />
-              )}
-            </button>
-          </div>
-
           {/* Active Filter Chips Bar */}
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-1.5 mb-3 p-2 rounded-xl bg-[#0e1320]/60 border border-white/10 text-xs">
@@ -432,7 +436,7 @@ export default function CardsView({ filters = {}, updateFilters, onSelectCard })
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                 {cards.map((card) => {
                 const cardName =
                   isEn && card.translations?.en?.cardName

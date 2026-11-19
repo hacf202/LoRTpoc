@@ -52,6 +52,12 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
       (sortBy && sortBy !== 'difficulty-asc')
   );
 
+  const activeFiltersCount =
+    (searchInput.trim() ? 1 : 0) +
+    selectedDifficulties.length +
+    selectedTypes.length +
+    (sortBy && sortBy !== 'difficulty-asc' ? 1 : 0);
+
   // Synchronize local search with URL prop when browser nav occurs
   useEffect(() => {
     setSearchInput(filters.q || filters.search || '');
@@ -119,7 +125,6 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
   // Filter Toggle Handlers with immediate transition feedback
   const handleToggleDifficulty = useCallback(
     (diffVal) => {
-      setIsTransitioning(true);
       const next = selectedDifficulties.includes(diffVal)
         ? selectedDifficulties.filter((d) => d !== diffVal)
         : [...selectedDifficulties, diffVal];
@@ -130,7 +135,6 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handleToggleType = useCallback(
     (typeVal) => {
-      setIsTransitioning(true);
       const next = selectedTypes.includes(typeVal)
         ? selectedTypes.filter((t) => t !== typeVal)
         : [...selectedTypes, typeVal];
@@ -141,14 +145,12 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handleSortChange = useCallback(
     (newSort) => {
-      setIsTransitioning(true);
       updateFilters?.({ sort: newSort, page: 1 });
     },
     [updateFilters]
   );
 
   const handleResetFilters = useCallback(() => {
-    setIsTransitioning(true);
     setSearchInput('');
     updateFilters?.({
       q: '',
@@ -161,7 +163,6 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
   const handlePageChange = useCallback(
     (newPage) => {
-      setIsTransitioning(true);
       updateFilters?.({ page: newPage });
       rosterTopRef.current?.scrollIntoView({ behavior: 'smooth' });
     },
@@ -182,8 +183,60 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
           </div>
         </div>
 
-        {/* 2. Main Layout Container: 2 Columns */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+        {/* 2. Mobile Action Bar (<640px): Quick Search & Mobile Drawer Trigger */}
+        <div className="sm:hidden flex items-center gap-2 mb-4">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder={isEn ? 'Search adventures...' : 'Tìm cuộc phiêu lưu...'}
+              className="w-full h-10 pl-9 pr-7 text-xs bg-[#090d16] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white placeholder-slate-500 outline-none"
+            />
+            <svg
+              className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            {searchInput && (
+              <button
+                type="button"
+                onClick={() => setSearchInput('')}
+                className="absolute right-3 top-3 text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className={`h-10 px-3 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
+              activeFiltersCount > 0
+                ? 'bg-[#8CC0EB] text-[#07090e] border-[#BFDDF0]'
+                : 'bg-[#090d16] text-white border-white/15 hover:border-white/25'
+            }`}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span>{isEn ? 'Filters' : 'Bộ Lọc'}</span>
+            {activeFiltersCount > 0 && (
+              <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-[#07090e] text-[#8CC0EB] text-[10px] font-black">
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* 3. Main Layout Container: 2 Columns */}
+        <div className="flex items-start gap-5 lg:gap-6 w-full min-h-[720px] sm:min-h-[820px]">
           {/* Left Sticky Sidebar (Desktop & Tablet) */}
           <MapFiltersSidebar
             searchTerm={searchInput}
@@ -202,47 +255,6 @@ export default function MapsView({ filters = {}, updateFilters, onSelectMap }) {
 
           {/* Right Main Content Area */}
           <main className="flex-1 w-full min-w-0">
-            {/* Mobile Action Bar (<640px) */}
-            <div className="sm:hidden flex items-center gap-2 mb-4">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder={isEn ? 'Search adventures...' : 'Tìm cuộc phiêu lưu...'}
-                  className="w-full h-10 pl-9 pr-7 text-xs bg-[#090d16] border border-white/15 focus:border-[#8CC0EB] rounded-xl text-white placeholder-slate-500 outline-none"
-                />
-                <svg
-                  className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsMobileDrawerOpen(true)}
-                className={`h-10 px-3 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
-                  hasActiveFilters
-                    ? 'bg-[#8CC0EB] text-[#07090e] border-[#BFDDF0]'
-                    : 'bg-[#090d16] text-white border-white/15 hover:border-white/25'
-                }`}
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <span>{isEn ? 'Filter' : 'Lọc'}</span>
-                {hasActiveFilters && (
-                  <span className="w-2 h-2 rounded-full bg-[#8CC0EB]" />
-                )}
-              </button>
-            </div>
-
             {/* Active Filter Chips Bar */}
             {hasActiveFilters && (
               <div className="flex flex-wrap items-center gap-1.5 mb-3 p-2 rounded-xl bg-[#0e1320]/60 border border-white/10 text-xs">

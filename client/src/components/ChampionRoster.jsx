@@ -183,7 +183,6 @@ export default function ChampionRoster({
   // Handlers for toggling multi-select filter items with immediate transition feedback
   const handleToggleRegion = useCallback(
     (regKey) => {
-      setIsTransitioning(true);
       const cleanKey = regKey.toLowerCase().trim();
       const next = selectedRegions.includes(cleanKey)
         ? selectedRegions.filter((r) => r !== cleanKey)
@@ -200,7 +199,6 @@ export default function ChampionRoster({
 
   const handleToggleCost = useCallback(
     (costVal) => {
-      setIsTransitioning(true);
       const next = selectedCosts.includes(costVal)
         ? selectedCosts.filter((c) => c !== costVal)
         : [...selectedCosts, costVal];
@@ -212,7 +210,6 @@ export default function ChampionRoster({
 
   const handleToggleStar = useCallback(
     (starVal) => {
-      setIsTransitioning(true);
       const numVal = parseInt(starVal, 10);
       const next = selectedStars.includes(numVal)
         ? selectedStars.filter((s) => s !== numVal)
@@ -228,7 +225,6 @@ export default function ChampionRoster({
 
   const handleToggleTag = useCallback(
     (tagVal) => {
-      setIsTransitioning(true);
       const next = selectedTags.includes(tagVal)
         ? selectedTags.filter((t) => t !== tagVal)
         : [...selectedTags, tagVal];
@@ -240,7 +236,6 @@ export default function ChampionRoster({
 
   const handleSortChange = useCallback(
     (newSort) => {
-      setIsTransitioning(true);
       updateFilters?.({ sort: newSort, page: 1 });
     },
     [updateFilters]
@@ -248,7 +243,6 @@ export default function ChampionRoster({
 
   const handlePageChange = useCallback(
     (newPage) => {
-      setIsTransitioning(true);
       updateFilters?.({ page: newPage });
       if (rosterTopRef.current) {
         rosterTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -258,7 +252,6 @@ export default function ChampionRoster({
   );
 
   const handleResetFilters = useCallback(() => {
-    setIsTransitioning(true);
     setLocalSearch('');
     updateFilters?.({
       q: '',
@@ -276,7 +269,7 @@ export default function ChampionRoster({
     <section ref={rosterTopRef} className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
       {/* 1. Single Clean Page Header (Ra giữa, chữ lớn lên, không nền đen) */}
       <div className="w-full text-center pb-6 sm:pb-8 mb-6 sm:mb-8 border-b border-white/10 select-none">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold uppercase tracking-wide text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.85)]">
           {t('roster.title')}
         </h1>
         <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs sm:text-sm font-semibold text-slate-300">

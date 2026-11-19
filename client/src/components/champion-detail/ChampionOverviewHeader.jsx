@@ -19,7 +19,7 @@ export default function ChampionOverviewHeader({
   const tierTheme = getTierTheme(champion.tier);
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-5 p-2 sm:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border-2 border-white/20 shadow-xl">
+    <div className="flex flex-col gap-3 sm:gap-5 p-2 sm:p-6 rounded-xl sm:rounded-2xl bg-[#0e1320] border border-white/15 shadow-xl">
       {/* Main Identity Row */}
       <div className="flex flex-col md:flex-row items-start gap-5">
         {/* Avatar Portrait */}

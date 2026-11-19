@@ -53,7 +53,7 @@ export default function ChampionGridCard({ champion, onClick }) {
           onClick?.(champion);
         }
       }}
-      className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer select-none transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.9),0_0_24px_rgba(140,192,235,0.22)] border border-white/15 hover:border-[#8CC0EB] bg-[#0e1320] hover:bg-[#141b2b] [transform:translateZ(0)] [backface-visibility:hidden]"
+      className="group relative flex flex-col rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer select-none transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-2xl border border-white/15 hover:border-[#8CC0EB]/60 bg-[#0e1320] hover:bg-[#141b2b] [transform:translateZ(0)] [backface-visibility:hidden]"
     >
       {/* Top Banner with Image */}
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#0e1320] group-hover:bg-[#141b2b] transition-colors [transform:translateZ(0)]">

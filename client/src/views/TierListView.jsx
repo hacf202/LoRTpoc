@@ -119,7 +119,7 @@ export default function TierListView({ onSelectChampion }) {
       <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-8">
         {/* 1. Single Clean Page Header (Ra giữa, chữ lớn lên, không nền đen - Đồng bộ toàn hệ thống) */}
         <div className="w-full text-center pb-3 sm:pb-6 mb-3 sm:mb-6 border-b border-white/10 select-none">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold uppercase tracking-wide text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.85)]">
             {isEn ? 'Champion Tier List' : 'Bảng Xếp Hạng Tướng'}
           </h1>
           <div className="mt-1.5 sm:mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/10 text-[11px] sm:text-xs font-semibold text-slate-300">

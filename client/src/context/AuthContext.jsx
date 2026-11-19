@@ -21,16 +21,28 @@ export function AuthProvider({ children }) {
           Authorization: `Bearer ${tokenToVerify}`
         }
       });
-      const data = await res.json();
-      if (data.success && data.authenticated) {
+
+      const text = await res.text();
+      let data = null;
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = null;
+        }
+      }
+
+      if (res.ok && data?.success && data?.authenticated) {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);
-        localStorage.removeItem('poc_admin_token');
-        setToken(null);
+        // Clear expired or invalid token
+        if (!res.ok && (res.status === 401 || res.status === 403 || !data?.authenticated)) {
+          localStorage.removeItem('poc_admin_token');
+          setToken(null);
+        }
       }
-    } catch (err) {
-      console.error('Failed to verify admin auth:', err);
+    } catch {
       setIsAdmin(false);
     } finally {
       setLoading(false);
@@ -51,14 +63,24 @@ export function AuthProvider({ children }) {
         },
         body: JSON.stringify({ password })
       });
-      const data = await res.json();
-      if (data.success && data.token) {
+
+      const text = await res.text();
+      let data = null;
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = null;
+        }
+      }
+
+      if (res.ok && data?.success && data?.token) {
         localStorage.setItem('poc_admin_token', data.token);
         setToken(data.token);
         setIsAdmin(true);
         return { success: true };
       }
-      return { success: false, message: data.message || 'Mật khẩu không chính xác' };
+      return { success: false, message: data?.message || 'Mật khẩu không chính xác' };
     } catch (err) {
       return { success: false, message: err.message || 'Lỗi kết nối máy chủ' };
     }

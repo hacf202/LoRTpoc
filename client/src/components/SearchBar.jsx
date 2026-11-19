@@ -11,14 +11,14 @@ const SearchBar = forwardRef(function SearchBar(
     onFocus,
     onBlur,
     onKeyDown,
-    placeholder = 'Tìm kiếm.... ',
+    placeholder = 'Tìm kiếm...',
     className = ''
   },
   ref
 ) {
   return (
     <div
-      className={`flex items-center w-full h-[60px] sm:h-[64px] px-5 sm:px-7 rounded-full bg-[#0d121d] border-2 border-white/20 shadow-2xl transition-all duration-200 focus-within:bg-[#121824] focus-within:border-[#8CC0EB] focus-within:-translate-y-0.5 ${className}`}
+      className={`flex items-center w-full h-[52px] sm:h-[64px] px-4 sm:px-7 rounded-full bg-[#0d121d] border border-white/15 shadow-xl transition-all duration-200 focus-within:bg-[#121824] focus-within:border-[#8CC0EB]/80 focus-within:-translate-y-0.5 ${className}`}
     >
       {/* Search Icon */}
       <div className="flex items-center justify-center text-[#8CC0EB] mr-3.5">
