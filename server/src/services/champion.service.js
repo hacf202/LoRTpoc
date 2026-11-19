@@ -85,10 +85,27 @@ function sanitizeChampionPayload(data) {
   // 2. Sanitize relicSets
   if (Array.isArray(clean.relicSets)) {
     clean.relicSets = clean.relicSets.map((set) => {
-      if (!set || typeof set !== 'object') return set;
+      if (!set) return set;
+      if (Array.isArray(set)) {
+        return {
+          recommendedStars: 3,
+          items: set.map((it) => String(it).trim().toUpperCase()).filter(Boolean).slice(0, 3),
+          description: '',
+          videoLink: ''
+        };
+      }
+      if (typeof set !== 'object') return set;
       const s = { ...set };
       delete s.comboSteps;
       delete s.proTips;
+
+      // Khôi phục nếu bị lỗi spread object { '0': 'R0134', ... }
+      if (!s.items && (s['0'] || s['1'] || s['2'])) {
+        s.items = [s['0'], s['1'], s['2']].filter(Boolean);
+        delete s['0'];
+        delete s['1'];
+        delete s['2'];
+      }
 
       // Loại bỏ hoàn toàn title của relicSets cả tiếng Việt lẫn tiếng Anh
       delete s.title;
@@ -105,7 +122,15 @@ function sanitizeChampionPayload(data) {
       // Ensure items is an array of max 3 strings
       if (Array.isArray(s.items)) {
         s.items = s.items.map((it) => String(it).trim().toUpperCase()).filter(Boolean).slice(0, 3);
+      } else if (typeof s.items === 'string') {
+        s.items = s.items.split(',').map((it) => String(it).trim().toUpperCase()).filter(Boolean).slice(0, 3);
+      } else {
+        s.items = [];
       }
+
+      s.recommendedStars = Number(s.recommendedStars) || 1;
+      s.description = typeof s.description === 'string' ? s.description : '';
+      s.videoLink = typeof s.videoLink === 'string' ? s.videoLink : '';
 
       return s;
     });

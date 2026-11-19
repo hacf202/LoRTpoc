@@ -210,6 +210,67 @@ function normalizeAdminCoreRelics(raw) {
   return { mandatory: [], options: [], description: '', translations: {} };
 }
 
+function normalizeAdminRelicSets(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s) => {
+    if (!s) {
+      return {
+        recommendedStars: 3,
+        items: ['', '', ''],
+        description: '',
+        videoLink: '',
+        translations: { en: { description: '' } }
+      };
+    }
+    // Trường hợp 1: Mảng string thuần (legacy format: ['R0134', 'R0116', 'R0115'])
+    if (Array.isArray(s)) {
+      return {
+        recommendedStars: 3,
+        items: s.map(cleanRelicCode).filter(Boolean).slice(0, 3),
+        description: '',
+        videoLink: '',
+        translations: { en: { description: '' } }
+      };
+    }
+    // Trường hợp 2: Dạng Object
+    if (typeof s === 'object') {
+      let items = [];
+      if (Array.isArray(s.items)) {
+        items = s.items.map(cleanRelicCode).filter(Boolean).slice(0, 3);
+      } else if (typeof s.items === 'string') {
+        items = s.items.split(',').map(cleanRelicCode).filter(Boolean).slice(0, 3);
+      } else if (s['0'] || s['1'] || s['2']) {
+        // Fallback khôi phục nếu dữ liệu bị spread object từ array { '0': 'R0134', ... }
+        items = [s['0'], s['1'], s['2']].map(cleanRelicCode).filter(Boolean).slice(0, 3);
+      }
+
+      const tr = s.translations || {};
+      const enTr = tr.en || {};
+
+      return {
+        recommendedStars: Number(s.recommendedStars) || 3,
+        items,
+        description: typeof s.description === 'string' ? s.description.replace(/\\n/g, '\n') : '',
+        videoLink: typeof s.videoLink === 'string' ? s.videoLink : '',
+        translations: {
+          ...tr,
+          en: {
+            ...enTr,
+            description: typeof enTr.description === 'string' ? enTr.description.replace(/\\n/g, '\n') : ''
+          }
+        }
+      };
+    }
+    return {
+      recommendedStars: 3,
+      items: [],
+      description: '',
+      videoLink: '',
+      translations: { en: { description: '' } }
+    };
+  });
+}
+
 export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   const { isAdmin, loading: authLoading, login, logout, token } = useAuth();
   const { language } = useLanguage();
@@ -298,6 +359,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   const syncRawInputsFromChampion = useCallback((champ) => {
     if (!champ) return;
     const parsedCore = normalizeAdminCoreRelics(champ.coreRelics);
+    const parsedSets = normalizeAdminRelicSets(champ.relicSets);
     setRawInputs({
       regions: Array.isArray(champ.regions) ? champ.regions.join(', ') : (champ.region || ''),
       tags: Array.isArray(champ.tags) ? champ.tags.join(', ') : '',
@@ -305,8 +367,8 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       coreMandatory: (parsedCore.mandatory || []).join(', '),
       coreDescription: parsedCore.description || '',
       otherRelicOptions: Array.isArray(champ.otherRelicOptions) ? champ.otherRelicOptions.join(', ') : '',
-      setItems: (champ.relicSets || []).reduce((acc, set, idx) => {
-        acc[idx] = Array.isArray(set.items) ? set.items.join(', ') : '';
+      setItems: parsedSets.reduce((acc, set, idx) => {
+        acc[idx] = Array.isArray(set.items) ? set.items.filter(Boolean).join(', ') : '';
         return acc;
       }, {}),
       adventurePowerIds: Array.isArray(champ.adventurePowerIds) ? champ.adventurePowerIds.join(', ') : '',
@@ -531,23 +593,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     if (cloned.translations?.en?.description) {
       cloned.translations.en.description = cloned.translations.en.description.replace(/\\n/g, '\n');
     }
-    if (Array.isArray(cloned.relicSets)) {
-      cloned.relicSets = cloned.relicSets.map((set) => {
-        const tr = set.translations || {};
-        const enTr = tr.en || {};
-        return {
-          ...set,
-          description: typeof set.description === 'string' ? set.description.replace(/\\n/g, '\n') : '',
-          translations: {
-            ...tr,
-            en: {
-              ...enTr,
-              description: typeof enTr.description === 'string' ? enTr.description.replace(/\\n/g, '\n') : ''
-            }
-          }
-        };
-      });
-    }
+    cloned.relicSets = normalizeAdminRelicSets(cloned.relicSets);
 
     // Chuẩn hóa cấu trúc coreRelics linh hoạt
     cloned.coreRelics = normalizeAdminCoreRelics(cloned.coreRelics);
@@ -773,10 +819,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
     const copy = [...editingChampion.relicSets];
     const targetSet = copy[sIdx] || { items: [] };
-    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items].map(cleanRelicCode) : ['', '', ''];
+    const rawItems = Array.isArray(targetSet) ? targetSet : (targetSet.items || []);
+    const currentItems = [...rawItems].map(cleanRelicCode);
     while (currentItems.length < 3) currentItems.push('');
     currentItems[slotIdx] = code;
-    copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
+    copy[sIdx] = {
+      ...(typeof targetSet === 'object' && !Array.isArray(targetSet) ? targetSet : {}),
+      items: currentItems.slice(0, 3)
+    };
 
     setEditingChampion({ ...editingChampion, relicSets: copy });
     setRawInputs((p) => ({
@@ -789,10 +839,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   const handleRemoveSlotItem = (sIdx, slotIdx) => {
     const copy = [...editingChampion.relicSets];
     const targetSet = copy[sIdx] || { items: [] };
-    const currentItems = Array.isArray(targetSet.items) ? [...targetSet.items].map(cleanRelicCode) : ['', '', ''];
+    const rawItems = Array.isArray(targetSet) ? targetSet : (targetSet.items || []);
+    const currentItems = [...rawItems].map(cleanRelicCode);
     while (currentItems.length < 3) currentItems.push('');
     currentItems[slotIdx] = '';
-    copy[sIdx] = { ...targetSet, items: currentItems.slice(0, 3) };
+    copy[sIdx] = {
+      ...(typeof targetSet === 'object' && !Array.isArray(targetSet) ? targetSet : {}),
+      items: currentItems.slice(0, 3)
+    };
 
     setEditingChampion({ ...editingChampion, relicSets: copy });
     setRawInputs((p) => ({
@@ -956,12 +1010,16 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     const copy = [...editingChampion.relicSets];
     let assigned = false;
     for (let sIdx = 0; sIdx < copy.length; sIdx++) {
-      const items = Array.isArray(copy[sIdx].items) ? [...copy[sIdx].items].map(cleanRelicCode) : ['', '', ''];
+      const rawItems = Array.isArray(copy[sIdx]) ? copy[sIdx] : (copy[sIdx]?.items || []);
+      const items = [...rawItems].map(cleanRelicCode);
       while (items.length < 3) items.push('');
       const emptySlotIdx = items.findIndex((it) => !it);
       if (emptySlotIdx !== -1) {
         items[emptySlotIdx] = code;
-        copy[sIdx] = { ...copy[sIdx], items: items.slice(0, 3) };
+        copy[sIdx] = {
+          ...(typeof copy[sIdx] === 'object' && !Array.isArray(copy[sIdx]) ? copy[sIdx] : {}),
+          items: items.slice(0, 3)
+        };
         assigned = true;
         setEditingChampion({ ...editingChampion, relicSets: copy });
         setRawInputs((p) => ({
@@ -1126,7 +1184,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
       }
 
       // Chuẩn hóa relicSets (không lưu title, hệ thống tự hiển thị Bộ #1, Bộ #2...)
-      const cleanRelicSets = (editingChampion.relicSets || []).map((set, idx) => {
+      const cleanRelicSets = normalizeAdminRelicSets(editingChampion.relicSets).map((set, idx) => {
         const rawItemsStr = rawInputs.setItems?.[idx] !== undefined ? rawInputs.setItems[idx] : (Array.isArray(set.items) ? set.items.join(', ') : '');
         const items = rawItemsStr.split(',').map(cleanRelicCode).filter(Boolean).slice(0, 3);
         const cleanSet = {
@@ -1343,7 +1401,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     }));
   }, [powers, powerSearch]);
 
-  // Lookup Maps tra cứu O(1) hiển thị thông tin Sức Mạnh & Vật Phẩm
+  // Lookup Maps tra cứu O(1) hiển thị thông tin Cổ Vật, Sức Mạnh & Vật Phẩm
+  const relicMap = useMemo(() => {
+    const map = new Map();
+    relics.forEach((r) => {
+      if (r.relicCode) map.set(r.relicCode, r);
+    });
+    return map;
+  }, [relics]);
+
   const powerMap = useMemo(() => {
     const map = new Map();
     powers.forEach((p) => {
@@ -2420,7 +2486,10 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         {/* Visual 3 slots preview with DROP ZONE */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
                           {[0, 1, 2].map((slotIdx) => {
-                            const code = cleanRelicCode((setObj.items || [])[slotIdx]);
+                            const setRelics = Array.isArray(setObj.items) ? setObj.items : (Array.isArray(set) ? set : []);
+                            const code = cleanRelicCode(setRelics[slotIdx]);
+                            const relicInfo = code ? relicMap.get(code) : null;
+                            const relicName = relicInfo?.name || '';
                             return (
                               <div
                                 key={slotIdx}
@@ -2434,7 +2503,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                     ? 'bg-[#1d212b] border-white/10 hover:border-sky-500/40'
                                     : 'bg-[#14161d] border-dashed border-white/15 hover:border-sky-500/40'
                                 }`}
-                                title="Kéo thả cổ vật vào đây để trang bị"
+                                title={code ? `${code}${relicName ? ` - ${relicName}` : ''}` : 'Kéo thả cổ vật vào đây để trang bị'}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
                                   <div className="w-9 h-9 rounded-md bg-[#12141a] border border-white/10 p-0.5 flex items-center justify-center shrink-0">
@@ -2449,11 +2518,18 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                       <span className="text-[10px] text-slate-500 font-mono">Ô {slotIdx + 1}</span>
                                     )}
                                   </div>
-                                  <div className="min-w-0">
+                                  <div className="min-w-0 flex-1">
                                     <span className="text-[10px] font-mono text-slate-400 block">Slot {slotIdx + 1}</span>
-                                    <span className="text-xs font-mono font-medium text-slate-200 truncate block">
-                                      {code || 'Thả cổ vật vào đây'}
-                                    </span>
+                                    <div className="flex items-baseline gap-1.5 min-w-0">
+                                      <span className={`text-xs font-mono font-medium truncate block ${code ? 'text-sky-300' : 'text-slate-400'}`}>
+                                        {code || 'Thả cổ vật vào đây'}
+                                      </span>
+                                      {relicName && (
+                                        <span className="text-[11px] text-slate-300 truncate font-sans hidden sm:inline" title={relicName}>
+                                          ({relicName})
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
 
