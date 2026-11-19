@@ -108,7 +108,6 @@ export default function RichMarkupTextarea({
       list.push({
         type: 'r',
         typeName: 'Cổ Vật',
-        icon: '💎',
         id: code,
         name,
         nameEn,
@@ -124,7 +123,6 @@ export default function RichMarkupTextarea({
       list.push({
         type: 'p',
         typeName: 'Sức Mạnh',
-        icon: '⚡',
         id: code,
         name,
         nameEn,
@@ -140,7 +138,6 @@ export default function RichMarkupTextarea({
       list.push({
         type: 'c',
         typeName: 'Tướng',
-        icon: '⚔️',
         id,
         name,
         nameEn,
@@ -156,7 +153,6 @@ export default function RichMarkupTextarea({
       list.push({
         type: 'i',
         typeName: 'Vật Phẩm',
-        icon: '📦',
         id: code,
         name,
         nameEn,
@@ -172,7 +168,6 @@ export default function RichMarkupTextarea({
       list.push({
         type: 'cd',
         typeName: 'Thẻ Bài',
-        icon: '🃏',
         id: code,
         name,
         nameEn,
@@ -361,19 +356,19 @@ export default function RichMarkupTextarea({
   return (
     <div className="space-y-1.5 font-sans relative">
       {/* 1. Header Toolbar */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pb-1">
+      <div className="flex items-center justify-between flex-wrap gap-2 pb-0.5">
         {label && (
-          <label className="block text-xs font-bold text-slate-300">
+          <label className="block text-xs font-medium text-slate-400">
             {label}
           </label>
         )}
 
         {/* Toolbar Action Buttons */}
-        <div className="flex items-center gap-1.5 ml-auto">
+        <div className="flex items-center gap-1 ml-auto">
           <button
             type="button"
             onClick={handleBold}
-            className="px-2 py-1 rounded bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs font-black transition-colors cursor-pointer border border-white/10"
+            className="w-6 h-6 rounded bg-[#1a1d26] hover:bg-[#222634] text-slate-300 hover:text-white text-xs font-bold transition-colors cursor-pointer border border-white/10 flex items-center justify-center"
             title="In đậm <b>...</b>"
           >
             B
@@ -382,7 +377,7 @@ export default function RichMarkupTextarea({
           <button
             type="button"
             onClick={handleItalic}
-            className="px-2 py-1 rounded bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs italic font-serif transition-colors cursor-pointer border border-white/10"
+            className="w-6 h-6 rounded bg-[#1a1d26] hover:bg-[#222634] text-slate-300 hover:text-white text-xs italic font-serif transition-colors cursor-pointer border border-white/10 flex items-center justify-center"
             title="In nghiêng <i>...</i>"
           >
             I
@@ -391,7 +386,7 @@ export default function RichMarkupTextarea({
           <button
             type="button"
             onClick={handleInsertNewline}
-            className="px-2 py-1 rounded bg-[#141b2a] hover:bg-white/10 text-amber-300 hover:text-white text-xs font-mono font-bold transition-colors cursor-pointer border border-white/10"
+            className="px-2 h-6 rounded bg-[#1a1d26] hover:bg-[#222634] text-amber-300/90 hover:text-amber-200 text-xs font-mono transition-colors cursor-pointer border border-white/10 flex items-center gap-1"
             title="Chèn xuống dòng (\n)"
           >
             ↵ \n
@@ -400,7 +395,7 @@ export default function RichMarkupTextarea({
           <button
             type="button"
             onClick={handleTriggerAt}
-            className="px-2.5 py-1 rounded bg-[#0b2545] hover:bg-sky-600 text-sky-200 hover:text-white text-xs font-bold transition-colors cursor-pointer border border-sky-400/50 flex items-center gap-1"
+            className="px-2 h-6 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-medium transition-colors cursor-pointer border border-sky-500/20 flex items-center gap-1"
             title="Gắn thẻ bằng @"
           >
             <span>@</span>
@@ -410,14 +405,14 @@ export default function RichMarkupTextarea({
           <button
             type="button"
             onClick={() => setPreviewMode(!previewMode)}
-            className={`px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer border flex items-center gap-1 ${
+            className={`px-2 h-6 rounded text-xs font-medium transition-colors cursor-pointer border flex items-center gap-1 ${
               previewMode
-                ? 'bg-[#e6b758] text-[#07090e] border-[#e6b758]'
-                : 'bg-[#141b2a] hover:bg-white/10 text-slate-300 border-white/10'
+                ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+                : 'bg-[#1a1d26] hover:bg-[#222634] text-slate-400 hover:text-slate-200 border-white/10'
             }`}
             title="Bật/Tắt chế độ xem trước trực tiếp (Live Preview)"
           >
-            <span>{previewMode ? '✏️ Soạn Thảo' : '👁️ Xem Trước'}</span>
+            <span>{previewMode ? 'Soạn thảo' : 'Xem trước'}</span>
           </button>
         </div>
       </div>
@@ -426,8 +421,8 @@ export default function RichMarkupTextarea({
       <div className="relative">
         {previewMode ? (
           <div
-            className={`w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-[#e6b758]/50 text-white text-xs leading-relaxed min-h-[${rows * 24}px] overflow-y-auto whitespace-pre-line`}
-            style={{ minHeight: `${rows * 26}px` }}
+            className="w-full px-3 py-2 rounded-lg bg-[#14161d] border border-sky-500/30 text-slate-200 text-xs leading-relaxed overflow-y-auto whitespace-pre-line"
+            style={{ minHeight: `${rows * 24}px` }}
           >
             {safeText ? (
               <LorMarkup text={safeText} />
@@ -443,7 +438,7 @@ export default function RichMarkupTextarea({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs leading-relaxed focus:border-[#e6b758] focus:outline-none transition-colors font-sans"
+            className="w-full px-3 py-2 rounded-lg bg-[#1a1d26] border border-white/10 text-slate-100 text-xs leading-relaxed placeholder:text-slate-500 focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/20 focus:outline-none transition-colors font-sans"
           />
         )}
 
@@ -451,11 +446,11 @@ export default function RichMarkupTextarea({
         {autoActive && suggestions.length > 0 && !previewMode && (
           <div
             ref={dropdownRef}
-            className="absolute left-2 z-50 bottom-full mb-1.5 w-72 sm:w-80 max-h-64 overflow-y-auto rounded-xl bg-[#0d1320] border-2 border-[#e6b758] shadow-[0_10px_30px_rgba(0,0,0,0.9)] p-1.5 space-y-1"
+            className="absolute left-2 z-50 bottom-full mb-1 w-72 sm:w-80 max-h-60 overflow-y-auto rounded-lg bg-[#161920] border border-white/10 shadow-xl p-1 space-y-0.5"
           >
-            <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#e6b758] border-b border-white/10 flex items-center justify-between">
-              <span>Gợi ý chèn thực thể LoR (@)</span>
-              <span className="text-slate-400 font-normal">Enter hoặc Click để chèn</span>
+            <div className="px-2 py-1 text-[10px] font-medium text-slate-400 border-b border-white/[0.08] flex items-center justify-between">
+              <span>Gợi ý chèn thực thể (@)</span>
+              <span className="text-slate-500">Enter để chọn</span>
             </div>
 
             {suggestions.map((item, idx) => {
@@ -467,14 +462,14 @@ export default function RichMarkupTextarea({
                     e.preventDefault(); // Tránh làm mất focus textarea
                     applySuggestion(idx);
                   }}
-                  className={`p-2 rounded-lg flex items-center gap-2.5 transition-all cursor-pointer ${
+                  className={`p-1.5 rounded-md flex items-center gap-2 transition-colors cursor-pointer ${
                     isSelected
-                      ? 'bg-[#e6b758] text-[#07090e]'
-                      : 'hover:bg-white/10 text-slate-200'
+                      ? 'bg-sky-500/15 text-slate-100 border border-sky-500/30'
+                      : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'
                   }`}
                 >
                   {/* Icon Thumbnail */}
-                  <div className="w-7 h-7 rounded bg-black/60 border border-white/10 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+                  <div className="w-6 h-6 rounded bg-black/40 border border-white/10 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -483,25 +478,25 @@ export default function RichMarkupTextarea({
                         onError={(e) => handleImageError(e, 'default')}
                       />
                     ) : (
-                      <span className="text-xs">{item.icon}</span>
+                      <span className="text-[10px] font-mono text-slate-400">{item.type}</span>
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-heading font-bold text-xs truncate block">
+                      <span className="font-medium text-xs truncate block text-slate-200">
                         {item.name}
                       </span>
                       {item.nameEn && item.nameEn.toLowerCase() !== item.name.toLowerCase() && (
-                        <span className="text-[10px] opacity-75 italic truncate">
+                        <span className="text-[10px] text-slate-400 truncate">
                           ({item.nameEn})
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 text-[10px] opacity-80 mt-0.5">
-                      <span className="font-semibold">{item.typeName}</span>
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 mt-0.5">
+                      <span>{item.typeName}</span>
                       <span>•</span>
-                      <span className="font-mono text-[9px] bg-black/20 px-1 py-0.2 rounded">{item.id}</span>
+                      <span className="font-mono text-[9px] bg-white/[0.04] px-1 py-0.2 rounded text-slate-400">{item.id}</span>
                     </div>
                   </div>
                 </div>
@@ -512,9 +507,9 @@ export default function RichMarkupTextarea({
       </div>
 
       {/* 4. Tips caption */}
-      <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-0.5">
-        <span>Gõ <strong className="text-amber-300">@</strong> để gắn thẻ Cổ vật / Sức mạnh / Tướng</span>
-        <span className="text-slate-400 font-mono">Nhận diện \n và Enter</span>
+      <div className="flex items-center justify-between text-[10px] text-slate-500 px-0.5 pt-0.5">
+        <span>Gõ <strong className="text-sky-400/90 font-mono">@</strong> để gắn thẻ nhanh</span>
+        <span className="font-mono">Tự nhận diện \n</span>
       </div>
     </div>
   );

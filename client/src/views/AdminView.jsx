@@ -50,6 +50,118 @@ const DEFAULT_CHAMPION_TEMPLATE = {
   translations: { en: { name: '', description: '', tier: '' } }
 };
 
+// Clean 16px SVG Icons for Unslop Dashboard (Zero emoji, quiet chrome)
+const AdminIcons = {
+  Overview: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  ),
+  Champions: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M12 2l7 3v6c0 5.25-3.5 10-7 11-3.5-1-7-5.75-7-11V5l7-3z" />
+    </svg>
+  ),
+  Relics: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M6 3h12l4 7-10 11L2 10l4-7z" />
+      <path d="M2 10h20M7 3l5 18 5-18" />
+    </svg>
+  ),
+  Powers: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  ),
+  Items: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  ),
+  Cards: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <rect x="3" y="5" width="14" height="16" rx="2" />
+      <path d="M7 2h12a2 2 0 0 1 2 2v13" />
+    </svg>
+  ),
+  Maps: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+      <line x1="8" y1="2" x2="8" y2="18" />
+      <line x1="16" y1="6" x2="16" y2="22" />
+    </svg>
+  ),
+  Logs: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  ),
+  Home: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  ),
+  Logout: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  ),
+  ChevronLeft: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  ),
+  ChevronRight: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  ),
+  Magnet: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M4 7V4h4v3a4 4 0 0 0 8 0V4h4v3a8 8 0 0 1-16 0z" />
+    </svg>
+  ),
+  Search: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  ),
+  Eye: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  EyeOff: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  ),
+  Plus: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  ),
+  Close: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+};
+
 function cleanRelicCode(str) {
   if (!str) return '';
   if (typeof str !== 'string') {
@@ -1261,32 +1373,32 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   // 1. LOGIN SCREEN IF NOT AUTHENTICATED
   if (!isAdmin) {
     return (
-      <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center p-4 bg-[#07090e]">
-        <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#131b2e] via-[#0d1320] to-[#080c14] border-2 border-[#8CC0EB] shadow-[0_0_60px_rgba(140, 192, 235,0.25)] space-y-7">
-          <div className="text-center space-y-3">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#1c2942] to-[#0c1322] border-2 border-[#8CC0EB] flex items-center justify-center text-3xl shadow-[0_0_25px_rgba(140, 192, 235,0.4)]">
-              🛡️
+      <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center p-4 bg-[#101216]">
+        <div className="w-full max-w-sm p-6 sm:p-8 rounded-2xl bg-[#161920] border border-white/10 shadow-2xl space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 mx-auto rounded-xl bg-[#1f232e] border border-white/10 flex items-center justify-center text-slate-300">
+              <AdminIcons.Champions className="w-6 h-6 text-sky-400" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-heading text-white tracking-wide uppercase">
-              {isEn ? 'Admin Portal' : 'Cổng Quản Trị Hệ Thống'}
+            <h2 className="text-xl font-semibold text-slate-100">
+              {isEn ? 'Admin Portal' : 'Cổng quản trị'}
             </h2>
-            <p className="text-xs text-slate-300 leading-relaxed max-w-xs mx-auto">
+            <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
               {isEn
-                ? 'Authenticate to unlock full management across champions, relics, powers and system logs.'
-                : 'Nhập mật khẩu quản trị để mở khóa bảng điều khiển quản lý tướng, cổ vật, sức mạnh và nhật ký máy chủ.'}
+                ? 'Enter password to access database management and system controls.'
+                : 'Nhập mật khẩu quản trị để mở bảng điều khiển dữ liệu và hệ thống.'}
             </p>
           </div>
 
-          <form onSubmit={handleLoginSubmit} className="space-y-5">
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#8CC0EB] font-heading">
-                  {isEn ? 'Admin Password' : 'Mật Khẩu Quản Trị'}
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-slate-300">
+                  {isEn ? 'Password' : 'Mật khẩu'}
                 </label>
                 <button
                   type="button"
                   onClick={() => setPassword('admin123')}
-                  className="text-[11px] text-amber-300/80 hover:text-amber-300 underline cursor-pointer font-mono"
+                  className="text-[11px] text-slate-400 hover:text-slate-200 underline cursor-pointer font-mono"
                   title="Điền nhanh mật khẩu mặc định"
                 >
                   (Mặc định: admin123)
@@ -1300,23 +1412,22 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   autoFocus
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu quản trị..."
-                  className="w-full px-4 py-3.5 pr-12 rounded-xl bg-[#06080d] border border-white/30 text-white text-sm focus:outline-none focus:border-[#8CC0EB] focus:ring-1 focus:ring-[#8CC0EB] transition-all placeholder:text-slate-500 font-mono"
+                  placeholder="Nhập mật khẩu..."
+                  className="w-full px-3.5 py-2.5 pr-10 rounded-lg bg-[#1f232e] border border-white/10 text-slate-100 text-sm focus:outline-none focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/20 transition-colors placeholder:text-slate-500 font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors cursor-pointer text-sm select-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer p-0.5"
                   title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  {showPassword ? <AdminIcons.EyeOff className="w-4 h-4" /> : <AdminIcons.Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             {loginError && (
-              <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/60 text-rose-300 text-xs font-semibold flex items-center gap-2">
-                <span>⚠️</span>
+              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium flex items-center gap-2">
                 <span>{loginError}</span>
               </div>
             )}
@@ -1324,20 +1435,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             <button
               type="submit"
               disabled={isSubmittingLogin}
-              className="w-full py-3.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black text-sm font-heading uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(140, 192, 235,0.3)] hover:shadow-[0_6px_25px_rgba(140, 192, 235,0.5)] cursor-pointer disabled:opacity-50 transform hover:-translate-y-0.5"
+              className="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-medium text-sm transition-colors cursor-pointer disabled:opacity-50"
             >
-              {isSubmittingLogin ? 'Đang xác thực...' : (isEn ? 'Log In to Admin' : 'Đăng Nhập Quản Trị')}
+              {isSubmittingLogin ? 'Đang xác thực...' : (isEn ? 'Log in' : 'Đăng nhập')}
             </button>
           </form>
 
-          <div className="text-center pt-3 border-t border-white/10">
+          <div className="text-center pt-2 border-t border-white/[0.08]">
             <button
               type="button"
               onClick={() => onNavigate?.('home')}
-              className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 font-semibold"
+              className="text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer inline-flex items-center gap-1.5"
             >
-              <span>←</span>
-              <span>{isEn ? 'Return to Home Page' : 'Quay lại Trang Chủ'}</span>
+              <AdminIcons.ChevronLeft className="w-3.5 h-3.5" />
+              <span>{isEn ? 'Return to Home Page' : 'Quay lại trang chủ'}</span>
             </button>
           </div>
         </div>
@@ -1347,36 +1458,39 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
   // 2. FULL-PAGE ADMIN PORTAL (SIDEBAR + MAIN CONTENT)
   const navModules = [
-    { id: 'overview', icon: '📊', label: isEn ? 'Overview' : 'Tổng Quan', liveCount: activeUsersStats.total },
-    { id: 'champions', icon: '🛡️', label: isEn ? 'Champions' : 'Quản Lý Tướng', count: champions.length },
-    { id: 'relics', icon: '💎', label: isEn ? 'Relics' : 'Quản Lý Cổ Vật', count: relics.length || 155 },
-    { id: 'powers', icon: '⚡', label: isEn ? 'Powers' : 'Quản Lý Sức Mạnh', count: powers.length || 380 },
-    { id: 'items', icon: '📦', label: isEn ? 'Items' : 'Quản Lý Vật Phẩm' },
-    { id: 'cards', icon: '🃏', label: isEn ? 'Cards' : 'Quản Lý Thẻ Bài' },
-    { id: 'maps', icon: '🗺️', label: isEn ? 'Maps' : 'Bản Đồ Phiêu Lưu' },
-    { id: 'logs', icon: '📜', label: isEn ? 'Server Logs' : 'Nhật Ký Máy Chủ (Winston)' }
+    { id: 'overview', icon: <AdminIcons.Overview />, label: isEn ? 'Overview' : 'Tổng quan', liveCount: activeUsersStats.total },
+    { id: 'champions', icon: <AdminIcons.Champions />, label: isEn ? 'Champions' : 'Quản lý tướng', count: champions.length },
+    { id: 'relics', icon: <AdminIcons.Relics />, label: isEn ? 'Relics' : 'Quản lý cổ vật', count: relics.length || 155 },
+    { id: 'powers', icon: <AdminIcons.Powers />, label: isEn ? 'Powers' : 'Quản lý sức mạnh', count: powers.length || 380 },
+    { id: 'items', icon: <AdminIcons.Items />, label: isEn ? 'Items' : 'Quản lý vật phẩm' },
+    { id: 'cards', icon: <AdminIcons.Cards />, label: isEn ? 'Cards' : 'Quản lý thẻ bài' },
+    { id: 'maps', icon: <AdminIcons.Maps />, label: isEn ? 'Maps' : 'Bản đồ phiêu lưu' },
+    { id: 'logs', icon: <AdminIcons.Logs />, label: isEn ? 'Server Logs' : 'Nhật ký máy chủ' }
   ];
 
   return (
-    <div className="relative z-10 w-full h-[calc(100vh-72px)] sm:h-[calc(100vh-76px)] flex flex-col md:flex-row font-sans text-slate-100 select-text overflow-hidden">
+    <div className="relative z-10 w-full h-[calc(100vh-72px)] sm:h-[calc(100vh-76px)] flex flex-col md:flex-row font-sans text-slate-100 select-text overflow-hidden bg-[#101216]">
       {/* 2.1 Fixed/Collapsible Sidebar Navigation */}
       <aside
-        className={`bg-[#0a0e17] border-r border-white/10 flex flex-col shrink-0 h-full transition-all duration-300 overflow-hidden ${
-          isSidebarCollapsed ? 'w-20' : 'w-64 xl:w-72'
+        className={`bg-[#0d0f14] border-r border-white/[0.08] flex flex-col shrink-0 h-full transition-all duration-200 overflow-hidden ${
+          isSidebarCollapsed ? 'w-16' : 'w-60 xl:w-64'
         }`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-3.5 border-b border-white/[0.08] flex items-center justify-between">
           {!isSidebarCollapsed && (
             <div className="flex items-center gap-2.5">
-              <span className="w-8 h-8 rounded-lg bg-[#8CC0EB] text-[#07090e] font-black flex items-center justify-center text-sm shadow-md">
+              <span className="w-7 h-7 rounded-md bg-[#1f232e] border border-white/10 text-sky-400 font-semibold flex items-center justify-center text-xs">
                 P
               </span>
               <div>
-                <span className="font-heading font-extrabold text-sm text-white block uppercase tracking-wider">
-                  PoC CMS V2
+                <span className="font-semibold text-xs text-slate-100 block">
+                  PoC Manager
                 </span>
-                <span className="text-[10px] text-emerald-400 font-mono font-bold">● System Online</span>
+                <span className="text-[10px] text-emerald-400/90 font-mono flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Live Sync
+                </span>
               </div>
             </div>
           )}
@@ -1384,15 +1498,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
           <button
             type="button"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer mx-auto"
+            className="p-1.5 rounded-md hover:bg-white/5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer mx-auto"
             title="Thu gọn / Mở rộng"
           >
-            {isSidebarCollapsed ? '→' : '←'}
+            {isSidebarCollapsed ? <AdminIcons.ChevronRight className="w-4 h-4" /> : <AdminIcons.ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Sidebar Menu Modules */}
-        <nav className="p-3 space-y-1.5 flex-1 overflow-y-auto">
+        <nav className="p-2 space-y-1 flex-1 overflow-y-auto">
           {navModules.map((mod) => {
             const isActive = activeModule === mod.id && !editingChampion;
             const targetHref = mod.id === 'overview' ? ADMIN_ROUTE_PREFIX : `${ADMIN_ROUTE_PREFIX}/${mod.id}`;
@@ -1404,30 +1518,29 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   e.preventDefault();
                   goToModule(mod.id);
                 }}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-heading font-bold text-xs transition-all cursor-pointer text-left ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left ${
                   isActive
-                    ? 'bg-[#8CC0EB] text-[#07090e] shadow-md shadow-amber-500/20'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-[#1f232e] text-slate-100 border border-white/10 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 }`}
               >
-                <span className="text-base shrink-0">{mod.icon}</span>
+                <span className={`shrink-0 ${isActive ? 'text-sky-400' : 'text-slate-400'}`}>{mod.icon}</span>
                 {!isSidebarCollapsed && (
-                  <span className="flex-1 truncate tracking-wide">{mod.label}</span>
+                  <span className="flex-1 truncate">{mod.label}</span>
                 )}
                 {!isSidebarCollapsed && mod.liveCount !== undefined && (
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold flex items-center gap-1.5 ${
-                      isActive ? 'bg-black/30 text-emerald-300' : 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/30'
+                    className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-medium ${
+                      isActive ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-500/10 text-emerald-400'
                     }`}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     {mod.liveCount}
                   </span>
                 )}
                 {!isSidebarCollapsed && mod.count !== undefined && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
-                      isActive ? 'bg-black/30 text-[#07090e]' : 'bg-[#141b2a] text-slate-400'
+                    className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
+                      isActive ? 'bg-black/20 text-slate-300' : 'bg-white/[0.04] text-slate-400'
                     }`}
                   >
                     {mod.count}
@@ -1439,59 +1552,61 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
         </nav>
 
         {/* Sidebar Footer Account & Actions */}
-        <div className="p-4 border-t border-white/10 space-y-2 bg-[#080c14]">
+        <div className="p-3 border-t border-white/[0.08] space-y-2 bg-[#0a0c10]">
           {!isSidebarCollapsed && (
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold text-white">Quản Trị Viên</span>
-              <span className="font-mono text-[10px] bg-[#141b2a] px-2 py-0.5 rounded text-amber-300 border border-amber-400/30">
+            <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+              <span className="font-medium text-slate-200">Quản trị viên</span>
+              <span className="font-mono text-[10px] bg-white/[0.06] px-1.5 py-0.5 rounded text-slate-300">
                 Admin
               </span>
             </div>
           )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => onNavigate?.('home')}
-              className="flex-1 py-2 px-2.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all text-center cursor-pointer truncate"
+              className="flex-1 py-1.5 px-2 rounded-md hover:bg-white/5 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors text-center cursor-pointer truncate flex items-center justify-center gap-1.5"
               title="Xem trang web"
             >
-              {isSidebarCollapsed ? '🏠' : 'Trang Chủ'}
+              <AdminIcons.Home className="w-3.5 h-3.5" />
+              {!isSidebarCollapsed && <span>Trang chủ</span>}
             </button>
             <button
               type="button"
               onClick={logout}
-              className="py-2 px-2.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer truncate"
+              className="py-1.5 px-2 rounded-md hover:bg-rose-500/10 text-slate-400 hover:text-rose-300 text-xs font-medium transition-colors cursor-pointer truncate flex items-center justify-center gap-1.5"
               title="Đăng xuất"
             >
-              {isSidebarCollapsed ? '🚪' : 'Đăng Xuất'}
+              <AdminIcons.Logout className="w-3.5 h-3.5" />
+              {!isSidebarCollapsed && <span>Đăng xuất</span>}
             </button>
           </div>
         </div>
       </aside>
 
       {/* 2.2 Main Dynamic Content Area */}
-      <main className="flex-1 min-w-0 h-full flex flex-col overflow-hidden">
+      <main className="flex-1 min-w-0 h-full flex flex-col overflow-hidden bg-[#101216]">
         {/* ============================================================ */}
         {/* MODULE 1: FULL-PAGE CHAMPION EDITOR VIEW (REPLACING MODAL)   */}
         {/* ============================================================ */}
         {editingChampion ? (
           <div className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
             {/* Header Toolbar cố định phía trên: Breadcrumbs, Title, Buttons, Tabs */}
-            <div className="shrink-0 p-3 sm:p-4 bg-[#0e1320] border-b border-white/15 space-y-2.5 z-10 shadow-lg">
-              {/* 1. Breadcrumb Phân Cấp Chi Tiết Cho Editor */}
-              <nav aria-label="Admin Editor Breadcrumb" className="w-full flex items-center gap-2 text-xs font-semibold text-slate-400 pb-2.5 border-b border-white/10 flex-wrap">
+            <div className="shrink-0 p-3 sm:p-4 bg-[#14161d] border-b border-white/[0.08] space-y-3 z-10">
+              {/* 1. Breadcrumb Phân Cấp Cho Editor */}
+              <nav aria-label="Admin Editor Breadcrumb" className="w-full flex items-center gap-2 text-xs font-medium text-slate-400 pb-2 border-b border-white/[0.06] flex-wrap">
                 <a
                   href="/"
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate?.('home');
                   }}
-                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                   title="Về Trang Chủ"
                 >
-                  <span>🏠</span>
-                  <span>{isEn ? 'Home' : 'Trang Chủ'}</span>
+                  <AdminIcons.Home className="w-3.5 h-3.5" />
+                  <span>{isEn ? 'Home' : 'Trang chủ'}</span>
                 </a>
                 <span className="text-slate-600">/</span>
                 <a
@@ -1500,11 +1615,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     e.preventDefault();
                     goToModule('overview');
                   }}
-                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                   title="Về Tổng Quan Quản Trị"
                 >
-                  <span>🛡️</span>
-                  <span>{isEn ? 'Admin Portal' : 'Quản Trị Hệ Thống'}</span>
+                  <AdminIcons.Overview className="w-3.5 h-3.5" />
+                  <span>{isEn ? 'Admin' : 'Quản trị'}</span>
                 </a>
                 <span className="text-slate-600">/</span>
                 <a
@@ -1513,51 +1628,52 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     e.preventDefault();
                     handleCancelEdit();
                   }}
-                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                   title="Về Danh Sách Tướng"
                 >
-                  <span>⚔️</span>
-                  <span>{isEn ? 'Champions' : 'Quản Lý Tướng'}</span>
+                  <AdminIcons.Champions className="w-3.5 h-3.5" />
+                  <span>{isEn ? 'Champions' : 'Quản lý tướng'}</span>
                 </a>
                 <span className="text-slate-600">/</span>
-                <span className="text-[#8CC0EB] font-bold truncate max-w-[280px]">
-                  {isNewChampion ? (isEn ? 'Create New' : 'Thêm Tướng Mới') : `${editingChampion.name} (${editingChampion.championID})`}
+                <span className="text-slate-200 font-medium truncate max-w-[280px]">
+                  {isNewChampion ? (isEn ? 'Create New' : 'Thêm tướng mới') : `${editingChampion.name} (${editingChampion.championID})`}
                 </span>
               </nav>
 
               {/* 2. Tiêu Đề & Các Nút Hành Động */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
-                <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full">
+                <div className="flex items-center gap-2.5 flex-wrap">
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer border border-white/10"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a1d26] hover:bg-[#222634] text-slate-300 hover:text-white text-xs font-medium transition-colors cursor-pointer border border-white/10"
                   >
-                    ← {isEn ? 'Back to Champions' : 'Quay Lại Danh Sách'}
+                    <AdminIcons.ChevronLeft className="w-3.5 h-3.5" />
+                    <span>{isEn ? 'Back' : 'Quay lại'}</span>
                   </button>
-                  <div className="h-5 w-px bg-white/15 hidden sm:block" />
-                  <h2 className="text-lg sm:text-xl font-black font-heading text-white">
-                    {isNewChampion ? 'Thêm Vị Tướng Mới' : `Chỉnh Sửa Tướng: ${editingChampion.name}`}
+                  <div className="h-4 w-px bg-white/10 hidden sm:block" />
+                  <h2 className="text-base sm:text-lg font-semibold text-slate-100">
+                    {isNewChampion ? 'Thêm vị tướng mới' : `Chỉnh sửa tướng: ${editingChampion.name}`}
                   </h2>
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-[#0b2545] text-sky-200 border border-sky-400">
+                  <span className="px-2 py-0.5 rounded font-mono text-xs text-sky-300 bg-sky-500/10 border border-sky-500/20">
                     {editingChampion.championID}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={() => setIsDropPanelOpen(!isDropPanelOpen)}
-                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border font-bold text-xs transition-all cursor-pointer shadow-md ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${
                       isDropPanelOpen
-                        ? 'bg-[#8CC0EB] text-[#07090e] border-[#8CC0EB] shadow-[0_0_15px_rgba(140, 192, 235,0.4)]'
-                        : 'bg-[#0b2545] hover:bg-sky-600 text-sky-200 border-sky-400 hover:text-white'
+                        ? 'bg-sky-500 text-slate-950 border-sky-400 font-semibold'
+                        : 'bg-[#1a1d26] hover:bg-[#222634] text-slate-300 border-white/10 hover:text-white'
                     }`}
                     title="Bật/Tắt Menu kéo thả Cổ vật và Sức mạnh"
                   >
-                    <span className="text-sm">🧲</span>
-                    <span>{isDropPanelOpen ? 'Đóng Menu Kéo Thả' : 'Mở Menu Kéo Thả'}</span>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] bg-black/30 font-mono font-bold">
+                    <AdminIcons.Magnet className="w-3.5 h-3.5" />
+                    <span>{isDropPanelOpen ? 'Đóng menu kéo thả' : 'Mở menu kéo thả'}</span>
+                    <span className="px-1.5 py-0.2 rounded text-[10px] bg-black/25 font-mono">
                       {relics.length || 155}
                     </span>
                   </button>
@@ -1565,49 +1681,49 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    className="px-4 py-2 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-lg bg-[#1a1d26] hover:bg-[#222634] text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors cursor-pointer border border-white/10"
                   >
-                    Hủy Bỏ
+                    Hủy bỏ
                   </button>
 
                   <button
                     type="button"
                     disabled={saveLoading}
                     onClick={handleSaveChampion}
-                    className="px-6 py-2 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black font-heading text-xs uppercase tracking-wide transition-all shadow-lg cursor-pointer disabled:opacity-50"
+                    className="px-5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
                   >
-                    {saveLoading ? 'Đang Lưu...' : 'Lưu Thay Đổi (Save)'}
+                    {saveLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
                   </button>
                 </div>
               </div>
 
-              {/* 3. Navigation Tabs Bar (Chuyển dạng tab trực quan như trang chi tiết tướng) */}
-              <div className="w-full flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-white/10">
+              {/* 3. Navigation Tabs Bar */}
+              <div className="w-full flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 border-t border-white/[0.06]">
                 {[
-                  { id: 'basic', label: isEn ? 'Basic Info' : 'Định Danh & Thuộc Tính' },
+                  { id: 'basic', label: isEn ? 'Basic Info' : 'Định danh & Thuộc tính' },
                   {
                     id: 'core',
-                    label: isEn ? 'Core Relics' : 'Cổ Vật Cốt Lõi',
+                    label: isEn ? 'Core Relics' : 'Cổ vật cốt lõi',
                     badge: (editingChampion.coreRelics?.mandatory || []).length + (editingChampion.coreRelics?.options || []).length
                   },
                   {
                     id: 'builds',
-                    label: isEn ? 'Relic Builds' : 'Các Bộ Cổ Vật',
+                    label: isEn ? 'Relic Builds' : 'Các bộ cổ vật',
                     badge: (editingChampion.relicSets || []).length
                   },
                   {
                     id: 'synergies',
-                    label: isEn ? 'Items & Powers' : 'Vật Phẩm & Sức Mạnh',
+                    label: isEn ? 'Items & Powers' : 'Vật phẩm & Sức mạnh',
                     badge:
                       (editingChampion.powerStarIds || []).filter(Boolean).length +
                       (editingChampion.adventurePowerIds || []).length +
                       (editingChampion.itemIds || []).length
                   },
-                  { id: 'ratings', label: isEn ? 'Ratings & Overview' : 'Đánh Giá & Vận Hành' },
-                  { id: 'assets', label: isEn ? 'Assets & Art' : 'Hình Ảnh & Asset' },
+                  { id: 'ratings', label: isEn ? 'Ratings & Overview' : 'Đánh giá & Vận hành' },
+                  { id: 'assets', label: isEn ? 'Assets & Art' : 'Hình ảnh & Asset' },
                   {
                     id: 'constellation',
-                    label: isEn ? 'Constellation' : 'Chòm Sao',
+                    label: isEn ? 'Constellation' : 'Chòm sao',
                     badge: (editingChampion.constellation?.nodes || []).length
                   }
                 ].map((tab) => {
@@ -1617,19 +1733,19 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       key={tab.id}
                       type="button"
                       onClick={() => setEditorTab(tab.id)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 shrink-0 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
                         isActive
-                          ? 'bg-[#8CC0EB] text-[#07090e] shadow-md shadow-sky-500/20'
-                          : 'bg-[#070a10] text-slate-300 hover:text-white border border-white/10 hover:border-white/20'
+                          ? 'bg-[#222634] text-slate-100 border border-white/15'
+                          : 'bg-[#14161d] text-slate-400 hover:text-slate-200 border border-transparent hover:border-white/[0.08]'
                       }`}
                     >
                       <span>{tab.label}</span>
                       {tab.badge !== undefined && tab.badge > 0 && (
                         <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                          className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
                             isActive
-                              ? 'bg-black/25 text-[#07090e]'
-                              : 'bg-[#141b2a] text-sky-300 border border-sky-500/30'
+                              ? 'bg-sky-500/20 text-sky-300'
+                              : 'bg-white/[0.06] text-slate-400'
                           }`}
                         >
                           {tab.badge}
@@ -1654,24 +1770,24 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 1: THÔNG TIN CƠ BẢN */}
             {editorTab === 'basic' && (
-            <div id="admin-sec-basic" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
-              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
-                <span>1.</span> Thông Tin Định Danh & Thuộc Tính Cơ Bản
+            <div id="admin-sec-basic" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-5">
+              <h3 className="text-sm font-semibold text-slate-200 border-b border-white/[0.08] pb-3 flex items-center gap-2">
+                <span className="text-sky-400 font-mono">01.</span> Thông Tin Định Danh & Thuộc Tính Cơ Bản
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Tên Tướng (VI)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Tên Tướng (VI)</label>
                   <input
                     type="text"
                     value={editingChampion.name || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs font-semibold focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Tên Tiếng Anh (EN)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Tên Tiếng Anh (EN)</label>
                   <input
                     type="text"
                     value={editingChampion.translations?.en?.name || ''}
@@ -1682,58 +1798,58 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         translations: { ...tr, en: { ...(tr.en || {}), name: e.target.value } }
                       });
                     }}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs font-semibold focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Mã Tướng (championID)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Mã Tướng (championID)</label>
                   <input
                     type="text"
                     disabled={!isNewChampion}
                     value={editingChampion.championID || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, championID: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-slate-400 font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#14161d] border border-white/[0.06] text-slate-400 font-mono text-xs focus:border-sky-500/60 focus:outline-none disabled:cursor-not-allowed"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Mã Thẻ (cardCode)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Mã Thẻ (cardCode)</label>
                   <input
                     type="text"
                     value={editingChampion.cardCode || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, cardCode: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Giá Mana (Cost)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Giá Mana (Cost)</label>
                   <input
                     type="number"
                     min="0"
                     max="20"
                     value={editingChampion.cost ?? 1}
                     onChange={(e) => setEditingChampion({ ...editingChampion, cost: Number(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-sky-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-sky-400 font-semibold font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Bậc Sức Mạnh VI (Tier VI)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Bậc Sức Mạnh VI (Tier VI)</label>
                   <input
                     type="text"
                     value={editingChampion.tier || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, tier: e.target.value })}
                     placeholder="VD: B Tier // Tạm được"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-amber-300 font-medium text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Bậc Sức Mạnh EN (Tier EN)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Bậc Sức Mạnh EN (Tier EN)</label>
                   <input
                     type="text"
                     value={editingChampion.translations?.en?.tier || ''}
@@ -1745,25 +1861,25 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       });
                     }}
                     placeholder="VD: B Tier // Average"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-amber-300 font-medium text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Chuẩn (VI)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Mốc Sao Chuẩn (VI)</label>
                   <input
                     type="text"
                     value={editingChampion.optimalStars || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, optimalStars: e.target.value })}
                     placeholder="VD: 4 - 5 Sao"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Chuẩn (EN)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Mốc Sao Chuẩn (EN)</label>
                   <input
                     type="text"
                     value={editingChampion.translations?.en?.optimalStars || ''}
@@ -1775,23 +1891,23 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       });
                     }}
                     placeholder="VD: 4 - 5 Stars"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Lối Chơi VI (PlayStyle VI)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Lối Chơi VI (PlayStyle VI)</label>
                   <input
                     type="text"
                     value={editingChampion.playStyle || ''}
                     onChange={(e) => setEditingChampion({ ...editingChampion, playStyle: e.target.value })}
                     placeholder="VD: Cân Bằng / Chỉ Số"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Lối Chơi EN (PlayStyle EN)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Lối Chơi EN (PlayStyle EN)</label>
                   <input
                     type="text"
                     value={editingChampion.translations?.en?.playStyle || ''}
@@ -1803,14 +1919,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       });
                     }}
                     placeholder="VD: Midrange / Body Builder"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Khu Vực (cách nhau dấu phẩy)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Khu Vực (cách nhau dấu phẩy)</label>
                   <input
                     type="text"
                     value={rawInputs.regions}
@@ -1821,12 +1937,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       setEditingChampion({ ...editingChampion, regions: list });
                     }}
                     placeholder="VD: Runeterra, Ionia"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Tags VI (cách nhau dấu phẩy)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Tags VI (cách nhau dấu phẩy)</label>
                   <input
                     type="text"
                     value={rawInputs.tags}
@@ -1837,12 +1953,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       setEditingChampion({ ...editingChampion, tags: list });
                     }}
                     placeholder="VD: Setup, High Stat, Midrange, Solo Carry"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Tags EN (cách nhau dấu phẩy)</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Tags EN (cách nhau dấu phẩy)</label>
                   <input
                     type="text"
                     value={rawInputs.tagsEn}
@@ -1857,7 +1973,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       });
                     }}
                     placeholder="VD: Setup, High Stat, Midrange, Solo Carry"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
               </div>
@@ -1866,13 +1982,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 2: CÁC CỔ VẬT PHÙ HỢP (SUITABLE RELICS - CẤU TRÚC LINH HOẠT) & TÙY CHỌN KHÁC */}
             {editorTab === 'core' && (
-            <div id="admin-sec-core" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
-              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center justify-between flex-wrap gap-2">
+            <div id="admin-sec-core" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-6">
+              <h3 className="text-sm font-semibold text-slate-200 border-b border-white/[0.08] pb-3 flex items-center justify-between flex-wrap gap-2">
                 <span className="flex items-center gap-2">
-                  <span>2.</span> Các Cổ Vật Phù Hợp (Suitable Relics) & Tùy Chọn Khác (Other Options)
+                  <span className="text-sky-400 font-mono">02.</span> Các Cổ Vật Phù Hợp & Tùy Chọn Khác
                 </span>
-                <span className="text-xs font-mono font-normal text-amber-300/80">
-                  🧲 Kéo cổ vật từ Menu bên phải vào các khung bên dưới
+                <span className="text-xs text-slate-400 font-normal">
+                  Kéo cổ vật từ Menu bên phải vào các khung bên dưới
                 </span>
               </h3>
 
@@ -1883,13 +1999,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   e.dataTransfer.dropEffect = 'copy';
                 }}
                 onDrop={handleDropToCore}
-                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-[#8CC0EB]/50 hover:border-[#8CC0EB] hover:bg-[#8CC0EB]/5 transition-all space-y-3"
+                className="p-4 rounded-xl bg-[#12141a] border border-dashed border-white/20 hover:border-sky-500/50 hover:bg-sky-500/[0.02] transition-colors space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-[#8CC0EB] uppercase font-heading flex items-center gap-2">
-                    <span>🛡️</span> 1. Cổ Vật Bắt Buộc / Cốt Lõi (Mandatory Relics)
+                  <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    Cổ Vật Bắt Buộc / Cốt Lõi (Mandatory Relics)
                   </h4>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#452600] text-amber-200">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                     {(editingChampion.coreRelics?.mandatory || []).length} Món
                   </span>
                 </div>
@@ -1917,30 +2034,30 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     });
                   }}
                   placeholder="VD: R0080, R0040"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                 />
 
                 {/* Visual preview with delete button */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
                   {(editingChampion.coreRelics?.mandatory || []).length === 0 ? (
-                    <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật bắt buộc (Kéo thả cổ vật vào đây)</span>
+                    <span className="text-xs text-slate-500 italic">Chưa có cổ vật bắt buộc (Kéo thả cổ vật vào đây)</span>
                   ) : (
                     (editingChampion.coreRelics?.mandatory || []).map((rawCode) => {
                       const code = cleanRelicCode(rawCode);
                       if (!code) return null;
                       return (
-                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-[#8CC0EB]/50 shadow-sm">
+                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#1d212b] border border-white/10 shadow-sm">
                           <img
                             src={`https://images.lortpoc.com/relics/${code}.webp`}
                             alt={code}
                             className="w-6 h-6 object-contain"
                             onError={(e) => { e.target.style.display = 'none'; }}
                           />
-                          <span className="text-xs font-mono font-bold text-amber-200">{code}</span>
+                          <span className="text-xs font-mono font-medium text-amber-300">{code}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveCoreRelic(code)}
-                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer transition-colors"
                             title="Xóa món này"
                           >
                             ✕
@@ -1953,11 +2070,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
               </div>
 
               {/* 2.2 CÁC PHƯƠNG ÁN TÙY CHỌN ĐI KÈM (FLEXIBLE OPTIONS) */}
-              <div className="p-5 rounded-xl bg-[#070a10] border border-sky-400/30 space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-white/10 flex-wrap gap-2">
+              <div className="p-4 rounded-xl bg-[#12141a] border border-white/[0.08] space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08] flex-wrap gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
-                      <span>🔀</span> 2. Các Phương Án Tùy Chọn Đi Kèm (Flexible Options)
+                    <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                      Các Phương Án Tùy Chọn Đi Kèm (Flexible Options)
                     </h4>
                     <p className="text-xs text-slate-400 mt-0.5">
                       Nếu bắt buộc có 2 món → mỗi phương án là 1 món (+C hoặc +D). Nếu bắt buộc có 1 món → mỗi phương án là 2 món (+B +C hoặc +E +F).
@@ -1966,14 +2084,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   <button
                     type="button"
                     onClick={handleAddCoreOption}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0b2545] hover:bg-sky-900/60 text-sky-200 border border-sky-400 cursor-pointer flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#1d212b] hover:bg-[#252a37] text-slate-200 border border-white/10 cursor-pointer flex items-center gap-1.5 transition-colors"
                   >
                     <span>+</span> Thêm Phương Án
                   </button>
                 </div>
 
                 {(editingChampion.coreRelics?.options || []).length === 0 ? (
-                  <div className="p-4 text-center text-xs text-slate-500 italic bg-[#0e1320] rounded-xl border border-white/5">
+                  <div className="p-4 text-center text-xs text-slate-500 italic bg-[#14161d] rounded-lg border border-white/[0.04]">
                     Chưa có phương án tùy chọn nào. Nhấn "+ Thêm Phương Án" để tạo lựa chọn thay thế (ví dụ: +C hoặc +D).
                   </div>
                 ) : (
@@ -1986,19 +2104,19 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           e.dataTransfer.dropEffect = 'copy';
                         }}
                         onDrop={(e) => handleDropToOption(optIdx, e)}
-                        className="p-3.5 rounded-xl bg-[#0e1320] border border-sky-500/20 hover:border-sky-400/50 transition-all space-y-2.5"
+                        className="p-3.5 rounded-xl bg-[#161920] border border-white/[0.08] hover:border-white/15 transition-colors space-y-2.5"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-sky-400" />
+                          <span className="text-xs font-medium text-slate-200 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
                             Phương Án {optIdx + 1}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleRemoveCoreOption(optIdx)}
-                            className="text-xs text-slate-400 hover:text-rose-400 font-bold cursor-pointer transition-colors"
+                            className="text-xs text-slate-400 hover:text-rose-400 font-medium cursor-pointer transition-colors"
                           >
-                            ✕ Xóa phương án này
+                            ✕ Xóa
                           </button>
                         </div>
 
@@ -2012,30 +2130,30 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           }}
                           onChange={(e) => handleOptionTextInputChange(optIdx, e.target.value)}
                           placeholder="VD: R0025 hoặc R0040, R0025 (kéo thả hoặc nhập mã)"
-                          className="w-full px-3 py-2 rounded-lg bg-[#070a10] border border-white/10 text-white font-mono text-xs focus:border-sky-400 focus:outline-none"
+                          className="w-full px-3 py-2 rounded-lg bg-[#12141a] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                         />
 
                         {/* Visual preview of relics inside this option */}
                         <div className="flex items-center gap-2 flex-wrap min-h-[32px]">
                           {(Array.isArray(optArr) ? optArr : []).length === 0 ? (
-                            <span className="text-[11px] text-slate-500 italic">Kéo thả cổ vật vào đây hoặc nhập mã</span>
+                            <span className="text-xs text-slate-500 italic">Kéo thả cổ vật vào đây hoặc nhập mã</span>
                           ) : (
                             (Array.isArray(optArr) ? optArr : []).map((rawCode) => {
                               const code = cleanRelicCode(rawCode);
                               if (!code) return null;
                               return (
-                                <div key={code} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#070a10] border border-sky-400/30">
+                                <div key={code} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#12141a] border border-white/10">
                                   <img
                                     src={`https://images.lortpoc.com/relics/${code}.webp`}
                                     alt={code}
                                     className="w-5 h-5 object-contain"
                                     onError={(e) => { e.target.style.display = 'none'; }}
                                   />
-                                  <span className="text-[11px] font-mono font-bold text-sky-200">{code}</span>
+                                  <span className="text-[11px] font-mono font-medium text-slate-200">{code}</span>
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveOptionRelic(optIdx, code)}
-                                    className="text-slate-400 hover:text-rose-400 text-[10px] ml-0.5 cursor-pointer font-bold"
+                                    className="text-slate-400 hover:text-rose-400 text-xs ml-0.5 cursor-pointer font-bold transition-colors"
                                     title="Xóa món"
                                   >
                                     ✕
@@ -2052,10 +2170,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
               </div>
 
               {/* 2.3 MÔ TẢ PHÂN TÍCH (DESCRIPTION) */}
-              <div className="p-5 rounded-xl bg-[#070a10] border border-[#8CC0EB]/25 space-y-4">
+              <div className="p-4 rounded-xl bg-[#12141a] border border-white/[0.08] space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-amber-300 uppercase font-heading flex items-center gap-2">
-                    <span>💡</span> 3. Mô Tả Phân Tích & Hướng Dẫn Chọn Cổ Vật (Description)
+                  <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    Mô Tả Phân Tích & Hướng Dẫn Chọn Cổ Vật (Description)
                   </h4>
                   <span className="text-[11px] text-slate-400 font-mono">
                     Hỗ trợ LorMarkup & Gợi ý (@)
@@ -2107,13 +2226,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   e.dataTransfer.dropEffect = 'copy';
                 }}
                 onDrop={handleDropToOther}
-                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-white/20 hover:border-sky-400 hover:bg-sky-950/10 transition-all space-y-3"
+                className="p-4 rounded-xl bg-[#12141a] border border-dashed border-white/20 hover:border-sky-500/50 hover:bg-sky-500/[0.02] transition-colors space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-200 uppercase font-heading flex items-center gap-2">
-                    4. Tùy Chọn Cổ Vật Khác (Other Relic Options)
+                  <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    Tùy Chọn Cổ Vật Khác (Other Relic Options)
                   </h4>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#141b2a] text-slate-300">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-white/[0.06] text-slate-300 border border-white/10">
                     {(editingChampion.otherRelicOptions || []).length} Tùy chọn
                   </span>
                 </div>
@@ -2135,19 +2255,19 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     setEditingChampion({ ...editingChampion, otherRelicOptions: list });
                   }}
                   placeholder="VD: R0060, R0020, R0114"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-[#8CC0EB] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                 />
 
                 {/* Visual preview with delete button */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
                   {(editingChampion.otherRelicOptions || []).length === 0 ? (
-                    <span className="text-[11px] text-slate-500 italic">Chưa có cổ vật tùy chọn (Thả cổ vật vào đây)</span>
+                    <span className="text-xs text-slate-500 italic">Chưa có cổ vật tùy chọn (Thả cổ vật vào đây)</span>
                   ) : (
                     (editingChampion.otherRelicOptions || []).map((rawCode) => {
                       const code = cleanRelicCode(rawCode);
                       if (!code) return null;
                       return (
-                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#141b2a] border border-white/15 shadow-sm">
+                        <div key={code} className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#1d212b] border border-white/10 shadow-sm">
                           <img
                             src={`https://images.lortpoc.com/relics/${code}.webp`}
                             alt={code}
@@ -2158,7 +2278,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           <button
                             type="button"
                             onClick={() => handleRemoveOtherRelic(code)}
-                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer transition-colors"
                             title="Xóa món này"
                           >
                             ✕
@@ -2174,11 +2294,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 3: BỘ CỔ VẬT ĐỀ XUẤT (RELIC SETS) */}
             {editorTab === 'builds' && (
-            <div id="admin-sec-builds" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+            <div id="admin-sec-builds" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-6">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="text-base font-bold font-heading text-[#8CC0EB] uppercase tracking-wider flex items-center gap-2">
-                    <span>3.</span> Danh Sách Các Bộ Cổ Vật Khác ({ (editingChampion.relicSets || []).length } Bộ)
+                  <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                    <span className="text-sky-400 font-mono">03.</span> Các Bộ Cổ Vật Đề Xuất ({ (editingChampion.relicSets || []).length } Bộ)
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Mỗi bộ trang bị gồm tiêu đề, 3 ô cổ vật, sao khuyên dùng và phân tích chiến thuật chi tiết.
@@ -2197,13 +2317,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     };
                     setEditingChampion({ ...editingChampion, relicSets: [...cur, newSet] });
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer font-heading"
+                  className="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-colors cursor-pointer"
                 >
                   + Thêm Bộ Cổ Vật Mới
                 </button>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {(editingChampion.relicSets || []).map((set, sIdx) => {
                   const isArr = Array.isArray(set);
                   const setObj = isArr ? { items: set } : set;
@@ -2211,10 +2331,10 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   return (
                     <div
                       key={sIdx}
-                      className="p-5 rounded-2xl bg-[#070a10] border-2 border-white/10 hover:border-white/25 transition-all space-y-4"
+                      className="p-4 sm:p-5 rounded-xl bg-[#12141a] border border-white/[0.08] hover:border-white/15 transition-colors space-y-4"
                     >
-                      <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
-                        <span className="font-bold font-heading text-sm text-[#8CC0EB]">
+                      <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5 flex-wrap gap-2">
+                        <span className="font-semibold text-sm text-slate-200">
                           Bộ #{sIdx + 1}
                         </span>
 
@@ -2226,14 +2346,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                               setEditingChampion({ ...editingChampion, relicSets: updated });
                             }
                           }}
-                          className="px-3 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-medium transition-colors cursor-pointer"
                         >
                           Xóa bộ này
                         </button>
                       </div>
 
                       <div className="max-w-xs">
-                        <label className="block text-xs font-bold text-slate-300 mb-1">Mốc Sao Khuyên Dùng (1 - 6)</label>
+                        <label className="block text-xs font-medium text-slate-300 mb-1.5">Mốc Sao Khuyên Dùng (1 - 6)</label>
                         <input
                           type="number"
                           min="1"
@@ -2244,17 +2364,17 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             copy[sIdx] = { ...setObj, recommendedStars: Number(e.target.value) || 1 };
                             setEditingChampion({ ...editingChampion, relicSets: copy });
                           }}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-amber-300 font-bold text-xs focus:border-[#8CC0EB] focus:outline-none"
+                          className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-amber-300 font-medium font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                         />
                       </div>
 
                       {/* 3 Relic Slots Inputs with DROP ZONE */}
                       <div>
                         <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-                          <label className="block text-xs font-bold text-slate-300">
-                            3 Ô Cổ Vật (Kéo thả từ Menu bên phải hoặc nhập mã, phân cách bằng dấu phẩy)
+                          <label className="block text-xs font-medium text-slate-300">
+                            3 Ô Cổ Vật (Kéo thả từ Menu bên phải hoặc nhập mã)
                           </label>
-                          <span className="text-[11px] text-[#8CC0EB] font-bold">
+                          <span className="text-[11px] text-slate-400">
                             Tối đa 3 món (Hỗ trợ kéo thả)
                           </span>
                         </div>
@@ -2294,7 +2414,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             setEditingChampion({ ...editingChampion, relicSets: copy });
                           }}
                           placeholder="VD: R0080, R0040, R0118"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs font-bold focus:border-[#8CC0EB] focus:outline-none"
+                          className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                         />
 
                         {/* Visual 3 slots preview with DROP ZONE */}
@@ -2309,15 +2429,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                   e.dataTransfer.dropEffect = 'copy';
                                 }}
                                 onDrop={(e) => handleDropToSlot(sIdx, slotIdx, e)}
-                                className={`group/slot relative flex items-center justify-between gap-3 p-3 rounded-xl border-2 transition-all ${
+                                className={`group/slot relative flex items-center justify-between gap-3 p-2.5 rounded-lg border transition-colors ${
                                   code
-                                    ? 'bg-[#0e1320] border-[#8CC0EB]/50 shadow-md hover:border-[#8CC0EB]'
-                                    : 'bg-[#080c14] border-dashed border-white/20 hover:border-[#8CC0EB]/70 hover:bg-[#8CC0EB]/5'
+                                    ? 'bg-[#1d212b] border-white/10 hover:border-sky-500/40'
+                                    : 'bg-[#14161d] border-dashed border-white/15 hover:border-sky-500/40'
                                 }`}
                                 title="Kéo thả cổ vật vào đây để trang bị"
                               >
-                                <div className="flex items-center gap-3 min-w-0">
-                                  <div className="w-11 h-11 rounded-lg bg-black border border-white/20 p-1 flex items-center justify-center shrink-0">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="w-9 h-9 rounded-md bg-[#12141a] border border-white/10 p-0.5 flex items-center justify-center shrink-0">
                                     {code ? (
                                       <img
                                         src={`https://images.lortpoc.com/relics/${code}.webp`}
@@ -2326,12 +2446,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                         onError={(e) => { e.target.style.display = 'none'; }}
                                       />
                                     ) : (
-                                      <span className="text-[10px] text-slate-500 font-bold">Ô {slotIdx + 1}</span>
+                                      <span className="text-[10px] text-slate-500 font-mono">Ô {slotIdx + 1}</span>
                                     )}
                                   </div>
                                   <div className="min-w-0">
                                     <span className="text-[10px] font-mono text-slate-400 block">Slot {slotIdx + 1}</span>
-                                    <span className="text-xs font-mono font-bold text-white truncate block">
+                                    <span className="text-xs font-mono font-medium text-slate-200 truncate block">
                                       {code || 'Thả cổ vật vào đây'}
                                     </span>
                                   </div>
@@ -2341,7 +2461,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveSlotItem(sIdx, slotIdx)}
-                                    className="p-1 rounded-full bg-rose-950/80 text-rose-300 hover:text-white border border-rose-500/40 text-[10px] transition-all cursor-pointer opacity-70 group-hover/slot:opacity-100 hover:scale-110 shrink-0"
+                                    className="p-1 rounded-md bg-rose-500/10 text-rose-300 hover:text-white hover:bg-rose-500/30 border border-rose-500/20 text-xs transition-colors cursor-pointer shrink-0"
                                     title="Gỡ cổ vật này"
                                   >
                                     ✕
@@ -2398,7 +2518,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                       {/* Video Link */}
                       <div>
-                        <label className="block text-xs font-bold text-slate-300 mb-1">
+                        <label className="block text-xs font-medium text-slate-300 mb-1.5">
                           Link Video Hướng Dẫn (Tùy chọn)
                         </label>
                         <input
@@ -2410,7 +2530,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             setEditingChampion({ ...editingChampion, relicSets: copy });
                           }}
                           placeholder="https://www.youtube.com/embed/..."
-                          className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-slate-300 text-xs font-mono"
+                          className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-200 text-xs font-mono focus:border-sky-500/60 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -2422,12 +2542,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 4: VẬT PHẨM & SỨC MẠNH (SYNERGIES) */}
             {editorTab === 'synergies' && (
-            <div id="admin-sec-synergies" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
-                <h3 className="text-base font-bold font-heading text-[#8CC0EB] uppercase tracking-wider flex items-center gap-2">
-                  <span>4.</span> Vật Phẩm & Sức Mạnh Khuyên Dùng (Items & Powers)
+            <div id="admin-sec-synergies" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-6">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 flex-wrap gap-2">
+                <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                  <span className="text-sky-400 font-mono">04.</span> Sức Mạnh Ngôi Sao & Vật Phẩm Khuyên Dùng
                 </h3>
-                <span className="text-xs text-amber-300 font-medium">
+                <span className="text-xs text-slate-400">
                   Kéo thả từ Menu bên phải hoặc nhập mã code
                 </span>
               </div>
@@ -2436,14 +2556,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
               <div className="space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-amber-300 uppercase font-heading flex items-center gap-2">
-                      <span>⭐</span> 4.1 Sức Mạnh Ngôi Sao (Star Powers: 1★ - 6★)
+                    <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      Sức Mạnh Ngôi Sao (Star Powers: 1★ - 6★)
                     </h4>
                     <p className="text-xs text-slate-400 mt-0.5">
                       Sức mạnh nội tại kích hoạt tương ứng từ mốc 1 Sao đến 6 Sao của tướng. Kéo thả sức mạnh vào từng ô sao.
                     </p>
                   </div>
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[#452600] text-amber-200 border border-amber-400/40">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                     {(editingChampion.powerStarIds || []).filter(Boolean).length}/6 Sao
                   </span>
                 </div>
@@ -2466,31 +2587,31 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           e.dataTransfer.dropEffect = 'copy';
                         }}
                         onDrop={(e) => handleDropToStarPower(starIdx, e)}
-                        className={`p-3.5 rounded-xl border-2 transition-all space-y-2.5 ${
+                        className={`p-3 rounded-lg border transition-colors space-y-2.5 ${
                           code
-                            ? 'bg-[#0a0f1a] border-amber-500/40 shadow-md hover:border-amber-400'
-                            : 'bg-[#070a10] border-dashed border-white/20 hover:border-amber-400/60 hover:bg-amber-950/10'
+                            ? 'bg-[#14161d] border-amber-500/30 hover:border-amber-500/50'
+                            : 'bg-[#12141a] border-dashed border-white/15 hover:border-amber-500/40'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="px-2 py-0.5 rounded-md text-[11px] font-black font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                          <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold font-mono bg-amber-500/15 text-amber-300 border border-amber-500/25">
                             {starNum}★
                           </span>
                           {code && (
                             <button
                               type="button"
                               onClick={() => handleRemoveStarPower(starIdx)}
-                              className="text-xs text-slate-400 hover:text-rose-400 font-bold cursor-pointer transition-colors"
+                              className="text-xs text-slate-400 hover:text-rose-400 font-medium cursor-pointer transition-colors"
                               title="Gỡ sức mạnh này"
                             >
-                              ✕ Gỡ bỏ
+                              ✕ Gỡ
                             </button>
                           )}
                         </div>
 
                         {code ? (
-                          <div className="flex items-start gap-2.5 min-h-[52px]">
-                            <div className="w-12 h-12 rounded-lg bg-black border border-white/20 p-1 flex items-center justify-center shrink-0">
+                          <div className="flex items-start gap-2.5 min-h-[48px]">
+                            <div className="w-10 h-10 rounded-md bg-[#12141a] border border-white/10 p-0.5 flex items-center justify-center shrink-0">
                               <img
                                 src={pImage}
                                 alt={pName}
@@ -2500,11 +2621,11 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-1">
-                                <span className="font-heading font-bold text-xs text-white truncate block" title={pName}>
+                                <span className="font-semibold text-xs text-slate-100 truncate block" title={pName}>
                                   {pName}
                                 </span>
                                 {pRarity && (
-                                  <span className="text-[9px] px-1 py-0.2 rounded font-bold uppercase bg-slate-800 text-slate-300 shrink-0">
+                                  <span className="text-[9px] px-1 py-0.2 rounded font-medium uppercase bg-white/[0.06] text-slate-300 shrink-0">
                                     {pRarity}
                                   </span>
                                 )}
@@ -2518,7 +2639,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             </div>
                           </div>
                         ) : (
-                          <div className="py-3 text-center text-xs text-slate-500 italic">
+                          <div className="py-2.5 text-center text-xs text-slate-500 italic">
                             Kéo thả sức mạnh vào đây
                           </div>
                         )}
@@ -2533,7 +2654,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                           }}
                           onChange={(e) => handleStarPowerCodeChange(starIdx, e.target.value)}
                           placeholder={`Mã sao ${starNum}★ (VD: P0156)`}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#070a10] border border-white/10 text-white font-mono text-xs focus:border-amber-400 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-md bg-[#12141a] border border-white/10 text-slate-100 font-mono text-xs focus:border-amber-500/60 focus:outline-none"
                         />
                       </div>
                     );
@@ -2548,18 +2669,19 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   e.dataTransfer.dropEffect = 'copy';
                 }}
                 onDrop={handleDropToAdventurePower}
-                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-sky-400/40 hover:border-sky-400 hover:bg-sky-950/10 transition-all space-y-3"
+                className="p-4 rounded-xl bg-[#12141a] border border-dashed border-white/20 hover:border-sky-500/50 hover:bg-sky-500/[0.02] transition-colors space-y-3"
               >
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-sky-300 uppercase font-heading flex items-center gap-2">
-                      <span>⚡</span> 4.2 Sức Mạnh Phiêu Lưu Khuyên Dùng (Adventure Powers)
+                    <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                      Sức Mạnh Phiêu Lưu Khuyên Dùng (Adventure Powers)
                     </h4>
                     <p className="text-xs text-slate-400 mt-0.5">
                       Các sức mạnh nhặt trong cuộc phiêu lưu phù hợp nhất với lối chơi của tướng.
                     </p>
                   </div>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#0b2545] text-sky-200 border border-sky-400">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">
                     {(editingChampion.adventurePowerIds || []).length} Sức mạnh
                   </span>
                 </div>
@@ -2579,13 +2701,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     setEditingChampion({ ...editingChampion, adventurePowerIds: list });
                   }}
                   placeholder="VD: P0067, P0680, P0222 (Kéo thả hoặc nhập mã phân cách bằng dấu phẩy)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-sky-400 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                 />
 
                 {/* Visual Preview */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
                   {(editingChampion.adventurePowerIds || []).length === 0 ? (
-                    <span className="text-[11px] text-slate-500 italic">
+                    <span className="text-xs text-slate-500 italic">
                       Chưa có sức mạnh phiêu lưu nào (Kéo thả từ tab Sức Mạnh ở Menu bên phải vào đây)
                     </span>
                   ) : (
@@ -2599,7 +2721,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       return (
                         <div
                           key={code}
-                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#0e1422] border border-sky-400/40 shadow-sm"
+                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#1d212b] border border-white/10 shadow-sm"
                         >
                           <img
                             src={pImage}
@@ -2608,15 +2730,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             onError={(e) => handleImageError(e, 'power')}
                           />
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-white max-w-[140px] truncate" title={pName}>
+                            <span className="text-xs font-medium text-slate-200 max-w-[140px] truncate" title={pName}>
                               {pName}
                             </span>
-                            <span className="text-[10px] font-mono text-sky-300 font-bold">{code}</span>
+                            <span className="text-[10px] font-mono text-sky-400 font-medium">{code}</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleRemoveAdventurePower(code)}
-                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer transition-colors"
                             title="Xóa sức mạnh này"
                           >
                             ✕
@@ -2635,18 +2757,19 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   e.dataTransfer.dropEffect = 'copy';
                 }}
                 onDrop={handleDropToItem}
-                className="p-5 rounded-xl bg-[#070a10] border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/10 transition-all space-y-3"
+                className="p-4 rounded-xl bg-[#12141a] border border-dashed border-white/20 hover:border-emerald-500/50 hover:bg-emerald-500/[0.02] transition-colors space-y-3"
               >
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-emerald-300 uppercase font-heading flex items-center gap-2">
-                      <span>📦</span> 4.3 Vật Phẩm Khuyên Dùng (Recommended Items)
+                    <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      Vật Phẩm Khuyên Dùng (Recommended Items)
                     </h4>
                     <p className="text-xs text-slate-400 mt-0.5">
                       Các vật phẩm trang bị tối ưu nhất để nâng cấp bài trong hành trình phiêu lưu.
                     </p>
                   </div>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                  <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
                     {(editingChampion.itemIds || []).length} Vật phẩm
                   </span>
                 </div>
@@ -2666,13 +2789,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     setEditingChampion({ ...editingChampion, itemIds: list });
                   }}
                   placeholder="VD: I0118, I0077, I0014 (Kéo thả hoặc nhập mã phân cách bằng dấu phẩy)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1320] border border-white/15 text-white font-mono text-xs focus:border-emerald-400 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 font-mono text-xs focus:border-emerald-500/60 focus:outline-none focus:ring-1 focus:ring-emerald-500/20 transition-colors"
                 />
 
                 {/* Visual Preview */}
                 <div className="flex items-center gap-2 pt-1 flex-wrap min-h-[38px]">
                   {(editingChampion.itemIds || []).length === 0 ? (
-                    <span className="text-[11px] text-slate-500 italic">
+                    <span className="text-xs text-slate-500 italic">
                       Chưa có vật phẩm nào (Kéo thả từ tab Vật Phẩm ở Menu bên phải vào đây)
                     </span>
                   ) : (
@@ -2686,7 +2809,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       return (
                         <div
                           key={code}
-                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#0e1422] border border-emerald-500/40 shadow-sm"
+                          className="group/item flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#1d212b] border border-white/10 shadow-sm"
                         >
                           <img
                             src={itImage}
@@ -2695,15 +2818,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                             onError={(e) => handleImageError(e, 'item')}
                           />
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-white max-w-[140px] truncate" title={itName}>
+                            <span className="text-xs font-medium text-slate-200 max-w-[140px] truncate" title={itName}>
                               {itName}
                             </span>
-                            <span className="text-[10px] font-mono text-emerald-300 font-bold">{code}</span>
+                            <span className="text-[10px] font-mono text-emerald-400 font-medium">{code}</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(code)}
-                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer"
+                            className="text-slate-400 hover:text-rose-400 font-bold ml-1 text-xs cursor-pointer transition-colors"
                             title="Xóa vật phẩm này"
                           >
                             ✕
@@ -2719,17 +2842,17 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 5: CHỈ SỐ ĐÁNH GIÁ (RATINGS) & MÔ TẢ TỔNG QUAN */}
             {editorTab === 'ratings' && (
-            <div id="admin-sec-ratings" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
-              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
-                <span>5.</span> Chỉ Số Sức Mạnh & Mô Tả Chi Tiết
+            <div id="admin-sec-ratings" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-6">
+              <h3 className="text-sm font-semibold text-slate-200 border-b border-white/[0.08] pb-3 flex items-center gap-2">
+                <span className="text-sky-400 font-mono">05.</span> Thang Điểm Năng Lực & Mô Tả Chi Tiết
               </h3>
 
               {/* Ratings Grid */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-3 uppercase tracking-wider font-heading">
+                <label className="block text-xs font-medium text-slate-300 mb-2.5">
                   Thang Điểm Năng Lực (1 - 10)
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   {[
                     { key: 'damage', label: 'Sát Thương (Damage)', color: 'text-rose-400', barColor: 'bg-rose-500' },
                     { key: 'defense', label: 'Phòng Thủ (Defense)', color: 'text-sky-400', barColor: 'bg-sky-500' },
@@ -2742,10 +2865,10 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     const numVal = Number(currentVal) || 0;
 
                     return (
-                      <div key={rate.key} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 space-y-2">
+                      <div key={rate.key} className="p-3.5 rounded-lg bg-[#12141a] border border-white/[0.08] space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className={`text-xs font-bold block ${rate.color}`}>{rate.label}</span>
-                          <span className="text-xs font-mono font-bold text-white">{numVal}/10</span>
+                          <span className={`text-xs font-medium block ${rate.color}`}>{rate.label}</span>
+                          <span className="text-xs font-mono font-medium text-slate-200">{numVal}/10</span>
                         </div>
 
                         <div className="flex items-center gap-1.5">
@@ -2759,7 +2882,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                 ratings: { ...(editingChampion.ratings || {}), [rate.key]: next }
                               });
                             }}
-                            className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-mono font-bold text-xs cursor-pointer border border-white/10 transition-colors"
+                            className="px-2 py-1 rounded bg-[#1d212b] hover:bg-[#252a37] text-slate-300 hover:text-white font-mono text-xs cursor-pointer border border-white/10 transition-colors"
                             title="Giảm 0.5"
                           >
                             -0.5
@@ -2779,7 +2902,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                 ratings: { ...curRatings, [rate.key]: val === '' ? '' : parseFloat(val) }
                               });
                             }}
-                            className="w-full px-2 py-1.5 rounded-lg bg-[#0e1320] border border-white/15 text-white font-mono font-bold text-sm text-center focus:border-[#8CC0EB] focus:outline-none"
+                            className="w-full px-2 py-1 rounded-lg bg-[#12141a] border border-white/10 text-slate-100 font-mono text-xs text-center focus:border-sky-500/60 focus:outline-none"
                           />
 
                           <button
@@ -2792,7 +2915,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                                 ratings: { ...(editingChampion.ratings || {}), [rate.key]: next }
                               });
                             }}
-                            className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white font-mono font-bold text-xs cursor-pointer border border-white/10 transition-colors"
+                            className="px-2 py-1 rounded bg-[#1d212b] hover:bg-[#252a37] text-slate-300 hover:text-white font-mono text-xs cursor-pointer border border-white/10 transition-colors"
                             title="Tăng 0.5"
                           >
                             +0.5
@@ -2800,7 +2923,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         </div>
 
                         {/* Mini bar preview */}
-                        <div className="w-full h-1.5 rounded-full bg-[#141b29] border border-white/10 overflow-hidden">
+                        <div className="w-full h-1.5 rounded-full bg-[#1d212b] border border-white/[0.06] overflow-hidden">
                           <div
                             className={`h-full ${rate.barColor} rounded-full transition-all`}
                             style={{ width: `${Math.min(100, Math.max(0, (numVal / 10) * 100))}%` }}
@@ -2855,16 +2978,16 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 6: ARTWORK ASSETS */}
             {editorTab === 'assets' && (
-            <div id="admin-sec-assets" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-6">
-              <h3 className="text-base font-bold font-heading text-[#8CC0EB] border-b border-white/10 pb-3 uppercase tracking-wider flex items-center gap-2">
-                <span>6.</span> Hình Ảnh & Splash Art (Assets)
+            <div id="admin-sec-assets" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-6">
+              <h3 className="text-sm font-semibold text-slate-200 border-b border-white/[0.08] pb-3 flex items-center gap-2">
+                <span className="text-sky-400 font-mono">06.</span> Hình Ảnh & Splash Art (Assets)
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                 {/* 1. URL Avatar Artwork */}
-                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                <div className="p-4 rounded-xl bg-[#12141a] border border-white/[0.08] space-y-3 flex flex-col justify-between">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-300">URL Avatar Artwork (avatar)</label>
+                    <label className="block text-xs font-medium text-slate-300">URL Avatar Artwork (avatar)</label>
                     <input
                       type="text"
                       value={editingChampion.assets?.[0]?.avatar || ''}
@@ -2876,13 +2999,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         setEditingChampion({ ...editingChampion, assets: curAssets });
                       }}
                       placeholder="https://images.lortpoc.com/avatarChampions/..."
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs font-mono focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                     />
                     <p className="text-[11px] text-slate-400">Ảnh đại diện hiển thị trong danh sách và thẻ tướng</p>
                   </div>
                   {/* Live Avatar Preview */}
-                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="pt-2 border-t border-white/[0.08] flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-lg bg-[#161920] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
                       {editingChampion.assets?.[0]?.avatar ? (
                         <img
                           src={editingChampion.assets[0].avatar}
@@ -2894,14 +3017,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         <span className="text-xs text-slate-500 font-mono">No Art</span>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400">Xem trước Avatar (Tỉ lệ 1:1)</span>
+                    <span className="text-[11px] text-slate-400">Xem trước Avatar (1:1)</span>
                   </div>
                 </div>
 
                 {/* 2. URL Full Splash Art */}
-                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                <div className="p-4 rounded-xl bg-[#12141a] border border-white/[0.08] space-y-3 flex flex-col justify-between">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-300">URL Full Splash Art (fullAbsolutePath)</label>
+                    <label className="block text-xs font-medium text-slate-300">URL Full Splash Art (fullAbsolutePath)</label>
                     <input
                       type="text"
                       value={editingChampion.assets?.[0]?.fullAbsolutePath || ''}
@@ -2913,13 +3036,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         setEditingChampion({ ...editingChampion, assets: curAssets });
                       }}
                       placeholder="https://dd.b.pvp.net/...-full.png"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs font-mono focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                     />
                     <p className="text-[11px] text-slate-400">Ảnh nền toàn cảnh khổ ngang hiển thị ở đầu trang chi tiết</p>
                   </div>
                   {/* Live Splash Preview */}
-                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
-                    <div className="w-24 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="pt-2 border-t border-white/[0.08] flex items-center gap-3">
+                    <div className="w-20 h-14 rounded-lg bg-[#161920] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
                       {editingChampion.assets?.[0]?.fullAbsolutePath ? (
                         <img
                           src={editingChampion.assets[0].fullAbsolutePath}
@@ -2931,14 +3054,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         <span className="text-xs text-slate-500 font-mono">No Art</span>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400">Xem trước Splash Art (Khổ ngang)</span>
+                    <span className="text-[11px] text-slate-400">Xem trước Splash Art</span>
                   </div>
                 </div>
 
                 {/* 3. URL Card In-Game Art (gameAbsolutePath) */}
-                <div className="p-4 rounded-xl bg-[#070a10] border border-white/10 space-y-3 flex flex-col justify-between">
+                <div className="p-4 rounded-xl bg-[#12141a] border border-white/[0.08] space-y-3 flex flex-col justify-between">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-300">URL Ảnh Thẻ Bài In-Game (gameAbsolutePath)</label>
+                    <label className="block text-xs font-medium text-slate-300">URL Ảnh Thẻ Bài In-Game (gameAbsolutePath)</label>
                     <input
                       type="text"
                       value={editingChampion.assets?.[0]?.gameAbsolutePath || ''}
@@ -2950,13 +3073,13 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         setEditingChampion({ ...editingChampion, assets: curAssets });
                       }}
                       placeholder="https://dd.b.pvp.net/.../cards/06RU026.png"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#0e1320] border border-white/15 text-white text-xs font-mono focus:border-[#8CC0EB] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-slate-100 text-xs font-mono focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                     />
                     <p className="text-[11px] text-slate-400">Ảnh thẻ bài dọc in-game làm hình minh họa và fallback</p>
                   </div>
                   {/* Live Card Preview */}
-                  <div className="pt-2 border-t border-white/10 flex items-center gap-3">
-                    <div className="w-12 h-16 rounded-xl bg-[#0e1320] border border-white/15 overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="pt-2 border-t border-white/[0.08] flex items-center gap-3">
+                    <div className="w-10 h-14 rounded-lg bg-[#161920] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
                       {editingChampion.assets?.[0]?.gameAbsolutePath ? (
                         <img
                           src={editingChampion.assets[0].gameAbsolutePath}
@@ -2968,7 +3091,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         <span className="text-[10px] text-slate-500 font-mono">No Art</span>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400">Xem trước Thẻ bài (Khổ dọc)</span>
+                    <span className="text-[11px] text-slate-400">Xem trước Thẻ bài</span>
                   </div>
                 </div>
               </div>
@@ -2977,7 +3100,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB 7: CHÒM SAO (CONSTELLATION) */}
             {editorTab === 'constellation' && (
-              <div id="admin-sec-constellation" className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-4">
+              <div id="admin-sec-constellation" className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-4">
                 <ConstellationEditor
                   constellation={
                     editingChampion.constellation || {
@@ -3002,7 +3125,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             )}
 
             {/* Bottom Floating Actions with Tab Switching Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/[0.08]">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {editorTab !== 'basic' && (
                   <button
@@ -3012,7 +3135,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       const idx = tabs.indexOf(editorTab);
                       if (idx > 0) setEditorTab(tabs[idx - 1]);
                     }}
-                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer border border-white/10"
+                    className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg bg-[#161920] hover:bg-[#1d212b] text-slate-300 hover:text-slate-100 text-xs font-medium transition-colors cursor-pointer border border-white/10"
                   >
                     ← {isEn ? 'Previous Tab' : 'Tab Trước'}
                   </button>
@@ -3025,18 +3148,18 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       const idx = tabs.indexOf(editorTab);
                       if (idx < tabs.length - 1) setEditorTab(tabs[idx + 1]);
                     }}
-                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer"
+                    className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg bg-[#1f232e] hover:bg-[#252a37] border border-white/10 text-sky-400 hover:text-sky-300 text-xs font-medium transition-colors cursor-pointer"
                   >
                     {isEn ? 'Next Tab' : 'Tab Kế Tiếp'} →
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="px-5 py-2.5 rounded-xl bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-lg bg-transparent hover:bg-white/5 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors cursor-pointer"
                 >
                   {isEn ? 'Cancel' : 'Hủy Bỏ'}
                 </button>
@@ -3045,9 +3168,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   type="button"
                   disabled={saveLoading}
                   onClick={handleSaveChampion}
-                  className="px-8 py-2.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-black font-heading text-xs uppercase tracking-wide transition-all shadow-xl cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50"
                 >
-                  {saveLoading ? (isEn ? 'Saving...' : 'Đang Lưu...') : (isEn ? 'Save Changes' : 'Lưu Thay Đổi (Save)')}
+                  {saveLoading ? (isEn ? 'Saving...' : 'Đang Lưu...') : (isEn ? 'Save Changes' : 'Lưu Thay Đổi')}
                 </button>
               </div>
             </div>
@@ -3055,7 +3178,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
           {/* CỘT PHẢI: MENU KÉO THẢ TÀI NGUYÊN (CỐ ĐỊNH TRONG KHUNG LÀM VIỆC) */}
           {isDropPanelOpen && (
-            <aside className="fixed bottom-4 right-4 z-40 w-[calc(100vw-32px)] sm:w-96 h-[calc(100vh-140px)] max-h-[640px] xl:static xl:w-88 2xl:w-96 xl:h-full shrink-0 rounded-2xl bg-[#0a0e17] border-2 border-[#8CC0EB]/60 shadow-2xl flex flex-col overflow-hidden">
+            <aside className="fixed bottom-4 right-4 z-40 w-[calc(100vw-32px)] sm:w-96 h-[calc(100vh-140px)] max-h-[640px] xl:static xl:w-88 2xl:w-96 xl:h-full shrink-0 rounded-xl bg-[#101216] border border-white/[0.08] shadow-2xl flex flex-col overflow-hidden">
               <DropDragSidePanel
                 isOpen={true}
                 onClose={() => setIsDropPanelOpen(false)}
@@ -3079,20 +3202,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
           <div className="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <div className="space-y-6 max-w-7xl mx-auto">
             {/* Top Bar with Section Info & Primary Action */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08]">
               <div>
                 {/* Link Phân Cấp (Breadcrumb) Cho Danh Sách Module Quản Trị */}
-                <nav aria-label="Admin Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-2 flex-wrap">
+                <nav aria-label="Admin Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-400 mb-2 flex-wrap">
                   <a
                     href="/"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate?.('home');
                     }}
-                    className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1.5"
                     title="Về Trang Chủ"
                   >
-                    <span>🏠</span>
+                    <AdminIcons.Home className="w-3.5 h-3.5 text-slate-400" />
                     <span>{isEn ? 'Home' : 'Trang Chủ'}</span>
                   </a>
                   <span className="text-slate-600">/</span>
@@ -3102,28 +3225,28 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       e.preventDefault();
                       goToModule('overview');
                     }}
-                    className={`hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 ${
-                      activeModule === 'overview' ? 'text-[#8CC0EB] font-bold' : ''
+                    className={`hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                      activeModule === 'overview' ? 'text-sky-400 font-medium' : ''
                     }`}
                     title="Tổng Quan Quản Trị"
                   >
-                    <span>🛡️</span>
+                    <AdminIcons.Overview className="w-3.5 h-3.5 text-slate-400" />
                     <span>{isEn ? 'Admin Portal' : 'Quản Trị Hệ Thống'}</span>
                   </a>
                   {activeModule !== 'overview' && (
                     <>
                       <span className="text-slate-600">/</span>
-                      <span className="text-[#8CC0EB] font-bold flex items-center gap-1.5">
-                        <span>{navModules.find((m) => m.id === activeModule)?.icon}</span>
+                      <span className="text-sky-400 font-medium flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5">{navModules.find((m) => m.id === activeModule)?.icon}</span>
                         <span>{navModules.find((m) => m.id === activeModule)?.label}</span>
                       </span>
                     </>
                   )}
                 </nav>
 
-                <h1 className="text-2xl font-black font-heading text-white">
-                  {navModules.find((m) => m.id === activeModule)?.icon}{' '}
-                  {navModules.find((m) => m.id === activeModule)?.label}
+                <h1 className="text-lg sm:text-xl font-semibold text-slate-100 flex items-center gap-2">
+                  <span className="text-sky-400">{navModules.find((m) => m.id === activeModule)?.icon}</span>
+                  <span>{navModules.find((m) => m.id === activeModule)?.label}</span>
                 </h1>
                 <p className="text-xs text-slate-400 mt-0.5">
                   Quản lý và cập nhật toàn bộ cơ sở dữ liệu thời gian thực.
@@ -3137,9 +3260,9 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     e.preventDefault();
                     goToChampionCreate();
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-[#8CC0EB] hover:bg-amber-400 text-[#07090e] font-extrabold font-heading text-xs uppercase tracking-wide transition-all shadow-md cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-colors shadow-sm cursor-pointer flex items-center gap-1.5"
                 >
-                  <span>+</span>
+                  <AdminIcons.Plus className="w-3.5 h-3.5" />
                   <span>{isEn ? 'Add Champion' : 'Thêm Tướng Mới'}</span>
                 </a>
               )}
@@ -3147,17 +3270,17 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB: OVERVIEW */}
             {activeModule === 'overview' && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* 1. Real-time Concurrent Users / Live Activity Monitor */}
-                <div className="p-2 sm:p-5 rounded-2xl bg-[#0e1320] border-2 border-[#8CC0EB]/25 shadow-xl">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 pb-2 sm:pb-5 border-b border-white/10">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <span className="relative flex h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0">
+                <div className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 pb-3 sm:pb-4 border-b border-white/[0.08]">
+                    <div className="flex items-center gap-2.5">
+                      <span className="relative flex h-2.5 w-2.5 shrink-0">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-500"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                       </span>
                       <div>
-                        <h3 className="font-heading font-extrabold text-sm sm:text-lg text-white uppercase tracking-wider">
+                        <h3 className="text-sm sm:text-base font-semibold text-slate-100">
                           {isEn ? 'Live Concurrent Users' : 'Người Dùng Trực Tuyến Đồng Thời'}
                         </h3>
                         <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
@@ -3168,15 +3291,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-2">
-                      <span className="text-[10px] sm:text-[11px] text-slate-400 font-mono">
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <span className="text-[11px] text-slate-400 font-mono">
                         {isEn ? 'Auto-refresh: 15s' : 'Tự động làm mới: 15s'}
                       </span>
                       <button
                         type="button"
                         onClick={fetchActiveUsers}
                         disabled={loadingActiveUsers}
-                        className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-[11px] sm:text-xs text-white font-bold transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2 disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-lg bg-[#1d212b] hover:bg-[#252a37] border border-white/10 text-xs text-slate-200 font-medium transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                         title="Làm mới số liệu"
                       >
                         <svg
@@ -3194,24 +3317,24 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                   </div>
 
                   {/* Metrics Body */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 pt-2 sm:pt-5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 pt-4">
                     {/* Active Visitors Counter */}
-                    <div className="p-2 sm:p-4 rounded-xl bg-[#070a10] border border-white/10 flex items-center justify-between">
+                    <div className="p-3.5 sm:p-4 rounded-lg bg-[#12141a] border border-white/[0.08] flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                        <span className="text-[11px] font-medium text-slate-400 block">
                           {isEn ? 'Total Online Users' : 'Tổng Đang Trực Tuyến'}
                         </span>
-                        <div className="flex items-baseline gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                          <span className="text-2xl sm:text-4xl font-black font-heading text-emerald-400">
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className="text-2xl sm:text-3xl font-semibold font-mono text-emerald-400">
                             {activeUsersStats.total || 0}
                           </span>
-                          <span className="text-[11px] sm:text-xs text-slate-400">
+                          <span className="text-xs text-slate-400">
                             {isEn ? 'active sessions' : 'phiên hoạt động'}
                           </span>
                         </div>
                       </div>
-                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                           <circle cx="9" cy="7" r="4" />
                           <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -3221,20 +3344,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     </div>
 
                     {/* Breakdown by Pages */}
-                    <div className="p-2 sm:p-4 rounded-xl bg-[#070a10] border border-white/10 md:col-span-2 flex flex-col justify-between">
+                    <div className="p-3.5 sm:p-4 rounded-lg bg-[#12141a] border border-white/[0.08] md:col-span-2 flex flex-col justify-between">
                       <div>
-                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5 sm:mb-2">
+                        <span className="text-[11px] font-medium text-slate-400 block mb-2">
                           {isEn ? 'Active by Page / Section' : 'Phân Bổ Theo Khu Vực Trang'}
                         </span>
                         {Object.keys(activeUsersStats.byPage || {}).length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                          <div className="flex flex-wrap gap-2">
                             {Object.entries(activeUsersStats.byPage).map(([page, count]) => (
                               <span
                                 key={page}
-                                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] sm:text-xs text-slate-200"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#1d212b] border border-white/10 text-xs text-slate-200"
                               >
-                                <span className="font-semibold capitalize text-[#8CC0EB]">{page}:</span>
-                                <span className="font-black text-white">{count}</span>
+                                <span className="text-slate-400 capitalize">{page}:</span>
+                                <span className="font-mono font-semibold text-slate-100">{count}</span>
                               </span>
                             ))}
                           </div>
@@ -3247,12 +3370,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                       {/* Language split */}
                       {Object.keys(activeUsersStats.byLang || {}).length > 0 && (
-                        <div className="mt-2 sm:mt-3 pt-2 sm:pt-2.5 border-t border-white/5 flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-400 flex-wrap">
-                          <span className="text-[10px] uppercase font-bold text-slate-500">Ngôn ngữ:</span>
+                        <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center gap-3 text-xs text-slate-400 flex-wrap">
+                          <span className="text-[10px] uppercase font-medium text-slate-500">Ngôn ngữ:</span>
                           {Object.entries(activeUsersStats.byLang).map(([l, count]) => (
-                            <span key={l} className="inline-flex items-center gap-1 font-mono text-[10px] sm:text-[11px]">
-                              <span className="uppercase text-slate-300 font-bold">{l}:</span>
-                              <span className="text-emerald-400 font-bold">{count}</span>
+                            <span key={l} className="inline-flex items-center gap-1 font-mono text-[11px]">
+                              <span className="uppercase text-slate-300">{l}:</span>
+                              <span className="text-emerald-400 font-semibold">{count}</span>
                             </span>
                           ))}
                           <span className="ml-auto text-[10px] text-slate-500 font-mono">
@@ -3265,20 +3388,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 </div>
 
                 {/* 2. Dataset Quick Modules Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   {navModules.filter((m) => m.count !== undefined).map((m) => (
                     <div
                       key={m.id}
                       onClick={() => goToModule(m.id)}
-                      className="p-5 rounded-2xl bg-[#0e1320] border border-white/10 hover:border-[#8CC0EB] transition-all cursor-pointer group shadow-lg"
+                      className="p-4 rounded-xl bg-[#161920] border border-white/[0.08] hover:border-white/15 hover:bg-[#1a1d26] transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-2xl">{m.icon}</span>
-                        <span className="text-2xl font-black font-heading text-[#8CC0EB] group-hover:scale-110 transition-transform">
+                        <span className="text-slate-400 group-hover:text-sky-400 transition-colors">{m.icon}</span>
+                        <span className="text-xl font-semibold font-mono text-slate-100 group-hover:text-sky-400 transition-colors">
                           {m.count}
                         </span>
                       </div>
-                      <span className="font-heading font-bold text-xs text-white block uppercase tracking-wider">
+                      <span className="font-medium text-xs text-slate-200 block">
                         {m.label}
                       </span>
                       <span className="text-[10px] text-slate-500 font-mono block mt-1">Truy cập module →</span>
@@ -3290,16 +3413,16 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB: CHAMPIONS LIST */}
             {activeModule === 'champions' && (
-              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
+              <div className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-4">
                 {/* Search & Filter */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-white/10">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
                   <div className="relative w-full sm:w-80">
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Tìm theo tên hoặc mã tướng..."
-                      className="w-full px-3.5 py-2 pl-9 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:outline-none focus:border-[#8CC0EB]"
+                      className="w-full px-3 py-2 pl-9 rounded-lg bg-[#12141a] border border-white/10 text-slate-100 placeholder:text-slate-500 text-xs focus:outline-none focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/20 transition-colors"
                     />
                     <svg className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                       <circle cx="11" cy="11" r="8" />
@@ -3311,7 +3434,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     <select
                       value={regionFilter}
                       onChange={(e) => setRegionFilter(e.target.value)}
-                      className="px-3 py-2 rounded-xl bg-[#070a10] border border-white/15 text-slate-300 text-xs focus:outline-none focus:border-[#8CC0EB]"
+                      className="px-3 py-2 rounded-lg bg-[#12141a] border border-white/10 text-slate-300 text-xs focus:outline-none focus:border-sky-500/60"
                     >
                       <option value="all">Tất cả khu vực</option>
                       <option value="runeterra">Runeterra</option>
@@ -3328,28 +3451,28 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       <option value="spiritblossom">Hoa Linh Lục Địa</option>
                     </select>
 
-                    <span className="text-xs text-slate-400 font-semibold whitespace-nowrap">
+                    <span className="text-xs text-slate-400 whitespace-nowrap font-mono">
                       {filteredChampions.length} / {champions.length} Tướng
                     </span>
                   </div>
                 </div>
 
                 {/* Champions Table */}
-                <div className="overflow-x-auto rounded-xl border border-white/10">
+                <div className="overflow-x-auto rounded-lg border border-white/[0.08]">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#070a10] uppercase font-mono text-[11px] text-slate-400 border-b border-white/10">
+                    <thead className="bg-[#12141a] font-mono text-[11px] text-slate-400 border-b border-white/[0.08]">
                       <tr>
-                        <th className="py-3 px-4">Tướng</th>
-                        <th className="py-3 px-3">Mã ID</th>
-                        <th className="py-3 px-3">Khu Vực</th>
-                        <th className="py-3 px-3">Cost</th>
-                        <th className="py-3 px-3">Tier</th>
-                        <th className="py-3 px-3">Core Relics</th>
-                        <th className="py-3 px-3">Số Bộ Build</th>
-                        <th className="py-3 px-4 text-right">Thao Tác</th>
+                        <th className="py-2.5 px-3.5 font-medium">Tướng</th>
+                        <th className="py-2.5 px-3 font-medium">Mã ID</th>
+                        <th className="py-2.5 px-3 font-medium">Khu Vực</th>
+                        <th className="py-2.5 px-3 font-medium">Cost</th>
+                        <th className="py-2.5 px-3 font-medium">Tier</th>
+                        <th className="py-2.5 px-3 font-medium">Core Relics</th>
+                        <th className="py-2.5 px-3 font-medium">Số Bộ Build</th>
+                        <th className="py-2.5 px-3.5 text-right font-medium">Thao Tác</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5 font-sans">
+                    <tbody className="divide-y divide-white/[0.04] font-sans">
                       {filteredChampions.map((c) => {
                         const avatar =
                           c.assets?.[0]?.avatar ||
@@ -3363,65 +3486,65 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                         const buildsCount = (c.relicSets || []).length;
 
                         return (
-                          <tr key={c.championID} className="hover:bg-[#141b2a]/60 transition-colors">
-                            <td className="py-3 px-4">
+                          <tr key={c.championID} className="hover:bg-[#1d212b]/50 transition-colors">
+                            <td className="py-2.5 px-3.5">
                               <a
                                 href={`${ADMIN_ROUTE_PREFIX}/champion/${toChampionSlug(c)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);
                                 }}
-                                className="flex items-center gap-3 group cursor-pointer"
+                                className="flex items-center gap-2.5 group cursor-pointer"
                                 title={`Chỉnh sửa ${c.name}`}
                               >
                                 <img
                                   src={avatar}
                                   alt={c.name}
-                                  className="w-9 h-9 rounded-lg object-cover bg-black border border-white/20 flex-shrink-0 group-hover:border-[#8CC0EB] group-hover:scale-105 transition-all"
+                                  className="w-8 h-8 rounded-md object-cover bg-black border border-white/10 flex-shrink-0 group-hover:border-sky-500/50 transition-colors"
                                   onError={(e) => handleImageError(e, 'champion')}
                                 />
                                 <div>
-                                  <span className="font-bold text-white block text-sm group-hover:text-[#8CC0EB] transition-colors">{c.name}</span>
+                                  <span className="font-medium text-slate-100 block text-xs group-hover:text-sky-400 transition-colors">{c.name}</span>
                                   {c.translations?.en?.name && (
-                                    <span className="text-[11px] text-slate-400 block">{c.translations.en.name}</span>
+                                    <span className="text-[10px] text-slate-400 block">{c.translations.en.name}</span>
                                   )}
                                 </div>
                               </a>
                             </td>
 
-                            <td className="py-3 px-3 font-mono text-slate-300">
+                            <td className="py-2.5 px-3 font-mono text-slate-400 text-xs">
                               {c.championID}
                               {c.cardCode && <span className="text-[10px] text-slate-500 block">{c.cardCode}</span>}
                             </td>
 
-                            <td className="py-3 px-3 text-slate-300 capitalize">
+                            <td className="py-2.5 px-3 text-slate-300 capitalize text-xs">
                               {Array.isArray(c.regions) ? c.regions.join(', ') : c.region || 'Runeterra'}
                             </td>
 
-                            <td className="py-3 px-3 font-bold text-sky-300">{c.cost ?? 0} Mana</td>
+                            <td className="py-2.5 px-3 font-mono text-sky-400 font-medium text-xs">{c.cost ?? 0} Mana</td>
 
-                            <td className="py-3 px-3">
-                              <span className="px-2 py-0.5 rounded font-black text-[11px] bg-[#8CC0EB] text-[#07090e]">
+                            <td className="py-2.5 px-3">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20">
                                 {tierShort}
                               </span>
                             </td>
 
-                            <td className="py-3 px-3">
-                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#452600] text-amber-200 border border-amber-400 whitespace-nowrap">
+                            <td className="py-2.5 px-3">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20 whitespace-nowrap">
                                 {coreCount} Cốt lõi{optionsCount > 0 ? ` + ${optionsCount} Tùy chọn` : ''}
                               </span>
                             </td>
 
-                            <td className="py-3 px-3 text-slate-300 font-semibold">{buildsCount} Bộ</td>
+                            <td className="py-2.5 px-3 text-slate-300 text-xs font-mono">{buildsCount} Bộ</td>
 
-                            <td className="py-3 px-4 text-right space-x-2">
+                            <td className="py-2.5 px-3.5 text-right space-x-1.5 whitespace-nowrap">
                               <a
                                 href={`${ADMIN_ROUTE_PREFIX}/champion/${toChampionSlug(c)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   goToChampionEdit(c);
                                 }}
-                                className="inline-block px-3.5 py-1.5 rounded-lg bg-[#0b2545] hover:bg-sky-600 border border-sky-400 text-sky-200 text-xs font-bold transition-all cursor-pointer"
+                                className="inline-block px-2.5 py-1 rounded-md bg-[#1f232e] hover:bg-[#282d3b] border border-white/10 text-slate-200 text-xs font-medium transition-colors cursor-pointer"
                               >
                                 Chỉnh Sửa
                               </a>
@@ -3429,7 +3552,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteChampion(c)}
-                                className="px-2.5 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                                className="px-2 py-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-medium transition-colors cursor-pointer"
                               >
                                 Xóa
                               </button>
@@ -3445,14 +3568,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB: RELICS CATALOG */}
             {activeModule === 'relics' && (
-              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
-                <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 flex-wrap">
+              <div className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-4">
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/[0.08] flex-wrap">
                   <input
                     type="text"
                     value={relicSearch}
                     onChange={(e) => setRelicSearch(e.target.value)}
                     placeholder="Tìm cổ vật theo tên hoặc mã..."
-                    className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB]"
+                    className="w-full sm:w-80 px-3 py-2 rounded-lg bg-[#12141a] border border-white/10 text-slate-100 placeholder:text-slate-500 text-xs focus:border-sky-500/60 focus:outline-none"
                   />
                   <span className="text-xs text-slate-400 font-mono">
                     {filteredRelics.length} Cổ Vật
@@ -3461,21 +3584,21 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {filteredRelics.map((r) => (
-                    <div key={r.relicCode} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 flex items-start gap-3">
+                    <div key={r.relicCode} className="p-3 rounded-lg bg-[#12141a] border border-white/[0.08] hover:border-white/15 transition-colors flex items-start gap-3">
                       <img
                         src={`https://images.lortpoc.com/relics/${r.relicCode}.webp`}
                         alt={r.name}
-                        className="w-12 h-12 object-contain bg-black/40 rounded-lg p-1 border border-white/15 shrink-0"
+                        className="w-10 h-10 object-contain bg-black/40 rounded-md p-0.5 border border-white/10 shrink-0"
                         onError={(e) => handleImageError(e, 'relic')}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1 mb-0.5">
                           <span className="font-mono text-[10px] text-slate-400">{r.relicCode}</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">
+                          <span className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                             {r.rarity || 'Common'}
                           </span>
                         </div>
-                        <h4 className="text-xs font-bold text-white truncate">{r.name}</h4>
+                        <h4 className="text-xs font-medium text-slate-100 truncate">{r.name}</h4>
                         <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">
                           {r.descriptionRaw || r.description}
                         </p>
@@ -3488,14 +3611,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB: POWERS CATALOG */}
             {activeModule === 'powers' && (
-              <div className="p-6 rounded-2xl bg-[#0e1320] border-2 border-white/15 shadow-xl space-y-5">
-                <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 flex-wrap">
+              <div className="p-4 sm:p-5 rounded-xl bg-[#161920] border border-white/[0.08] space-y-4">
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/[0.08] flex-wrap">
                   <input
                     type="text"
                     value={powerSearch}
                     onChange={(e) => setPowerSearch(e.target.value)}
                     placeholder="Tìm sức mạnh theo tên hoặc mã..."
-                    className="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-[#070a10] border border-white/15 text-white text-xs focus:border-[#8CC0EB]"
+                    className="w-full sm:w-80 px-3 py-2 rounded-lg bg-[#12141a] border border-white/10 text-slate-100 placeholder:text-slate-500 text-xs focus:border-sky-500/60 focus:outline-none"
                   />
                   <span className="text-xs text-slate-400 font-mono">
                     {filteredPowers.length} Sức Mạnh
@@ -3504,15 +3627,15 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {filteredPowers.slice(0, 90).map((p) => (
-                    <div key={p.powerCode || p.name} className="p-3.5 rounded-xl bg-[#070a10] border border-white/10 flex items-start gap-3">
+                    <div key={p.powerCode || p.name} className="p-3 rounded-lg bg-[#12141a] border border-white/[0.08] hover:border-white/15 transition-colors flex items-start gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1 mb-0.5">
                           <span className="font-mono text-[10px] text-slate-400">{p.powerCode}</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">
+                          <span className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                             {p.rarity || 'Common'}
                           </span>
                         </div>
-                        <h4 className="text-xs font-bold text-white truncate">{p.name}</h4>
+                        <h4 className="text-xs font-medium text-slate-100 truncate">{p.name}</h4>
                         <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">
                           {p.descriptionRaw || p.description}
                         </p>
@@ -3525,14 +3648,14 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
             {/* TAB: SERVER LOGS */}
             {activeModule === 'logs' && (
-              <div className="rounded-2xl bg-[#07090e] border-2 border-white/15 shadow-2xl overflow-hidden font-mono text-xs">
-                <div className="flex items-center justify-between px-4 py-3 bg-[#0d121d] border-b border-white/10">
+              <div className="rounded-xl bg-[#0d0f14] border border-white/[0.08] overflow-hidden font-mono text-xs">
+                <div className="flex items-center justify-between px-4 py-2.5 bg-[#12141a] border-b border-white/[0.08]">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-                    <span className="text-xs font-bold text-slate-300 ml-2 font-heading">
-                      WINSTON LIVE LOGGER • LOCALHOST:5001
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                    <span className="text-xs font-medium text-slate-300 ml-2">
+                      Winston Logger • localhost:5001
                     </span>
                   </div>
 
@@ -3541,21 +3664,21 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       type="button"
                       onClick={fetchServerLogs}
                       disabled={logsLoading}
-                      className="px-3 py-1.5 rounded-lg bg-[#141b2a] hover:bg-white/10 text-slate-300 text-xs font-bold transition-all cursor-pointer border border-white/10"
+                      className="px-3 py-1.5 rounded-lg bg-[#1d212b] hover:bg-[#252a37] text-slate-300 text-xs font-medium transition-colors cursor-pointer border border-white/10"
                     >
-                      {logsLoading ? 'Đang tải...' : 'Làm Mới (Refresh)'}
+                      {logsLoading ? 'Đang tải...' : 'Làm Mới'}
                     </button>
                     <button
                       type="button"
                       onClick={handleClearLogs}
-                      className="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-medium transition-colors cursor-pointer"
                     >
                       Xóa Log
                     </button>
                   </div>
                 </div>
 
-                <div className="p-4 max-h-[600px] overflow-y-auto space-y-1 bg-[#05070a] select-text">
+                <div className="p-3 max-h-[600px] overflow-y-auto space-y-1 bg-[#090b0e] select-text">
                   {serverLogs.length === 0 ? (
                     <div className="py-16 text-center text-slate-500 text-xs">
                       Chưa có nhật ký máy chủ gần đây.
@@ -3566,20 +3689,20 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                       const isWarn = log.level === 'warn';
                       const isHttp = log.level === 'http';
                       const levelBadgeClass = isError
-                        ? 'text-rose-400 bg-rose-950/60 border-rose-500/40'
+                        ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
                         : isWarn
-                        ? 'text-amber-400 bg-amber-950/60 border-amber-500/40'
+                        ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
                         : isHttp
-                        ? 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
-                        : 'text-sky-300 bg-sky-950/60 border-sky-500/40';
+                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                        : 'text-sky-300 bg-sky-500/10 border-sky-500/20';
 
                       return (
-                        <div key={log.id} className="flex items-start gap-2.5 leading-relaxed hover:bg-white/5 px-2 py-1 rounded transition-colors">
+                        <div key={log.id} className="flex items-start gap-2.5 leading-relaxed hover:bg-white/[0.03] px-2 py-1 rounded transition-colors">
                           <span className="text-slate-500 shrink-0 text-[11px] font-mono">{log.timestamp}</span>
-                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase shrink-0 border ${levelBadgeClass}`}>
+                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-medium uppercase shrink-0 border ${levelBadgeClass}`}>
                             {log.level}
                           </span>
-                          <span className={`break-all ${isError ? 'text-rose-200 font-bold' : 'text-slate-200'}`}>
+                          <span className={`break-all ${isError ? 'text-rose-300 font-medium' : 'text-slate-300'}`}>
                             {log.message}
                           </span>
                         </div>

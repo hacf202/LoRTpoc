@@ -106,39 +106,44 @@ export default function DropDragSidePanel({
   if (!isOpen) return null;
 
   return (
-    <div className="w-full h-full flex flex-col font-sans select-none overflow-hidden bg-[#0a0e17]">
+    <div className="w-full h-full flex flex-col font-sans select-none overflow-hidden bg-[#13151b] border-l border-white/[0.08]">
       {/* 1. Header */}
-      <div className="p-3.5 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-[#121824] to-[#0a0e17] shrink-0">
+      <div className="p-3 border-b border-white/[0.08] flex items-center justify-between bg-[#101216] shrink-0">
         <div className="flex items-center gap-2">
-          <span className="w-7 h-7 rounded-lg bg-[#8CC0EB] text-[#07090e] font-black flex items-center justify-center text-sm shadow">
-            🧲
+          <span className="w-6 h-6 rounded-md bg-[#1d212b] border border-white/10 text-sky-400 flex items-center justify-center text-xs">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <path d="M4 7V4h4v3a4 4 0 0 0 8 0V4h4v3a8 8 0 0 1-16 0z" />
+            </svg>
           </span>
           <div>
-            <h3 className="font-heading font-black text-xs text-white uppercase tracking-wider">
-              Menu Kéo Thả
+            <h3 className="font-semibold text-xs text-slate-100">
+              Menu kéo thả
             </h3>
-            <span className="text-[10px] text-amber-300 font-medium">Kéo thả vào ô bên trái hoặc bấm (+)</span>
+            <span className="text-[10px] text-slate-400">Kéo sang ô bên trái hoặc bấm (+)</span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-950/60 border border-white/10 hover:border-rose-500/50 text-slate-400 hover:text-rose-300 transition-colors cursor-pointer text-xs font-bold"
+          className="p-1.5 rounded-md hover:bg-white/5 border border-transparent hover:border-white/10 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer text-xs"
           title="Đóng bảng kéo thả"
         >
-          ✕
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
       {/* 2. Tabs Switcher */}
-      <div className="grid grid-cols-5 p-1.5 bg-[#06080d] border-b border-white/10 text-xs font-heading font-bold gap-1 shrink-0">
+      <div className="grid grid-cols-5 p-1 bg-[#161920] border-b border-white/[0.08] text-xs font-medium gap-1 shrink-0">
         {[
-          { id: 'relics', label: 'Cổ Vật', icon: '💎', count: relics.length },
-          { id: 'powers', label: 'Sức Mạnh', icon: '⚡', count: powers.length },
-          { id: 'bonusStars', label: 'Chòm Sao', icon: '⭐', count: bonusStars.length },
-          { id: 'items', label: 'Vật Phẩm', icon: '📦', count: items.length },
-          { id: 'cards', label: 'Thẻ Bài', icon: '🃏', count: cards.length }
+          { id: 'relics', label: 'Cổ vật', count: relics.length },
+          { id: 'powers', label: 'Sức mạnh', count: powers.length },
+          { id: 'bonusStars', label: 'Chòm sao', count: bonusStars.length },
+          { id: 'items', label: 'Vật phẩm', count: items.length },
+          { id: 'cards', label: 'Thẻ bài', count: cards.length }
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -149,21 +154,21 @@ export default function DropDragSidePanel({
                 setActiveTab(tab.id);
                 setRarityFilter('all');
               }}
-              className={`py-1.5 px-0.5 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+              className={`py-1.5 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-[#8CC0EB] text-[#07090e] shadow-md font-black'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#222634] text-slate-100 border border-white/10 shadow-sm font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
               }`}
             >
-              <span className="text-sm">{tab.icon}</span>
-              <span className="text-[9px] sm:text-[10px] truncate max-w-full">{tab.label}</span>
+              <span className="text-[10px] sm:text-[11px] truncate max-w-full">{tab.label}</span>
+              <span className={`text-[9px] font-mono ${isActive ? 'text-sky-300' : 'text-slate-500'}`}>{tab.count}</span>
             </button>
           );
         })}
       </div>
 
       {/* 3. Search & Filters Bar */}
-      <div className="p-3 space-y-2 border-b border-white/10 bg-[#0c111c] shrink-0">
+      <div className="p-3 space-y-2 border-b border-white/[0.08] bg-[#13151b] shrink-0">
         {/* Search Input */}
         <div className="relative">
           <input
@@ -171,16 +176,19 @@ export default function DropDragSidePanel({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={`Tìm theo tên ${activeTab === 'relics' ? 'cổ vật' : activeTab === 'powers' ? 'sức mạnh' : activeTab === 'bonusStars' ? 'ngôi sao' : '...'}`}
-            className="w-full px-3 py-2 pl-8 rounded-xl bg-[#06080d] border border-white/20 text-white text-xs focus:outline-none focus:border-[#8CC0EB] transition-colors"
+            className="w-full px-3 py-1.5 pl-8 rounded-lg bg-[#1a1d26] border border-white/10 text-slate-100 text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/20 transition-colors"
           />
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
-            🔍
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
           </span>
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs cursor-pointer"
             >
               ✕
             </button>
@@ -194,17 +202,17 @@ export default function DropDragSidePanel({
               { id: 'all', label: 'Tất cả' },
               { id: 'common', label: 'Thường' },
               { id: 'rare', label: 'Hiếm' },
-              { id: 'epic', label: 'Sử Thi' },
-              { id: 'legendary', label: 'H.Thoại' }
+              { id: 'epic', label: 'Sử thi' },
+              { id: 'legendary', label: 'Huyền thoại' }
             ].map((r) => (
               <button
                 key={r.id}
                 type="button"
                 onClick={() => setRarityFilter(r.id)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded text-[10px] font-medium shrink-0 transition-colors cursor-pointer ${
                   rarityFilter === r.id
-                    ? 'bg-[#8CC0EB] text-[#07090e]'
-                    : 'bg-white/5 text-slate-400 hover:text-white'
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                    : 'bg-[#1a1d26] text-slate-400 hover:text-slate-200 border border-white/[0.06]'
                 }`}
               >
                 {r.label}
@@ -218,16 +226,16 @@ export default function DropDragSidePanel({
             {[
               { id: 'all', label: 'Tất cả' },
               { id: 'bonusStar', label: 'Bonus Star (Thường)' },
-              { id: 'bonusStarGem', label: 'Thượng Giới (Đá Quý)' }
+              { id: 'bonusStarGem', label: 'Thượng giới (Đá quý)' }
             ].map((r) => (
               <button
                 key={r.id}
                 type="button"
                 onClick={() => setRarityFilter(r.id)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded text-[10px] font-medium shrink-0 transition-colors cursor-pointer ${
                   rarityFilter === r.id
-                    ? 'bg-[#8CC0EB] text-[#07090e]'
-                    : 'bg-white/5 text-slate-400 hover:text-white'
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                    : 'bg-[#1a1d26] text-slate-400 hover:text-slate-200 border border-white/[0.06]'
                 }`}
               >
                 {r.label}
@@ -237,13 +245,13 @@ export default function DropDragSidePanel({
         )}
 
         <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
-          <span>Tìm thấy: <strong className="text-white font-mono">{currentList.length}</strong></span>
-          <span className="text-[10px] text-amber-300/80">Kéo sang ô bên trái</span>
+          <span>Tìm thấy: <strong className="text-slate-200 font-mono">{currentList.length}</strong></span>
+          <span className="text-[10px] text-slate-500">Kéo sang ô bên trái</span>
         </div>
       </div>
 
       {/* 4. Draggable Items List */}
-      <div className="flex-1 overflow-y-auto p-2.5 space-y-2">
+      <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
         {currentList.length === 0 ? (
           <div className="py-12 text-center text-slate-500 text-xs">
             Không tìm thấy kết quả phù hợp.
@@ -260,13 +268,13 @@ export default function DropDragSidePanel({
               (activeTab === 'relics' ? `https://images.lortpoc.com/relics/${code}.webp` : null);
 
             const rawRarity = (item.rarity || item.translations?.en?.rarity || '').toLowerCase();
-            let rarityBadgeClass = 'bg-slate-800 text-slate-300';
+            let rarityBadgeClass = 'bg-white/[0.06] text-slate-400 border border-white/10';
             if (rawRarity.includes('rare') || rawRarity.includes('hiếm')) {
-              rarityBadgeClass = 'bg-blue-950 text-blue-300 border border-blue-500/40';
+              rarityBadgeClass = 'bg-blue-500/10 text-blue-300 border border-blue-500/20';
             } else if (rawRarity.includes('epic') || rawRarity.includes('sử thi')) {
-              rarityBadgeClass = 'bg-purple-950 text-purple-300 border border-purple-500/40';
+              rarityBadgeClass = 'bg-purple-500/10 text-purple-300 border border-purple-500/20';
             } else if (rawRarity.includes('legendary') || rawRarity.includes('huyền thoại')) {
-              rarityBadgeClass = 'bg-amber-950 text-amber-300 border border-amber-500/40';
+              rarityBadgeClass = 'bg-amber-500/10 text-amber-300 border border-amber-500/20';
             }
 
             return (
@@ -274,11 +282,11 @@ export default function DropDragSidePanel({
                 key={code}
                 draggable
                 onDragStart={(e) => handleDragStart(e, item)}
-                className="group p-2.5 rounded-xl bg-[#0e1422] hover:bg-[#151e33] border border-white/10 hover:border-[#8CC0EB] transition-all cursor-grab active:cursor-grabbing flex items-center gap-3 shadow-sm hover:shadow-md"
+                className="group p-2 rounded-lg bg-[#181b23] hover:bg-[#20242f] border border-white/[0.08] hover:border-sky-500/40 transition-colors cursor-grab active:cursor-grabbing flex items-center gap-2.5"
                 title={`Kéo thả "${name}" vào ô bên trái`}
               >
-                {/* Artwork Thumbnail (Icon to rõ) */}
-                <div className="w-11 h-11 rounded-xl bg-black/60 border border-white/15 p-1 shrink-0 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+                {/* Artwork Thumbnail */}
+                <div className="w-9 h-9 rounded-md bg-[#101216] border border-white/10 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
                   {imageUrl ? (
                     <img
                       src={imageUrl}
@@ -288,31 +296,31 @@ export default function DropDragSidePanel({
                       onError={(e) => handleImageError(e, activeTab === 'relics' ? 'relic' : activeTab === 'powers' ? 'power' : activeTab === 'items' ? 'item' : 'card')}
                     />
                   ) : (
-                    <span className="text-lg">{activeTab === 'relics' ? '💎' : activeTab === 'powers' ? '⚡' : activeTab === 'bonusStars' ? '⭐' : '📦'}</span>
+                    <span className="text-xs text-slate-500 font-mono">{code.slice(0, 3)}</span>
                   )}
                 </div>
 
-                {/* Info Text: CHỈ HIỆN TÊN VÀ MÔ TẢ (KHÔNG HIỆN MÃ CODE) */}
+                {/* Info Text */}
                 <div className="flex-1 min-w-0">
-                  <span className="font-heading font-bold text-xs text-white truncate block group-hover:text-[#8CC0EB] transition-colors">
+                  <span className="font-medium text-xs text-slate-200 truncate block group-hover:text-sky-300 transition-colors">
                     {name}
                   </span>
 
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     {activeTab === 'bonusStars' ? (
-                      <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${
+                      <span className={`text-[9px] px-1 py-0.2 rounded font-medium shrink-0 ${
                         item.nodeType === 'bonusStarGem'
-                          ? 'bg-purple-950 text-purple-300 border border-purple-500/40'
-                          : 'bg-sky-950 text-sky-300 border border-sky-500/40'
+                          ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
+                          : 'bg-sky-500/10 text-sky-300 border border-sky-500/20'
                       }`}>
-                        {item.nodeType === 'bonusStarGem' ? 'Thượng Giới' : 'Bonus Star'}
+                        {item.nodeType === 'bonusStarGem' ? 'Thượng giới' : 'Bonus star'}
                       </span>
                     ) : item.rarity ? (
-                      <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${rarityBadgeClass}`}>
+                      <span className={`text-[9px] px-1 py-0.2 rounded font-medium shrink-0 ${rarityBadgeClass}`}>
                         {item.rarity}
                       </span>
                     ) : null}
-                    <p className="text-[10px] text-slate-400 truncate max-w-[170px]">
+                    <p className="text-[10px] text-slate-500 truncate max-w-[170px]">
                       {item.descriptionRaw || item.description || ''}
                     </p>
                   </div>
@@ -326,7 +334,7 @@ export default function DropDragSidePanel({
                       e.stopPropagation();
                       onQuickAssignRelic(code);
                     }}
-                    className="p-1.5 rounded-lg bg-[#8CC0EB]/20 hover:bg-[#8CC0EB] text-[#8CC0EB] hover:text-[#07090e] transition-all cursor-pointer font-bold text-xs shrink-0"
+                    className="p-1 rounded-md bg-white/[0.04] hover:bg-sky-500 hover:text-slate-950 text-slate-400 transition-colors cursor-pointer text-xs shrink-0"
                     title={`Gán nhanh "${name}" vào slot trống`}
                   >
                     +
@@ -339,7 +347,7 @@ export default function DropDragSidePanel({
                       e.stopPropagation();
                       onQuickAssignPower(code);
                     }}
-                    className="p-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400 text-amber-300 hover:text-black transition-all cursor-pointer font-bold text-xs shrink-0"
+                    className="p-1 rounded-md bg-white/[0.04] hover:bg-sky-500 hover:text-slate-950 text-slate-400 transition-colors cursor-pointer text-xs shrink-0"
                     title={`Gán nhanh sức mạnh "${name}"`}
                   >
                     +
@@ -352,7 +360,7 @@ export default function DropDragSidePanel({
                       e.stopPropagation();
                       onQuickAssignItem(code);
                     }}
-                    className="p-1.5 rounded-lg bg-emerald-400/20 hover:bg-emerald-400 text-emerald-300 hover:text-black transition-all cursor-pointer font-bold text-xs shrink-0"
+                    className="p-1 rounded-md bg-white/[0.04] hover:bg-sky-500 hover:text-slate-950 text-slate-400 transition-colors cursor-pointer text-xs shrink-0"
                     title={`Gán nhanh vật phẩm "${name}"`}
                   >
                     +
@@ -365,16 +373,14 @@ export default function DropDragSidePanel({
       </div>
 
       {/* 5. Footer Instructions */}
-      <div className="p-2.5 border-t border-white/10 bg-[#06080d] text-[11px] text-slate-400 flex items-center justify-between shrink-0">
-        <span className="flex items-center gap-1.5">
-          <span className="text-amber-400">💡</span> Kéo thả hoặc bấm (+)
-        </span>
+      <div className="p-2 border-t border-white/[0.08] bg-[#101216] text-[11px] text-slate-400 flex items-center justify-between shrink-0">
+        <span>Kéo thả hoặc bấm (+) để gán</span>
         <button
           type="button"
           onClick={onClose}
-          className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer underline"
+          className="text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
         >
-          Ẩn Menu
+          Ẩn menu
         </button>
       </div>
     </div>
