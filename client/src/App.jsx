@@ -213,13 +213,31 @@ export default function App() {
   // Keyboard shortcut listener (Ctrl+K or /)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
         searchInputRef.current?.focus();
-      } else if (e.key === '/' && document.activeElement !== searchInputRef.current) {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      } else if (e.key === 'Escape') {
+        return;
+      }
+      
+      // Shortcut '/' chỉ kích hoạt khi người dùng KHÔNG ĐANG nhập liệu trong ô input/textarea/select
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeEl = document.activeElement;
+        const tagName = activeEl?.tagName;
+        const isEditing =
+          tagName === 'INPUT' ||
+          tagName === 'TEXTAREA' ||
+          tagName === 'SELECT' ||
+          activeEl?.isContentEditable ||
+          activeEl?.getAttribute('role') === 'textbox';
+
+        if (!isEditing) {
+          e.preventDefault();
+          searchInputRef.current?.focus();
+        }
+        return;
+      }
+      
+      if (e.key === 'Escape') {
         setIsDropdownOpen(false);
         searchInputRef.current?.blur();
       }

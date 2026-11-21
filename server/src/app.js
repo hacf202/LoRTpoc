@@ -78,6 +78,11 @@ app.use(
 // Bot Crawler Interceptor for rich Discord/Facebook/Twitter previews
 app.use(socialCrawlerMiddleware);
 
+// Health check endpoints for Render, monitoring & uptime bots
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+
 // Root-level SEO Endpoints (For Search Engine Crawlers & Social Bots)
 app.get('/sitemap.xml', seoController.getSitemap);
 app.get('/robots.txt', seoController.getRobots);

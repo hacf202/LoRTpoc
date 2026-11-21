@@ -912,7 +912,7 @@
       "Ionia"
     ],
     "cost": 2,
-    "tier": "A+ // Pháo Thủy Tinh",
+    "tier": "A+ Tier // Pháo Thủy Tinh",
     "maxStar": 6,
     "optimalStars": "3 Sao",
     "playStyle": "Combo // Thu Về",
@@ -1684,7 +1684,7 @@
           "Nexus strike",
           "Combo"
         ],
-        "tier": "A+ // Glass cannon"
+        "tier": "A+ Tier // Glass cannon"
       }
     },
     "resolvedCards": {
@@ -6767,10 +6767,19 @@
       "freljord"
     ],
     "cost": 6,
+    "tier": "B+ Tier // Rất nhiều chim",
     "maxStar": 6,
-    "tags": [],
-    "description": "-[cd:01FR024|Anivia|icon,img-full] Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\\n-Khả năng hồi sinh và tạo nhiều bản sao tướng của [cd:01FR024|Anivia|icon,img-full] sẽ trở nên cực kỳ bá đạo khi kết hợp cùng Thiên Thần Hộ Mệnh và Cả Bão Tố Luden giúp cộng dồn sát thương kỹ năng và bài phép.\\n-Sức mạnh của [cd:01FR024|Anivia|icon,img-full] sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\\n",
-    "descriptionRaw": "-Anivia Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\\n-Khả năng hồi sinh và tạo nhiều bản sao tướng của Anivia sẽ trở nên cực kỳ bá đạo khi kết hợp cùng Thiên Thần Hộ Mệnh và Cả Bão Tố Luden giúp cộng dồn sát thương kỹ năng và bài phép.\\n-Sức mạnh của Anivia sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\\n",
+    "optimalStars": "5 Sao",
+    "playStyle": "Khai sáng / Kiểm soát",
+    "tags": [
+      "Control",
+      "Combo",
+      "Khai sáng",
+      "Phép nguyên tố",
+      "2p mất trứng"
+    ],
+    "description": "Tướng dễ chơi đánh theo phong cách đóng băng và kiểm soát khỏe, chủ yếu xoay quanh việc dùng bài phép và kỹ năng nguyên tố tích năng lượng là chính.\n[cd:01FR024|Anivia|icon,img-full] Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\nKhả năng hồi sinh và tạo nhiều bản sao tướng của [cd:01FR024|Anivia|icon,img-full] sẽ trở nên cực kỳ bá đạo khi kết hợp cùng [r:R0007|Thiên Thần Hộ Mệnh] và cả [r:R0017|Bão Tố Luden] giúp cộng dồn sát thương kỹ năng và bài phép.\nSức mạnh của [cd:01FR024|Anivia|icon,img-full] sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\nVề cách đánh thì chủ yếu là dùng các bài phép hoặc kỹ năng nguyên tố bạn có thể dùng ở giai đoạn đầu để có thể tích ngọc năng lượng, sau đó triệu hồi Anivia và bắt đầu quá trình kiểm soát cũng như combo.\nAnivia sẽ rất cần quan tâm việc chọn tướng phụ đặc biệt là các tướng phụ có các bài phép nguyên tố ví dụ Kennen, Nilah, Janna, Rồng Ngàn Tuổi, Annie,...\n",
+    "descriptionRaw": "-Anivia Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\n-Khả năng hồi sinh và tạo nhiều bản sao tướng của Anivia sẽ trở nên cực kỳ bá đạo khi kết hợp cùng Thiên Thần Hộ Mệnh và Cả Bão Tố Luden giúp cộng dồn sát thương kỹ năng và bài phép.\n-Sức mạnh của Anivia sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\n",
     "assets": [
       {
         "avatar": "https://images.lortpoc.com/avatarChampions/Anivia.webp",
@@ -6778,88 +6787,85 @@
         "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR024.png"
       }
     ],
-    "coreRelics": [
-      "R0007",
-      "R0017",
-      "R0048"
-    ],
+    "coreRelics": {
+      "mandatory": [
+        "R0007",
+        "R0048"
+      ],
+      "options": [
+        [
+          "R0017"
+        ],
+        [
+          "R0049"
+        ]
+      ],
+      "description": "[r:R0007|Thiên Thần Hộ Mệnh] là cổ vật rất quan trọng với Anivia vì nó sẽ cho tướng này bất diệt, khi đó khi Anivia Trăn Trối ta sẽ được 2 Anivia và từ đó có thể nhân bản ra thêm nhiều nữa. [r:R0048|Máy Sao Chép Hóa Kỹ] sẽ tương tác cực tốt với Anivia vì tướng này khai sáng rất nhanh nên rất dễ đạt mốc năng lượng kích hoạt cổ vật, và cổ vật này có cộng dồn theo số lượng Anivia trên sân nữa nên các bài phép khi được sử dụng sẽ được nhân lên rất nhiều lần.\nKết hợp cùng [r:R0017|Bão Tố Luden] tương tự [r:R0048|Máy Sao Chép Hóa Kỹ] ở trên thì [r:R0017|Bão Tố Luden] cũng cộng dồn theo số lượng tướng nên càng nhiều Anivia bạn sẽ có càng nhiều sát thương cho bài phép và kỹ năng.\nĐi cùng với [r:R0049|Mai Giáp Hóa Hư Không] bạn sẽ được thêm nhiều đặc điểm cho Anivia khi bạn tiêu diệt bài quân đặc biệt là Bất Diệt khi đó Anivia hy sinh thì đặc điểm này cùng các đặc điểm khác điều sẽ được giữ lại.",
+      "translations": {
+        "en": {
+          "description": "[r:R0007|Guardian Angel] is a crucial relic for Anivia because it grants her Deathless—when Anivia's Last Breath triggers, you end up with 2 Anivias on the board, allowing you to start cloning even more of her. [r:R0048|Chemtech Duplicator] synergizes exceptionally well with Anivia since she ramps to Enlightened very quickly, making it easy to hit the mana threshold to activate it. Better yet, this relic stacks with every copy of Anivia on the board, multiplying your cast spells an absurd number of times.\nPairing this with [r:R0017|Luden's Tempest] works the exact same way as [r:R0048|Chemtech Duplicator]—[r:R0017|Luden's Tempest] also stacks for each copy of your champion on the board, meaning the more Anivias you have, the more massive your spell and skill damage becomes.\nAlternatively, running [r:R0049|Voidborne Carapace] lets you harvest extra keywords for Anivia whenever units die—most notably Deathless. When Anivia dies and revives, she retains Deathless along with all the other keywords she has absorbed."
+        }
+      }
+    },
     "relicSets": [
       {
-        "description": "[r:R0007|Thiên Thần Hộ Mệnh] cho Anivia bất tử, khi bị tiêu diệt sẽ triệu hồi 1 trứng và 1 Anivia bị choáng, [r:R0017|Bão Tố Luden] sẽ giúp tăng sát thương dựa trên số lượng Anivia càng nhiều thì càng hiệu quả, [r:R0048|Máy Sao Chép Hóa Kỹ] tương tự càng nhiều Anivia thì bài phép sẽ được nhân lên nhiều lần. ",
-        "descriptionRaw": "Thiên Thần Hộ Mệnh cho Anivia bất tử, khi bị tiêu diệt sẽ triệu hồi 1 trứng và 1 Anivia bị choáng, Bão Tố Luden sẽ giúp tăng sát thương dựa trên số lượng Anivia càng nhiều thì càng hiệu quả, Máy Sao Chép Hóa Kỹ tương tự càng nhiều Anivia thì bài phép sẽ được nhân lên nhiều lần. ",
+        "recommendedStars": 3,
         "items": [
           "R0007",
           "R0017",
           "R0048"
         ],
-        "videoLink": ""
+        "description": "Bộ này dùng [r:R0099|Biểu Tượng Valhir] giúp bài phép và kỹ năng nguyên tố sẽ được thêm sát thương mà không cần có Anivia trên sân, bù lại sẽ không stack được dmg như luden nếu có nhiều Anivia, [r:R0007|Thiên Thần Hộ Mệnh] cho bất tử để có nhiều chim, [r:R0048|Máy Sao Chép Hóa Kỹ] nhân đôi bài phép, càng nhiều Anivia [r:R0048|Máy Sao Chép Hóa Kỹ] càng hiệu quả cao.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "This build uses [r:R0099|Icon of Valhir] to boost the damage of your Elemental spells and skills without needing Anivia on the board—though the trade-off is that the damage doesn't stack like Luden's Tempest when you have multiple Anivias. [r:R0007|Guardian Angel] grants a revive so you can clone multiple birds, while [r:R0048|Chemtech Duplicator] duplicates your spells, becoming even more effective the more Anivias you have in play."
+          }
+        }
       },
       {
-        "description": "Tương tự bộ 1, với 2 [r:R0017|Bão Tố Luden] thì sẽ nhiều sát bài phép và kỹ năng hơn.",
-        "descriptionRaw": "Tương tự bộ 1, với 2 Bão Tố Luden thì sẽ nhiều sát bài phép và kỹ năng hơn.",
+        "recommendedStars": 3,
         "items": [
           "R0007",
           "R0017",
           "R0017"
         ],
-        "videoLink": ""
+        "description": "[r:R0048|Máy Sao Chép Hóa Kỹ] để clone phép, [r:R0020|Kế Đối Phó Của Đại Tướng] để lấy đóng băng thủ tốt hơn và có cả rút bài, [r:R0007|Thiên Thần Hộ Mệnh] cho bất tử để có thêm nhiều Anivia hơn.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "[r:R0048|Chemtech Duplicator] duplicates your spells, [r:R0020|The Grand General's Counterplan] provides Frostbite for better defense along with extra card draw, and [r:R0007|Guardian Angel] grants a revive to help you clone even more Anivias."
+          }
+        }
       },
       {
-        "description": "Bộ này dùng [r:R0099|Biểu Tượng Valhir] giúp bài phép và kỹ năng nguyên tố sẽ được thêm sát thương mà không cần có Anivia trên sân, bù lại sẽ không stack được dmg như luden nếu có nhiều Anivia, [r:R0007|Thiên Thần Hộ Mệnh] cho bất tử để có nhiều chim, [r:R0048|Máy Sao Chép Hóa Kỹ] nhân đôi bài phép, càng nhiều Anivia [r:R0048|Máy Sao Chép Hóa Kỹ] càng hiệu quả cao.",
-        "descriptionRaw": "Bộ này dùng Biểu Tượng Valhir giúp bài phép và kỹ năng nguyên tố sẽ được thêm sát thương mà không cần có Anivia trên sân, bù lại sẽ không stack được dmg như luden nếu có nhiều Anivia, Thiên Thần Hộ Mệnh cho bất tử để có nhiều chim, Máy Sao Chép Hóa Kỹ nhân đôi bài phép, càng nhiều Anivia Máy Sao Chép Hóa Kỹ càng hiệu quả cao.",
+        "recommendedStars": 3,
         "items": [
           "R0007",
           "R0048",
           "R0099"
         ],
-        "videoLink": ""
-      },
-      {
-        "description": "Thêm ngọc năng lượng khi khởi đầu nhờ [r:R0082|Găng Tinh Vân Sư] và [r:R0026|Ngọc Sáng Chói]. [r:R0048|Máy Sao Chép Hóa Kỹ] sẽ giúp bài phép được nhân lên nhiều lần.",
-        "descriptionRaw": "Thêm ngọc năng lượng khi khởi đầu nhờ Găng Tinh Vân Sư và Ngọc Sáng Chói. Máy Sao Chép Hóa Kỹ sẽ giúp bài phép được nhân lên nhiều lần.",
-        "items": [
-          "R0082",
-          "R0026",
-          "R0048"
-        ],
-        "videoLink": ""
-      },
-      {
-        "description": "[r:R0048|Máy Sao Chép Hóa Kỹ] để clone phép, [r:R0020|Kế Đối Phó Của Đại Tướng] để lấy đóng băng thủ tốt hơn và có cả rút bài, [r:R0007|Thiên Thần Hộ Mệnh] cho bất tử để có thêm nhiều Anivia hơn.",
-        "descriptionRaw": "Máy Sao Chép Hóa Kỹ để clone phép, Kế Đối Phó Của Đại Tướng để lấy đóng băng thủ tốt hơn và có cả rút bài, Thiên Thần Hộ Mệnh cho bất tử để có thêm nhiều Anivia hơn.",
-        "items": [
-          "R0048",
-          "R0020",
-          "R0007"
-        ],
-        "videoLink": ""
-      },
-      {
         "description": "[r:R0109|Hàn Băng Mộ] sẽ cho Anivia vào vòng 4, trước đó bạn có thể gọi Anivia để có nhiều chim hơn.[r:R0007|Thiên Thần Hộ Mệnh] cho thêm Anivia khi bị tiêu diệt nôm na là càng giết thì càng ra nhiều chim hơn, [r:R0048|Máy Sao Chép Hóa Kỹ] cho thêm khả năng clone bài phép dựa trên số Anivia đang có trên sân.",
-        "descriptionRaw": "Hàn Băng Mộ sẽ cho Anivia vào vòng 4, trước đó bạn có thể gọi Anivia để có nhiều chim hơn.Thiên Thần Hộ Mệnh cho thêm Anivia khi bị tiêu diệt nôm na là càng giết thì càng ra nhiều chim hơn, Máy Sao Chép Hóa Kỹ cho thêm khả năng clone bài phép dựa trên số Anivia đang có trên sân.",
-        "items": [
-          "R0109",
-          "R0007",
-          "R0048"
-        ],
-        "videoLink": ""
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "[r:R0109|Frozen Tomb] summons an Anivia on Round 4, and you can play your own Anivia beforehand to get even more birds on the board. [r:R0007|Guardian Angel] spawns extra Anivias whenever she's killed—basically, the more she dies, the more birds you get. Finally, [r:R0048|Chemtech Duplicator] multiplies your spells based on the number of Anivias currently in play."
+          }
+        }
       }
     ],
     "otherRelicOptions": [
       "R0099",
-      "R0082",
-      "R0026",
       "R0020",
-      "R0109"
+      "R0109",
+      "R0143",
+      "R0061"
     ],
     "ratings": {
-      "consistency": 7,
-      "damage": 7,
-      "defense": 8,
-      "independence": 8.4,
-      "playstyleNote": null,
-      "speed": 2.1,
-      "synergy": 8.5
+      "damage": 7.5,
+      "defense": 8.5,
+      "synergy": 6.5,
+      "difficulty": 6.5
     },
     "startingDeck": {
       "baseCards": [
@@ -7450,13 +7456,9 @@
       "I0185",
       "I0157",
       "I0012",
-      "I0123",
-      "I0075",
       "I0079",
       "I0118",
       "I0206",
-      "I0044",
-      "I0050",
       "I0212",
       "I0069"
     ],
@@ -7469,21 +7471,26 @@
       "P0000",
       "P0444",
       "P0075",
-      "P0083",
       "P0475",
       "P0062",
-      "P0113",
-      "P0864",
-      "P0325",
-      "P0055"
+      "P0113"
     ],
     "translations": {
       "en": {
-        "description": "-[cd:01FR024|Anivia|icon,img-full] Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\\n-Khả năng hồi sinh và tạo nhiều bản sao tướng của [cd:01FR024|Anivia|icon,img-full] sẽ trở nên cực kỳ bá đạo khi kết hợp cùng Thiên Thần Hộ Mệnh và Cả Bão Tố Luden giúp cộng dồn sát thương kỹ năng và bài phép.\\n-Sức mạnh của [cd:01FR024|Anivia|icon,img-full] sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\\n",
+        "description": "An easy-to-play champion with a strong Frostbite and control playstyle, primarily revolving around using Elemental spells and skills to ramp mana.\n\n[cd:01FR024|Anivia|icon,img-full], the mighty Demigod of the Freljord, excels at controlling the board with Elemental spells while rapidly stacking mana gems to reach Enlightened very early.\n\n[cd:01FR024|Anivia|icon,img-full]'s ability to revive and clone multiple copies of herself becomes completely overpowered when paired with [r:R0007|Guardian Angel] and [r:R0017|Luden's Tempest], allowing you to stack massive spell and skill damage.\n\n[cd:01FR024|Anivia|icon,img-full]'s full potential is unlocked when paired with items that cast Elemental skills or low-cost Elemental spells to hit Enlightened as fast as possible.\n\nGameplay: Focus on casting any Elemental spells or skills you have in the early game to ramp your mana gems, then drop Anivia onto the board to take over control and start your combo engine.\n\nSupport Champions: Drafting the right support champion is especially important for Anivia. Prioritize champions that bring Elemental spells or skills into your deck, such as Kennen, Nilah, Janna, Elder Dragon, or Annie.",
         "descriptionRaw": "-Anivia Á Thần mạnh mẽ của Freljord có khả năng kiểm soát bàn đấu mạnh mẽ nhờ các bài phép nguyên tố, khả năng tích cộng dồn ngọc năng lượng để đạt khai sáng cực kỳ sớm.\\n-Khả năng hồi sinh và tạo nhiều bản sao tướng của Anivia sẽ trở nên cực kỳ bá đạo khi kết hợp cùng Thiên Thần Hộ Mệnh và Cả Bão Tố Luden giúp cộng dồn sát thương kỹ năng và bài phép.\\n-Sức mạnh của Anivia sẽ được phát huy tối đa khi đi kèm cùng các vật phẩm sử dụng kỹ năng nguyên tố hoặc các bài phép nguyên tố có tiêu hao thấp để kích hoạt khai sáng sớm nhất có thể.\\n",
         "name": "Anivia",
         "regions": [
           "Freljord"
+        ],
+        "tier": "B+ Tier // Frozen Phoenix ",
+        "optimalStars": "5 Sao",
+        "playStyle": "Enlightened / Control",
+        "tags": [
+          "Control",
+          "Combo",
+          "Khai sáng",
+          "Elemental"
         ]
       }
     }
@@ -7496,10 +7503,19 @@
       "noxus"
     ],
     "cost": 1,
+    "tier": "A+ Tier // Sinh viên đốt nhà",
     "maxStar": 6,
-    "tags": [],
-    "description": "-Annie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\\n-Có khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\\n-Annie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng, các cổ vật như Đại Bác, Bão Tố Lunden, Pháo Mũi [cd:02BW002|Tàu Dreadway|icon,img-full] cho Annie gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu.",
-    "descriptionRaw": "-Annie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\\n-Có khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\\n-Annie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng, các cổ vật như Đại Bác, Bão Tố Lunden, Pháo Mũi Tàu Dreadway cho Annie gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu.",
+    "optimalStars": "3 Sao",
+    "playStyle": "Aggro / Băng cầu",
+    "tags": [
+      "Aggo",
+      "Burn",
+      "CBQD",
+      "Sinh viên đốt nhà",
+      "R che băng tiễn"
+    ],
+    "description": "Tướng khỏe, có nhiều sát thương từ giai đoạn đầu, đặc biệt sát thương cực nhiều khi có C6, dễ chơi dễ làm quen và dùng được các cổ vật thông dụng.\nAnnie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\nCó khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\nAnnie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng giúp gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu và sốc dmg.\nĐiểm mạnh của tướng này là sát thương thẳng lên nhà chính khi đi cùng [r:R0100|Choáng Váng & Kinh Ngạc], nhưng cũng là điểm yếu khi sát thương của tướng này chỉ bùng nổ ở giai đoạn đầu và bị giới hạn ở khoảng 30-60 dmg do số lượng kỹ năng dùng một lần khi tấn công là có giới hạn.\nCách đánh phổ biến nhất là lối đánh khi dùng [r:R0100|Choáng Váng & Kinh Ngạc] đi cùng các bài quân 1- tiêu hao để dùng kỹ năng gây sát thương trực tiếp lên nhà chính đối thủ liên tục.",
+    "descriptionRaw": "-Annie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\n-Có khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\n-Annie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng, các cổ vật như Đại Bác, Bão Tố Lunden, Pháo Mũi Tàu Dreadway cho Annie gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu.",
     "assets": [
       {
         "avatar": "https://images.lortpoc.com/avatarChampions/Annie.webp",
@@ -7507,90 +7523,115 @@
         "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set6/vi_vn/img/cards/06NX012.png"
       }
     ],
-    "coreRelics": [
-      "R0017",
-      "R0021"
-    ],
+    "coreRelics": {
+      "mandatory": [
+        "R0100"
+      ],
+      "options": [
+        [
+          "R0111",
+          "R0001"
+        ],
+        [
+          "R0134",
+          "R0017"
+        ]
+      ],
+      "description": "[r:R0100|Choáng Váng & Kinh Ngạc] tương tác cực tốt với Annie đặc biệt là khi có C6 [p:P0846|Đứa Trẻ Bóng Tối] giúp nhân đôi kỹ năng. \nVới [r:R0111|Đại Bác] và [r:R0001|Di Sản Crownguard] thì bạn sẽ đánh bằng cách triệu hồi Annie và 2 bài quân 1 tiêu hao khác sau đó cứ tấn công như bình thường, [r:R0001|Di Sản Crownguard] sẽ cho thêm 1 lần tiến công, [r:R0111|Đại Bác] sẽ bổ sung thêm sát thương cho các ký năng đặc biệt là kỹ năng từ [r:R0100|Choáng Váng & Kinh Ngạc].\nNếu dùng [r:R0134|Bộ Bài Định Mệnh] và [r:R0017|Bão Tố Luden] combo này cũng sẽ tăng sát thương cho bài phép và kỹ nhưng cần có Annie trên sân nhưng có thể stack dmg, lá [cd:98BW003|Lá Bài Bí Ẩn] khi dùng sẽ tính là kỹ năng và cũng sẽ được nhân đôi nếu có C6.",
+      "translations": {
+        "en": {
+          "description": "[r:R0100|Shock & Awe] synergizes exceptionally well with Annie, especially with her 6-Star power [p:P0846|The Dark Child] doubling her skills.\nWith [r:R0111|Big Guns] and [r:R0001|Crownguard Inheritance], you play by summoning Annie along with two other 1-cost units and attacking as usual; [r:R0001|Crownguard Inheritance] grants an extra Rally, while [r:R0111|Big Guns] boosts the damage of your skills—especially the ones triggered by [r:R0100|Shock & Awe].\nIf you run [r:R0134|Deck of Destiny] and [r:R0017|Luden's Tempest], this combo also boosts your spell and skill damage; it requires Annie to be on the board, but it allows you to stack damage, and playing [cd:98BW003|Wild Card] counts as a skill so it will also be doubled if you have her 6-Star power."
+        }
+      }
+    },
     "relicSets": [
       {
-        "description": "Combo bắn pháo, [r:R0017|Bão Tố Luden] sẽ tăng thêm sát thương bài phép kết hợp cùng power thì sát thương thấp nhất là 4, [r:R0021|Pháo Mũi Tàu Dreadway] cho bắn cảnh cáo 4 sát thương, 4 lá sẽ là 16 giúp đánh những map tháng máu thấp cực nhanh.",
-        "descriptionRaw": "Combo bắn pháo, Bão Tố Luden sẽ tăng thêm sát thương bài phép kết hợp cùng power thì sát thương thấp nhất là 4, Pháo Mũi Tàu Dreadway cho bắn cảnh cáo 4 sát thương, 4 lá sẽ là 16 giúp đánh những map tháng máu thấp cực nhanh.",
+        "recommendedStars": 3,
         "items": [
           "R0017",
           "R0021",
           "R0021"
         ],
-        "videoLink": ""
+        "description": "Combo bắn pháo, [r:R0017|Bão Tố Luden] sẽ tăng thêm sát thương bài phép kết hợp cùng power thì sát thương thấp nhất là 4, [r:R0021|Pháo Mũi Tàu Dreadway] cho bắn cảnh cáo 4 sát thương, 4 lá sẽ là 16 giúp đánh những map tháng máu thấp cực nhanh.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "This is a burn combo setup: [r:R0017|Luden's Tempest] boosts your spell damage, and when combined with your Star Power, your minimum damage is 4. [r:R0021|The Dreadway Chase Gun] generates Warning Shots that deal 4 damage each—4 copies equal 16 damage, letting you blitz through low-Health monthly challenge adventures incredibly fast."
+          }
+        }
       },
       {
-        "description": "Bộ cơ bản cho tướng tiêu hao thấp, nên triệu hồi Annie nhiều lần để tối ưu băng cầu.",
-        "descriptionRaw": "Bộ cơ bản cho tướng tiêu hao thấp, nên triệu hồi Annie nhiều lần để tối ưu băng cầu.",
+        "recommendedStars": 3,
         "items": [
           "R0061",
           "R0052",
           "R0052"
         ],
-        "videoLink": ""
+        "description": "Bộ cơ bản cho tướng tiêu hao thấp, nên triệu hồi Annie nhiều lần để tối ưu băng cầu.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "A basic build for low-cost champions; you should summon Annie multiple times to get the maximum value out of Everfrost."
+          }
+        }
       },
       {
-        "description": "Triệu hồi Annie để rút anh hùng cấp 2 nhờ [r:R0064|Lời Thề Hộ Vệ], [r:R0043|Ngọc Tinh Tú] giảm tiêu hao anh hùng, kết hợp cùng bài phép anh hùng của Annie để rút thêm các lá anh hùng được gài vào bộ bài bằng [r:R0064|Lời Thề Hộ Vệ].",
-        "descriptionRaw": "Triệu hồi Annie để rút anh hùng cấp 2 nhờ Lời Thề Hộ Vệ, Ngọc Tinh Tú giảm tiêu hao anh hùng, kết hợp cùng bài phép anh hùng của Annie để rút thêm các lá anh hùng được gài vào bộ bài bằng Lời Thề Hộ Vệ.",
+        "recommendedStars": 3,
         "items": [
           "R0064",
           "R0043",
           "R0043"
         ],
-        "videoLink": ""
+        "description": "Triệu hồi Annie để rút anh hùng cấp 2 nhờ [r:R0064|Lời Thề Hộ Vệ], [r:R0043|Ngọc Tinh Tú] giảm tiêu hao anh hùng, kết hợp cùng bài phép anh hùng của Annie để rút thêm các lá anh hùng được gài vào bộ bài bằng [r:R0064|Lời Thề Hộ Vệ].",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "Summon Annie to shuffle level 2 champions into your deck with [r:R0064|Oath of the Guardians], while [r:R0043|Star Gem] reduces champion costs, and combine this with Annie's champion spell to draw the extra champions shuffled into your deck by [r:R0064|Oath of the Guardians]."
+          }
+        }
       },
       {
-        "description": "[r:R0100|Choáng Váng & Kinh Ngạc] sẽ sử dụng kỹ năng gây 1 sát thương khi tấn công bằng bài quân 1- tiêu hao, kết hợp cùng C3 cho thêm 2 sát thương cho kỹ năng và bài phép, [r:R0017|Bão Tố Luden] sẽ cho thêm 1, [r:R0001|Di Sản Crownguard] giúp nhận lượt tấn công khi thăng cấp để gây thêm 1 loạt sát thương nữa. Combo này sẽ mạnh hơn khi có C6.",
-        "descriptionRaw": "Choáng Váng & Kinh Ngạc sẽ sử dụng kỹ năng gây 1 sát thương khi tấn công bằng bài quân 1- tiêu hao, kết hợp cùng C3 cho thêm 2 sát thương cho kỹ năng và bài phép, Bão Tố Luden sẽ cho thêm 1, Di Sản Crownguard giúp nhận lượt tấn công khi thăng cấp để gây thêm 1 loạt sát thương nữa. Combo này sẽ mạnh hơn khi có C6.",
+        "recommendedStars": 6,
         "items": [
           "R0100",
           "R0017",
           "R0001"
         ],
-        "videoLink": ""
+        "description": "[r:R0100|Choáng Váng & Kinh Ngạc] sẽ sử dụng kỹ năng gây 1 sát thương khi tấn công bằng bài quân 1- tiêu hao, kết hợp cùng C3 cho thêm 2 sát thương cho kỹ năng và bài phép, [r:R0017|Bão Tố Luden] sẽ cho thêm 1, [r:R0001|Di Sản Crownguard] giúp nhận lượt tấn công khi thăng cấp để gây thêm 1 loạt sát thương nữa. Combo này sẽ mạnh hơn khi có C6.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "[r:R0100|Shock & Awe] triggers a skill that deals 1 damage whenever you attack with a 1-cost or less unit; combined with her 3-Star power adding +2 damage to skills and spells, plus [r:R0017|Luden's Tempest] adding another +1, your damage output scales rapidly, while [r:R0001|Crownguard Inheritance] lets you Rally upon leveling up to unleash another wave of burst damage. This combo becomes even stronger once you unlock her 6-Star power."
+          }
+        }
       },
       {
-        "description": "Tương tự bộ 4 nhưng với [r:R0111|Đại Bác] thì sẽ cộng thẳng sát thương cho bài phép và kỹ năng mà không cần Annie, tuy nhiên sẽ không stack được dmg như luden nếu có 2 Annie trở lên.",
-        "descriptionRaw": "Tương tự bộ 4 nhưng với Đại Bác thì sẽ cộng thẳng sát thương cho bài phép và kỹ năng mà không cần Annie, tuy nhiên sẽ không stack được dmg như luden nếu có 2 Annie trở lên.",
+        "recommendedStars": 3,
         "items": [
           "R0100",
           "R0111",
           "R0001"
         ],
-        "videoLink": ""
-      },
-      {
-        "description": "Giống bộ 1, sát thương trên mỗi bài phép sẽ ít hơn do không có [r:R0017|Bão Tố Luden] những sẽ có nhiều lá [cd:02BW020|Bắn Cảnh Cáo] hơn nhờ vào việc Annie được hồi sinh từ [k:Deathless|Bất Diệt], tổng sát thương sẽ là 24 nếu dùng được 8 lá bắn cảnh cáo khi triệu hồi Annie và hồi sinh được Annie bằng [k:Deathless|Bất Diệt].",
-        "descriptionRaw": "Giống bộ 1, sát thương trên mỗi bài phép sẽ ít hơn do không có Bão Tố Luden những sẽ có nhiều lá Bắn Cảnh Cáo hơn nhờ vào việc Annie được hồi sinh từ Bất Diệt, tổng sát thương sẽ là 24 nếu dùng được 8 lá bắn cảnh cáo khi triệu hồi Annie và hồi sinh được Annie bằng Bất Diệt.",
-        "items": [
-          "R0021",
-          "R0021",
-          "R0007"
-        ],
-        "videoLink": ""
+        "description": "Tương tự bộ 4 nhưng với [r:R0111|Đại Bác] thì sẽ cộng thẳng sát thương cho bài phép và kỹ năng mà không cần Annie, tuy nhiên sẽ không stack được dmg như luden nếu có 2 Annie trở lên.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "Similar to Build 4, but using [r:R0111|Big Guns] directly boosts your spell and skill damage without needing Annie on the board; however, the damage won't stack like Luden's Tempest if you have 2 or more Annies in play."
+          }
+        }
       }
     ],
     "otherRelicOptions": [
-      "R0061",
-      "R0052",
-      "R0064",
-      "R0043",
-      "R0100",
-      "R0001",
-      "R0111",
-      "R0007"
+      "R0126",
+      "R0144",
+      "R0031",
+      "R0020"
     ],
     "ratings": {
-      "consistency": 7.5,
-      "damage": 9,
+      "damage": 8.5,
       "defense": 6.5,
-      "independence": 8.5,
-      "playstyleNote": null,
-      "speed": 10,
-      "synergy": 8.7
+      "synergy": 5.5,
+      "difficulty": 4.5
     },
     "startingDeck": {
       "baseCards": [
@@ -8196,15 +8237,11 @@
       "I0068",
       "I0123",
       "I0012",
-      "I0070",
-      "I0078",
-      "I0125",
       "I0069",
       "I0212"
     ],
     "runeIds": [],
     "adventurePowerIds": [
-      "P0683",
       "P0326",
       "P0444",
       "P0684",
@@ -8212,16 +8249,22 @@
       "P0113",
       "P0111",
       "P0062",
-      "P0059",
       "P0864"
     ],
     "translations": {
       "en": {
-        "description": "-Annie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\\n-Có khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\\n-Annie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng, các cổ vật như Đại Bác, Bão Tố Lunden, Pháo Mũi Tàu Dreadway cho Annie gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu.",
+        "description": "A strong champion with high early-game damage—especially massive burst at 6 Stars—who is easy to pick up and works well with common relics.\nAnnie excels at dealing direct Nexus damage through skills and spells amplified by her Pyromania Star Power.\nHaving access to Stuns, card draw, and direct Nexus burn via low-cost units makes Annie very easy to play and set up.\nShe pairs well with powers that boost spell and skill damage, allowing her to output huge early-game burst.\nHer greatest strength is direct Nexus burn when paired with [r:R0100|Shock & Awe], though this is also her weakness: her damage peaks early and caps out around 30–60 damage per attack due to the limit on how many skills can go on the stack at once.\nHer most popular playstyle revolves around combining [r:R0100|Shock & Awe] with 1-cost or less units to continuously trigger skills that burn down the enemy Nexus.",
         "descriptionRaw": "-Annie mạnh mẽ khi có khả năng gây sát thương vào nhà chính của đối thủ nhờ vào các kỹ năng và bài phép được cường hóa sát thương từ sức mạnh Hỏa Cuồng.\\n-Có khả năng choáng, rút bài, gây sát thương thẳng vào nhà chính bằng các bài quân tiêu hao thấp giúp cho Annie là 1 vị tướng dễ chơi và dễ triển khai.\\n-Annie phù hợp với các sức mạnh cường hóa sát thương từ bài phép và kỹ năng, các cổ vật như Đại Bác, Bão Tố Lunden, Pháo Mũi Tàu Dreadway cho Annie gây lượng lớn sát thương ngay từ giai đoạn đầu trận đấu.",
         "name": "Annie",
         "regions": [
           "Noxus"
+        ],
+        "tier": "A+ Tier // Massive burn damage",
+        "optimalStars": "3 Sao",
+        "playStyle": "Aggro / Guardian's Orb",
+        "tags": [
+          "Aggo",
+          "Burn"
         ]
       }
     }
@@ -48324,10 +48367,19 @@
       "bilgewater"
     ],
     "cost": 4,
+    "tier": "A+ // Thần bài",
     "maxStar": 6,
-    "tags": [],
-    "description": "-Twisted Fate vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\\n-[k:Fated|Định Mệnh] cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều [cd:98BW003|Lá Bài Bí Ẩn|icon,img-full] từ sớm.\\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
-    "descriptionRaw": "-Twisted Fate vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\\n-Định Mệnh cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều Lá Bài Bí Ẩn từ sớm.\\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
+    "optimalStars": "4 Sao",
+    "playStyle": "Rút bài / Giảm tiêu hao",
+    "tags": [
+      "Rút bài",
+      "Combo",
+      "Giảm tiêu hao",
+      "Tiến bịp",
+      "Định mệnh"
+    ],
+    "description": "-Twisted Fate vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\n-[k:Fated|Định Mệnh] cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều [cd:98BW003|Lá Bài Bí Ẩn|icon,img-full] từ sớm.\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
+    "descriptionRaw": "-Twisted Fate vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\n-Định Mệnh cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều Lá Bài Bí Ẩn từ sớm.\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
     "assets": [
       {
         "avatar": "https://images.lortpoc.com/avatarChampions/TwistedFate.webp",
@@ -48335,11 +48387,11 @@
         "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set2/vi_vn/img/cards/02BW026.png"
       }
     ],
-    "coreRelics": [
-      "R0134",
-      "R0116",
-      "R0115"
-    ],
+    "coreRelics": {
+      "mandatory": [],
+      "options": [],
+      "description": ""
+    },
     "relicSets": [
       [
         "R0134",
@@ -48383,13 +48435,10 @@
       "R0012"
     ],
     "ratings": {
-      "consistency": 5,
       "damage": 5,
       "defense": 5,
-      "independence": 5,
-      "playstyleNote": null,
-      "speed": 5,
-      "synergy": 5
+      "synergy": 5,
+      "difficulty": 5
     },
     "startingDeck": {
       "baseCards": [
@@ -49029,11 +49078,19 @@
     ],
     "translations": {
       "en": {
-        "description": "-[cd:02BW026|Twisted Fate|icon,img-full] vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\\n-Định Mệnh cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều Lá Bài Bí Ẩn từ sớm.\\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
+        "description": "-[cd:02BW026|Twisted Fate|icon,img-full] vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\n-Định Mệnh cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều Lá Bài Bí Ẩn từ sớm.\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
         "descriptionRaw": "-Twisted Fate vị tướng với lối chơi xoay quanh việc rút bài, combo giữa các lá bài, càng rút bài nhiều thì TF càng mạnh.\\n-Với Học Vấn Nâng Cao thì TF có thể dàn toàn bộ quân ra sân và combo rút bài liên tục từ đó tăng lượng sát thương lên tối đa.\\n-Định Mệnh cường hóa khả năng của các lá bài định mệnh và một trong những cường hóa mạnh mẽ là bài xanh.\\n-Cổ vật dùng tốt cho TF là Lõi Công Nghệ Hoàn Hảo giúp bạn kích tạo ra được nhiều Lá Bài Bí Ẩn từ sớm.\\n-Sức mạnh nên chọn cho TF là các sức mạnh giảm tiêu hao bài phép, bài được tạo, hồi năng lượng, giảm tiêu hao các lá bài được rút, tăng sát thương bài phép và kỹ năng.",
         "name": "Twisted Fate",
         "regions": [
           "Bilgewater"
+        ],
+        "tier": "A+ // Wombo combo with card-draw",
+        "optimalStars": "4 Stars",
+        "playStyle": "Draw card / Reduce card cost",
+        "tags": [
+          "Draw card",
+          "Combo",
+          "Reduce card cost"
         ]
       }
     }
