@@ -5,6 +5,8 @@ const COLLECTION_NAME = 'system_logs';
 const DEFAULT_RETENTION_DAYS = 30;
 
 let indexesInitialized = false;
+const logQueryCache = new Map();
+const LOG_CACHE_TTL_MS = 5000;
 
 /**
  * Ensure compound & TTL indexes exist on system_logs collection
@@ -12,12 +14,14 @@ let indexesInitialized = false;
 async function ensureLogIndexes(collection) {
   if (indexesInitialized) return;
   try {
-    await collection.createIndex({ key: 1, createdAt: -1 });
-    await collection.createIndex({ level: 1, createdAt: -1 });
-    await collection.createIndex({ category: 1, createdAt: -1 });
-    await collection.createIndex({ createdAt: -1 });
-    // TTL Index: automatically delete logs after expireAt date
-    await collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
+    await Promise.all([
+      collection.createIndex({ key: 1, createdAt: -1 }),
+      collection.createIndex({ level: 1, createdAt: -1 }),
+      collection.createIndex({ category: 1, createdAt: -1 }),
+      collection.createIndex({ createdAt: -1 }),
+      // TTL Index: automatically delete logs after expireAt date
+      collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 })
+    ]);
     indexesInitialized = true;
   } catch (err) {
     // Non-fatal if index creation fails or already exists
@@ -133,6 +137,14 @@ export async function querySystemLogs({
   const safePage = Math.max(1, parseInt(page, 10) || 1);
   const skip = (safePage - 1) * safeLimit;
 
+  // Serve from short 5s in-memory cache to prevent redundant MongoDB round-trips from frequent polling
+  const cacheKey = `${key || ''}:${level || ''}:${category || ''}:${search || ''}:${safeLimit}:${safePage}`;
+  const now = Date.now();
+  const cached = logQueryCache.get(cacheKey);
+  if (cached && now - cached.timestamp < LOG_CACHE_TTL_MS) {
+    return cached.result;
+  }
+
   try {
     const db = getDb();
     if (!db) {
@@ -211,13 +223,18 @@ export async function querySystemLogs({
       createdAt: doc.createdAt
     }));
 
-    return {
+    const resultDoc = {
       total,
       page: safePage,
       totalPages: Math.ceil(total / safeLimit) || 1,
       source: 'mongodb',
       data: formattedData
     };
+
+    if (logQueryCache.size > 50) logQueryCache.clear();
+    logQueryCache.set(cacheKey, { timestamp: now, result: resultDoc });
+
+    return resultDoc;
   } catch (err) {
     console.error('❌ [SystemLog] Query logs failed:', err.message);
     const { getRecentLogs } = await import('../utils/logger.js');
@@ -236,6 +253,7 @@ export async function querySystemLogs({
  * Purge all system logs from MongoDB and in-memory buffer
  */
 export async function clearAllSystemLogs() {
+  logQueryCache.clear();
   const { clearRecentLogs } = await import('../utils/logger.js');
   clearRecentLogs();
 

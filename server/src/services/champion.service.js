@@ -406,7 +406,39 @@ export const championService = {
     const targetSlug = toChampionSlug(rawId);
     const targetNorm = targetSlug.replace(/-/g, '');
 
-    // 1. Direct query MongoDB (Source of Truth) for absolute freshest data
+    // 1. Fast In-Memory Lookup (Sub-millisecond local RAM)
+    let champion = champions.find(
+      (c) =>
+        c.championID?.toLowerCase() === cleanId ||
+        c.cardCode?.toLowerCase() === cleanId ||
+        c.name?.toLowerCase() === cleanId ||
+        c.translations?.en?.name?.toLowerCase() === cleanId ||
+        toChampionSlug(c.name) === targetSlug ||
+        toChampionSlug(c.translations?.en?.name) === targetSlug
+    );
+
+    // 2. Normalized match (handles slugs without hyphens or alternate formats)
+    if (!champion && targetNorm) {
+      champion = champions.find(
+        (c) =>
+          toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
+          toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm ||
+          c.championID?.toLowerCase() === targetNorm ||
+          c.cardCode?.toLowerCase() === targetNorm
+      );
+    }
+
+    // 3. Fallback: Prefix/partial match for multi-title names (e.g. "yasuo" matching "Yasuo")
+    if (!champion && targetNorm) {
+      champion = champions.find((c) => toChampionSlug(c.name).replace(/-/g, '').startsWith(targetNorm));
+    }
+
+    if (champion) {
+      const hydrated = relationService.hydrateChampion(champion);
+      return fields ? pickFields(hydrated, fields, 'championID') : hydrated;
+    }
+
+    // 4. MongoDB Direct Query Fallback (Only if entity is not found in memory)
     const db = getDb();
     if (db) {
       try {
@@ -440,36 +472,7 @@ export const championService = {
       }
     }
 
-    // 2. Exact match on ID, Code, Name, English name, or clean slug in memory
-    let champion = champions.find(
-      (c) =>
-        c.championID?.toLowerCase() === cleanId ||
-        c.cardCode?.toLowerCase() === cleanId ||
-        c.name?.toLowerCase() === cleanId ||
-        c.translations?.en?.name?.toLowerCase() === cleanId ||
-        toChampionSlug(c.name) === targetSlug ||
-        toChampionSlug(c.translations?.en?.name) === targetSlug
-    );
-
-    // 3. Normalized match (handles slugs without hyphens or alternate formats)
-    if (!champion && targetNorm) {
-      champion = champions.find(
-        (c) =>
-          toChampionSlug(c.name).replace(/-/g, '') === targetNorm ||
-          toChampionSlug(c.translations?.en?.name).replace(/-/g, '') === targetNorm ||
-          c.championID?.toLowerCase() === targetNorm ||
-          c.cardCode?.toLowerCase() === targetNorm
-      );
-    }
-
-    // 4. Fallback: Prefix/partial match for multi-title names (e.g. "yasuo" matching "Yasuo")
-    if (!champion && targetNorm) {
-      champion = champions.find((c) => toChampionSlug(c.name).replace(/-/g, '').startsWith(targetNorm));
-    }
-
-    if (!champion) return null;
-    const hydrated = relationService.hydrateChampion(champion);
-    return fields ? pickFields(hydrated, fields, 'championID') : hydrated;
+    return null;
   },
 
   create: async (data) => {

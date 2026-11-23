@@ -36,7 +36,7 @@ export const matchSearchQuery = (targetText, query) => {
   return cleanTarget.includes(cleanQuery);
 };
 
-export const calculateFieldScore = (fieldValue, normalizedQuery) => {
+export const calculateFieldScore = (fieldValue, normalizedQuery, compiledRegex = null) => {
   if (!fieldValue || !normalizedQuery) return 0;
   const normVal = removeVietnameseTones(String(fieldValue));
   if (!normVal) return 0;
@@ -44,8 +44,9 @@ export const calculateFieldScore = (fieldValue, normalizedQuery) => {
   if (normVal === normalizedQuery) return 10000;
   if (normVal.startsWith(normalizedQuery)) return 6000;
 
-  const escaped = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const wordBoundaryRegex = new RegExp(`(?:^|\\s)${escaped}`, 'i');
+  const wordBoundaryRegex =
+    compiledRegex ||
+    new RegExp(`(?:^|\\s)${normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
   if (wordBoundaryRegex.test(normVal)) return 3500;
 
   if (normVal.includes(normalizedQuery)) return 1500;
@@ -53,9 +54,13 @@ export const calculateFieldScore = (fieldValue, normalizedQuery) => {
   return 0;
 };
 
-export const calculateEntityScore = (item, rawQuery, fieldExtractor) => {
+export const calculateEntityScore = (item, rawQuery, fieldExtractor, compiledRegex = null) => {
   const q = removeVietnameseTones(rawQuery);
   if (!q || !item) return 0;
+
+  const queryRegex =
+    compiledRegex ||
+    new RegExp(`(?:^|\\s)${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
 
   const fields = typeof fieldExtractor === 'function' ? fieldExtractor(item) : {
     nameVi: item.name || item.cardName || item.adventureName || '',
@@ -64,10 +69,10 @@ export const calculateEntityScore = (item, rawQuery, fieldExtractor) => {
     desc: item.descriptionRaw || item.description || item.translations?.en?.description || ''
   };
 
-  const nameViScore = calculateFieldScore(fields.nameVi, q);
-  const nameEnScore = calculateFieldScore(fields.nameEn, q);
-  const codeScore = calculateFieldScore(fields.code, q);
-  const descScore = calculateFieldScore(fields.desc, q) > 0 ? 500 : 0;
+  const nameViScore = calculateFieldScore(fields.nameVi, q, queryRegex);
+  const nameEnScore = calculateFieldScore(fields.nameEn, q, queryRegex);
+  const codeScore = calculateFieldScore(fields.code, q, queryRegex);
+  const descScore = calculateFieldScore(fields.desc, q, queryRegex) > 0 ? 500 : 0;
 
   let maxMatchQuality = Math.max(
     nameViScore,
@@ -91,10 +96,12 @@ export const rankSearchResults = (items, rawQuery, fieldExtractor) => {
   const q = removeVietnameseTones(rawQuery);
   if (!q) return items;
 
+  const queryRegex = new RegExp(`(?:^|\\s)${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
+
   const scored = [];
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    const score = calculateEntityScore(item, q, fieldExtractor);
+    const score = calculateEntityScore(item, q, fieldExtractor, queryRegex);
     if (score > 0) {
       scored.push({ item, score, index: i });
     }

@@ -110,26 +110,7 @@ export const httpCache = (durationSeconds = 60) => {
     const cacheKey = req.originalUrl || req.url;
     const redisKey = `poc:cache:${cacheKey}`;
 
-    // 3. Try Redis Cache
-    if (isRedisReady() && redisClient) {
-      try {
-        const cachedRaw = await redisClient.get(redisKey);
-        if (cachedRaw) {
-          const cached = JSON.parse(cachedRaw);
-          res.set({
-            'Content-Type': cached.contentType || 'application/json; charset=utf-8',
-            'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
-            'Vary': 'Accept-Encoding, Authorization',
-            'X-Server-Cache': 'HIT (Redis)'
-          });
-          return res.status(cached.statusCode || 200).send(cached.data);
-        }
-      } catch (err) {
-        // Redis read failure: fail-safe to memory
-      }
-    }
-
-    // 4. Try Memory Cache Fallback
+    // 3. Try L1 Memory Cache FIRST (Sub-millisecond local RAM hit)
     const memCached = memoryCache.get(cacheKey);
     const now = Date.now();
     if (memCached && memCached.expiresAt > now) {
@@ -137,9 +118,37 @@ export const httpCache = (durationSeconds = 60) => {
         'Content-Type': memCached.contentType || 'application/json; charset=utf-8',
         'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
         'Vary': 'Accept-Encoding, Authorization',
-        'X-Server-Cache': 'HIT (Memory)'
+        'X-Server-Cache': 'HIT (Memory L1)'
       });
       return res.status(memCached.statusCode).send(memCached.data);
+    }
+
+    // 4. Try L2 Redis Cache (Distributed fallback across instances)
+    if (isRedisReady() && redisClient) {
+      try {
+        const cachedRaw = await redisClient.get(redisKey);
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          // Promote to L1 Memory cache for subsequent fast hits
+          if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
+            pruneMemoryCache();
+          }
+          memoryCache.set(cacheKey, {
+            ...cached,
+            expiresAt: Date.now() + durationSeconds * 1000
+          });
+
+          res.set({
+            'Content-Type': cached.contentType || 'application/json; charset=utf-8',
+            'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
+            'Vary': 'Accept-Encoding, Authorization',
+            'X-Server-Cache': 'HIT (Redis L2)'
+          });
+          return res.status(cached.statusCode || 200).send(cached.data);
+        }
+      } catch (err) {
+        // Redis read failure: fail-safe
+      }
     }
 
     // 5. Cache MISS: intercept response
@@ -159,12 +168,7 @@ export const httpCache = (durationSeconds = 60) => {
           statusCode: res.statusCode
         };
 
-        // Save to Redis if available
-        if (isRedisReady() && redisClient) {
-          redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
-        }
-
-        // Save to Memory
+        // Save to L1 Memory immediately
         if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
           pruneMemoryCache();
         }
@@ -172,6 +176,11 @@ export const httpCache = (durationSeconds = 60) => {
           ...payload,
           expiresAt: Date.now() + durationSeconds * 1000
         });
+
+        // Save to L2 Redis asynchronously in background (non-blocking)
+        if (isRedisReady() && redisClient) {
+          redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
+        }
       }
       return originalSend(body);
     };

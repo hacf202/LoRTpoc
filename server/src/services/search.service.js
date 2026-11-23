@@ -57,6 +57,8 @@ export const searchService = {
     }
 
     const categoryLimit = Number(options.limitPerCategory) || 12;
+    const cleanQ = removeVietnameseTones(q);
+    const queryRegex = new RegExp(`(?:^|\\s)${cleanQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
 
     // 1. Champions Search
     const matchedChampions = [];
@@ -66,7 +68,7 @@ export const searchService = {
         nameEn: item.translations?.en?.name,
         code: `${item.championID || ''} ${item.cardCode || ''}`,
         desc: item.descriptionRaw || item.description
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedChampions.push({
           score: score + 120, // Ưu tiên nhẹ Tướng khi tìm kiếm toàn hệ thống
@@ -103,7 +105,7 @@ export const searchService = {
         nameEn: item.translations?.en?.name,
         code: r.relicCode,
         desc: item.descriptionRaw || item.description
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedRelics.push({
           score: score + 80,
@@ -133,7 +135,7 @@ export const searchService = {
         nameEn: item.translations?.en?.name,
         code: p.powerCode,
         desc: item.descriptionRaw || item.description
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedPowers.push({
           score: score + 70,
@@ -163,7 +165,7 @@ export const searchService = {
         nameEn: item.translations?.en?.name,
         code: item.itemCode,
         desc: item.descriptionRaw || item.description
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedItems.push({
           score: score + 40,
@@ -176,7 +178,7 @@ export const searchService = {
             enName: it.translations?.en?.name || it.name,
             rarity: it.rarity || 'Common',
             imageUrl: it.assetAbsolutePath || it.assetFullAbsolutePath || '',
-            description: it.descriptionRaw || it.description || '',
+            description: it.descriptionRaw || item.description || '',
             raw: it
           }
         });
@@ -193,7 +195,7 @@ export const searchService = {
         nameEn: item.translations?.en?.name,
         code: item.cardCode,
         desc: item.descriptionRaw || item.description
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedCards.push({
           score: score + 30,
@@ -225,7 +227,7 @@ export const searchService = {
         nameEn: item.translations?.en?.adventureName,
         code: item.adventureID,
         desc: item.requirement || ''
-      }));
+      }), queryRegex);
       if (score > 0) {
         matchedMaps.push({
           score: score + 50,

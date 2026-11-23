@@ -12,9 +12,14 @@ export function requestAuditMiddleware(req, res, next) {
   const startTime = performance.now();
 
   res.on('finish', () => {
-    // Ignore internal presence heartbeats and healthchecks to keep logs clean
+    // Ignore internal presence heartbeats, healthchecks, and admin log polling to prevent self-referential log loops
     const originalUrl = req.originalUrl || req.url || '';
-    if (originalUrl.includes('/presence/ping') || originalUrl === '/health' || originalUrl === '/api/health') {
+    if (
+      originalUrl.includes('/presence/ping') ||
+      originalUrl.includes('/auth/logs') ||
+      originalUrl === '/health' ||
+      originalUrl === '/api/health'
+    ) {
       return;
     }
 
