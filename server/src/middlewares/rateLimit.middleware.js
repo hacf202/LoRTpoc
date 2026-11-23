@@ -1,5 +1,6 @@
 import { redisClient, isRedisReady } from '../config/redis.js';
 import { config } from '../config/env.js';
+import { recordLog } from '../services/systemLog.service.js';
 
 /**
  * Intelligent Rate Limiter & Anti-Spam Middleware
@@ -106,6 +107,16 @@ export function createRateLimiter(options = {}) {
         if (currentCount > max) {
           const retryAfter = windowSeconds;
           res.setHeader('Retry-After', retryAfter);
+
+          // Asynchronously record rate limit breach
+          recordLog({
+            key: `security:ratelimit:blocked:${scope}:${clientIp}`,
+            level: 'warn',
+            category: 'security',
+            message: `Rate limit [${scope}] breached by IP ${clientIp} (${currentCount}/${max})`,
+            value: { ip: clientIp, scope, currentCount, max, method: req.method, url: req.originalUrl || req.url }
+          });
+
           return res.status(429).json({
             success: false,
             message: customMessage,
@@ -134,6 +145,15 @@ export function createRateLimiter(options = {}) {
       res.setHeader('X-RateLimit-Remaining', 0);
       res.setHeader('X-RateLimit-Reset', Math.ceil((oldest + windowMs) / 1000));
       res.setHeader('Retry-After', retryAfter);
+
+      // Asynchronously record rate limit breach in memory mode
+      recordLog({
+        key: `security:ratelimit:blocked:${scope}:${clientIp}`,
+        level: 'warn',
+        category: 'security',
+        message: `Rate limit [${scope}] breached by IP ${clientIp} (${timestamps.length}/${max})`,
+        value: { ip: clientIp, scope, currentCount: timestamps.length, max, method: req.method, url: req.originalUrl || req.url }
+      });
 
       return res.status(429).json({
         success: false,

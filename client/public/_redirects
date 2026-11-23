@@ -1,5 +1,4 @@
 /api/*  https://api.lortpoc.com/api/:splat  200
-/sitemap.xml  https://api.lortpoc.com/sitemap.xml  200
 /preview  https://api.lortpoc.com/preview  200
 /share  https://api.lortpoc.com/share  200
 /*  /index.html  200

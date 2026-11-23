@@ -502,7 +502,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     if (!token) return;
     try {
       setLogsLoading(true);
-      const res = await adminFetch('/api/v1/auth/logs?limit=200');
+      const res = await adminFetch('/api/v1/auth/logs?limit=100');
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) setServerLogs(data.data);
     } catch (err) {
@@ -563,7 +563,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     if (activeModule === 'maps') fetchMaps();
     if (activeModule === 'logs') {
       fetchServerLogs();
-      const interval = setInterval(fetchServerLogs, 4000);
+      // Auto-poll logs every 20s (instead of 4s) and ONLY when browser tab is actively visible
+      const interval = setInterval(() => {
+        if (!document.hidden) {
+          fetchServerLogs();
+        }
+      }, 20000);
       return () => clearInterval(interval);
     }
   }, [isAdmin, activeModule, fetchActiveUsers, fetchChampions, fetchBonusStars, fetchRelics, fetchPowers, fetchItems, fetchCards, fetchMaps, fetchServerLogs]);

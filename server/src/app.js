@@ -13,6 +13,7 @@ import { notFoundHandler } from './middlewares/notFound.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { burstRateLimiter, apiRateLimiter } from './middlewares/rateLimit.middleware.js';
 import { wafMiddleware } from './middlewares/waf.middleware.js';
+import { requestAuditMiddleware } from './middlewares/requestAudit.middleware.js';
 import { ensureDatabaseConnected } from './config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,32 +26,44 @@ const app = express();
 // Application WAF: Immediately reject common scanner probes (.env, wp-admin, xmlrpc, etc.)
 app.use(wafMiddleware);
 
-// Dynamic Multi-Origin CORS (supports Localhost, lortpoc.com, and Vercel preview domains)
+// Health check endpoints for Render, monitoring & uptime bots (Instant < 0.2ms response, bypasses DB/heavy sync)
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+
+// Non-intrusive Audit Middleware: Tracks slow requests (>1000ms), 5xx server errors & security spikes
+app.use(requestAuditMiddleware);
+
+// Strict Multi-Origin CORS whitelist
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://lortpoc.com',
-  'https://www.lortpoc.com'
+  'https://www.lortpoc.com',
+  'https://lortpoc.pages.dev'
 ];
 if (config.clientUrl && !allowedOrigins.includes(config.clientUrl)) {
   allowedOrigins.push(config.clientUrl);
 }
 
+// Strictly allow only verified preview subdomains of this specific project on Cloudflare Pages
+const isAllowedPagesPreview = (origin) => {
+  return /^https:\/\/[a-z0-9-]+\.lortpoc\.pages\.dev$/.test(origin);
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Cho phép Same-Origin, Server-to-Server, mobile apps hoặc cURL (origin is undefined)
+    // Allow Same-Origin, Server-to-Server, mobile apps, or cURL (origin is undefined)
     if (!origin) return callback(null, true);
 
     if (
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
       origin.endsWith('.lortpoc.com') ||
-      origin === 'https://lortpoc.com' ||
-      origin === 'https://www.lortpoc.com'
+      isAllowedPagesPreview(origin)
     ) {
       return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error('CORS origin not allowed by policy'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -81,11 +94,6 @@ app.use(
 
 // Bot Crawler Interceptor for rich Discord/Facebook/Twitter previews
 app.use(socialCrawlerMiddleware);
-
-// Health check endpoints for Render, monitoring & uptime bots
-app.get(['/health', '/api/health'], (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
-});
 
 // Root-level SEO Endpoints (For Search Engine Crawlers & Social Bots)
 app.get('/sitemap.xml', seoController.getSitemap);
