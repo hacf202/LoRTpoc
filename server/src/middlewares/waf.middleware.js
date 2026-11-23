@@ -8,11 +8,11 @@ import { getClientIp } from './rateLimit.middleware.js';
  */
 
 const BLOCKED_SCANNER_PATTERNS = [
-  // Sensitive configuration and source control probes
-  /^\/\.env/i,
-  /^\/\.git/i,
-  /^\/\.vscode/i,
-  /^\/\.svn/i,
+  // Sensitive configuration and source control probes (anywhere in path)
+  /\.env(\b|[._\/-]|$)/i,
+  /\.git(\b|[._\/-]|$)/i,
+  /\.vscode(\b|[._\/-]|$)/i,
+  /\.svn(\b|[._\/-]|$)/i,
 
   // WordPress vulnerability probes
   /^\/wp-admin/i,

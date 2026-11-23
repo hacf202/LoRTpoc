@@ -21,6 +21,10 @@ function pruneMemoryPresence() {
 // Memory pruning every 30 seconds
 setInterval(pruneMemoryPresence, 30000);
 
+// Short-lived 5s cache to prevent repetitive WAN round-trips when polling presence stats
+let cachedStats = null;
+let lastStatsFetchTime = 0;
+
 export const presenceService = {
   /**
    * Record or refresh heartbeat from a client session
@@ -83,13 +87,23 @@ export const presenceService = {
    */
   async getActiveUsersStats() {
     const now = Date.now();
+
+    // Serve from short 5-second in-memory cache to eliminate slow network round-trips
+    if (cachedStats && now - lastStatsFetchTime < 5000) {
+      return cachedStats;
+    }
+
     const threshold = now - PRESENCE_TTL_SECONDS * 1000;
 
-    // 1. Try Redis first
+    // 1. Try Redis first with pipelining
     if (isRedisConnected && redisClient) {
       try {
-        await redisClient.zremrangebyscore(REDIS_SET_KEY, 0, threshold);
-        const activeIds = await redisClient.zrange(REDIS_SET_KEY, 0, -1);
+        const pipeline = redisClient.pipeline();
+        pipeline.zremrangebyscore(REDIS_SET_KEY, 0, threshold);
+        pipeline.zrange(REDIS_SET_KEY, 0, -1);
+        const results = await pipeline.exec();
+
+        const activeIds = results?.[1]?.[1] || [];
         const total = activeIds.length;
         const byPage = {};
         const byLang = {};
@@ -110,7 +124,7 @@ export const presenceService = {
           });
         }
 
-        return {
+        cachedStats = {
           total,
           byPage,
           byLang,
@@ -118,6 +132,8 @@ export const presenceService = {
           windowSeconds: PRESENCE_TTL_SECONDS,
           timestamp: new Date().toISOString()
         };
+        lastStatsFetchTime = now;
+        return cachedStats;
       } catch (err) {
         // Fallback to memory
       }
@@ -139,7 +155,7 @@ export const presenceService = {
       }
     }
 
-    return {
+    cachedStats = {
       total,
       byPage,
       byLang,
@@ -147,5 +163,7 @@ export const presenceService = {
       windowSeconds: PRESENCE_TTL_SECONDS,
       timestamp: new Date().toISOString()
     };
+    lastStatsFetchTime = now;
+    return cachedStats;
   }
 };

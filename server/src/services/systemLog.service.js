@@ -15,6 +15,7 @@ async function ensureLogIndexes(collection) {
     await collection.createIndex({ key: 1, createdAt: -1 });
     await collection.createIndex({ level: 1, createdAt: -1 });
     await collection.createIndex({ category: 1, createdAt: -1 });
+    await collection.createIndex({ createdAt: -1 });
     // TTL Index: automatically delete logs after expireAt date
     await collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
     indexesInitialized = true;
@@ -157,6 +158,9 @@ export async function querySystemLogs({
     }
 
     const col = db.collection(COLLECTION_NAME);
+    if (!indexesInitialized) {
+      await ensureLogIndexes(col);
+    }
     const filter = {};
 
     if (key) {
@@ -179,8 +183,13 @@ export async function querySystemLogs({
       ];
     }
 
+    const hasFilter = Object.keys(filter).length > 0;
+    const countPromise = hasFilter
+      ? col.countDocuments(filter)
+      : col.estimatedDocumentCount();
+
     const [total, docs] = await Promise.all([
-      col.countDocuments(filter),
+      countPromise,
       col
         .find(filter)
         .sort({ createdAt: -1 })
