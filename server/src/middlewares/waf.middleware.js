@@ -1,3 +1,6 @@
+import { recordLog } from '../services/systemLog.service.js';
+import { getClientIp } from './rateLimit.middleware.js';
+
 /**
  * Application-Level WAF Middleware (Scanner & Probe Blocker)
  * Rapidly rejects automated vulnerability scans and probe bots at 0ms latency
@@ -37,6 +40,23 @@ export function wafMiddleware(req, res, next) {
     if (BLOCKED_SCANNER_PATTERNS[i].test(reqPath)) {
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-WAF-Block', 'probe-rejected');
+
+      // Asynchronously record blocked scanner attempt
+      const clientIp = getClientIp(req);
+      recordLog({
+        key: `security:waf:blocked:${reqPath.slice(0, 50)}`,
+        level: 'warn',
+        category: 'security',
+        message: `Blocked probe to [${reqPath}] from IP ${clientIp}`,
+        value: {
+          path: reqPath,
+          ip: clientIp,
+          method: req.method,
+          userAgent: req.headers['user-agent'] || '',
+          headers: req.headers
+        }
+      });
+
       return res.status(403).type('text/plain').send('Forbidden');
     }
   }

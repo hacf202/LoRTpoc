@@ -318,9 +318,12 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
   const [bonusStars, setBonusStars] = useState([]);
   const [loadingBonusStars, setLoadingBonusStars] = useState(false);
 
-  // Server Logs state
+  // Server Logs state (Key-Value system_logs)
   const [serverLogs, setServerLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(false);
+  const [logSearchQuery, setLogSearchQuery] = useState('');
+  const [logLevelFilter, setLogLevelFilter] = useState('all');
+  const [expandedLogId, setExpandedLogId] = useState(null);
 
   // Live Concurrent Users state
   const [activeUsersStats, setActiveUsersStats] = useState({
@@ -3722,72 +3725,137 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
               </div>
             )}
 
-            {/* TAB: SERVER LOGS */}
-            {activeModule === 'logs' && (
-              <div className="rounded-xl bg-[#0d0f14] border border-white/[0.08] overflow-hidden font-mono text-xs">
-                <div className="flex items-center justify-between px-4 py-2.5 bg-[#12141a] border-b border-white/[0.08]">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
-                    <span className="text-xs font-medium text-slate-300 ml-2">
-                      Winston Logger • localhost:5001
-                    </span>
-                  </div>
+            {/* TAB: SERVER LOGS (Key-Value System Logs) */}
+            {activeModule === 'logs' && (() => {
+              const filteredLogs = serverLogs.filter((log) => {
+                if (logLevelFilter !== 'all' && log.level !== logLevelFilter) return false;
+                if (!logSearchQuery.trim()) return true;
+                const q = logSearchQuery.toLowerCase();
+                const inKey = log.key ? log.key.toLowerCase().includes(q) : false;
+                const inMsg = log.message ? log.message.toLowerCase().includes(q) : false;
+                const inVal = log.value ? JSON.stringify(log.value).toLowerCase().includes(q) : false;
+                return inKey || inMsg || inVal;
+              });
 
-                  <div className="flex items-center gap-2 font-sans">
-                    <button
-                      type="button"
-                      onClick={fetchServerLogs}
-                      disabled={logsLoading}
-                      className="px-3 py-1.5 rounded-lg bg-[#1d212b] hover:bg-[#252a37] text-slate-300 text-xs font-medium transition-colors cursor-pointer border border-white/10"
-                    >
-                      {logsLoading ? 'Đang tải...' : 'Làm Mới'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleClearLogs}
-                      className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-medium transition-colors cursor-pointer"
-                    >
-                      Xóa Log
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-3 max-h-[600px] overflow-y-auto space-y-1 bg-[#090b0e] select-text">
-                  {serverLogs.length === 0 ? (
-                    <div className="py-16 text-center text-slate-500 text-xs">
-                      Chưa có nhật ký máy chủ gần đây.
+              return (
+                <div className="rounded-xl bg-[#0d0f14] border border-white/[0.08] overflow-hidden font-mono text-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-2.5 bg-[#12141a] border-b border-white/[0.08]">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                      <span className="text-xs font-medium text-slate-300 ml-2">
+                        System Logs • Key-Value Store ({filteredLogs.length}/{serverLogs.length})
+                      </span>
                     </div>
-                  ) : (
-                    serverLogs.map((log) => {
-                      const isError = log.level === 'error';
-                      const isWarn = log.level === 'warn';
-                      const isHttp = log.level === 'http';
-                      const levelBadgeClass = isError
-                        ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-                        : isWarn
-                        ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-                        : isHttp
-                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                        : 'text-sky-300 bg-sky-500/10 border-sky-500/20';
 
-                      return (
-                        <div key={log.id} className="flex items-start gap-2.5 leading-relaxed hover:bg-white/[0.03] px-2 py-1 rounded transition-colors">
-                          <span className="text-slate-500 shrink-0 text-[11px] font-mono">{log.timestamp}</span>
-                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-medium uppercase shrink-0 border ${levelBadgeClass}`}>
-                            {log.level}
-                          </span>
-                          <span className={`break-all ${isError ? 'text-rose-300 font-medium' : 'text-slate-300'}`}>
-                            {log.message}
-                          </span>
-                        </div>
-                      );
-                    })
-                  )}
+                    <div className="flex items-center gap-2 font-sans">
+                      <button
+                        type="button"
+                        onClick={fetchServerLogs}
+                        disabled={logsLoading}
+                        className="px-3 py-1.5 rounded-lg bg-[#1d212b] hover:bg-[#252a37] text-slate-300 text-xs font-medium transition-colors cursor-pointer border border-white/10"
+                      >
+                        {logsLoading ? 'Đang tải...' : 'Làm Mới'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearLogs}
+                        className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        Xóa Log
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Filter and Search Bar for Logs */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2.5 bg-[#0e1017] border-b border-white/[0.06] font-sans">
+                    <input
+                      type="text"
+                      value={logSearchQuery}
+                      onChange={(e) => setLogSearchQuery(e.target.value)}
+                      placeholder="Lọc theo Key (vd: error:500, auth, waf) hoặc nội dung..."
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#14161f] border border-white/10 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
+                    />
+                    <select
+                      value={logLevelFilter}
+                      onChange={(e) => setLogLevelFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-lg bg-[#14161f] border border-white/10 text-xs text-slate-300 focus:outline-none focus:border-sky-500/50 cursor-pointer"
+                    >
+                      <option value="all">Tất cả Level</option>
+                      <option value="error">Error</option>
+                      <option value="warn">Warn</option>
+                      <option value="info">Info</option>
+                      <option value="http">HTTP</option>
+                    </select>
+                  </div>
+
+                  <div className="p-3 max-h-[600px] overflow-y-auto space-y-1.5 bg-[#090b0e] select-text">
+                    {filteredLogs.length === 0 ? (
+                      <div className="py-16 text-center text-slate-500 text-xs">
+                        {serverLogs.length === 0
+                          ? 'Chưa có nhật ký máy chủ gần đây.'
+                          : 'Không tìm thấy nhật ký khớp với bộ lọc.'}
+                      </div>
+                    ) : (
+                      filteredLogs.map((log) => {
+                        const isError = log.level === 'error';
+                        const isWarn = log.level === 'warn';
+                        const isHttp = log.level === 'http';
+                        const levelBadgeClass = isError
+                          ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                          : isWarn
+                          ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+                          : isHttp
+                          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                          : 'text-sky-300 bg-sky-500/10 border-sky-500/20';
+
+                        const hasValue = log.value && typeof log.value === 'object' && Object.keys(log.value).length > 0;
+                        const isExpanded = expandedLogId === log.id;
+
+                        return (
+                          <div
+                            key={log.id}
+                            className="flex flex-col gap-1 hover:bg-white/[0.03] px-2 py-1.5 rounded transition-colors border border-transparent hover:border-white/[0.05]"
+                          >
+                            <div className="flex flex-wrap items-center gap-2 leading-relaxed">
+                              <span className="text-slate-500 shrink-0 text-[11px] font-mono">{log.timestamp}</span>
+                              <span className={`px-1.5 py-0.2 rounded text-[10px] font-medium uppercase shrink-0 border ${levelBadgeClass}`}>
+                                {log.level}
+                              </span>
+                              {log.key && (
+                                <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-sky-500/10 text-sky-300 border border-sky-500/20 shrink-0">
+                                  {log.key}
+                                </span>
+                              )}
+                              <span className={`break-all ${isError ? 'text-rose-300 font-medium' : 'text-slate-300'}`}>
+                                {log.message}
+                              </span>
+                              {hasValue && (
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                                  className="ml-auto text-[10px] text-sky-400 hover:text-sky-300 hover:underline shrink-0 font-sans cursor-pointer"
+                                >
+                                  {isExpanded ? 'Ẩn Value' : 'Xem Value JSON'}
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Expandable Key-Value JSON View */}
+                            {hasValue && isExpanded && (
+                              <pre className="mt-1 p-2.5 rounded-lg bg-black/60 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed select-all">
+                                {JSON.stringify(log.value, null, 2)}
+                              </pre>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       )}

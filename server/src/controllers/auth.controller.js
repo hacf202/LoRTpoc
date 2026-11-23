@@ -1,11 +1,22 @@
 import { ADMIN_PASSWORD, generateAdminToken, verifyAdminToken } from '../middlewares/auth.middleware.js';
-import { getRecentLogs, clearRecentLogs } from '../utils/logger.js';
+import { querySystemLogs, clearAllSystemLogs, recordLog } from '../services/systemLog.service.js';
+import { getClientIp } from '../middlewares/rateLimit.middleware.js';
 
 export const loginAdmin = async (req, res, next) => {
   try {
     const { password } = req.body;
+    const clientIp = getClientIp(req);
+    const userAgent = req.headers['user-agent'] || '';
 
     if (!password || String(password).trim() !== ADMIN_PASSWORD) {
+      recordLog({
+        key: 'auth:login:failed',
+        level: 'warn',
+        category: 'auth',
+        message: `Admin login failed from IP ${clientIp}`,
+        value: { ip: clientIp, userAgent, attemptedAt: new Date().toISOString() }
+      });
+
       return res.status(401).json({
         success: false,
         message: 'Mật khẩu quản trị viên không chính xác.'
@@ -13,6 +24,14 @@ export const loginAdmin = async (req, res, next) => {
     }
 
     const token = generateAdminToken();
+
+    recordLog({
+      key: 'auth:login:success',
+      level: 'info',
+      category: 'auth',
+      message: `Admin logged in successfully from IP ${clientIp}`,
+      value: { ip: clientIp, userAgent, loggedInAt: new Date().toISOString() }
+    });
 
     res.status(200).json({
       success: true,
@@ -57,12 +76,11 @@ export const verifyCurrentAdmin = async (req, res, next) => {
 
 export const getSystemLogs = async (req, res, next) => {
   try {
-    const limit = Math.min(200, parseInt(req.query.limit, 10) || 100);
-    const logs = getRecentLogs(limit);
+    const { key, level, category, search, limit, page } = req.query;
+    const result = await querySystemLogs({ key, level, category, search, limit, page });
     res.status(200).json({
       success: true,
-      total: logs.length,
-      data: logs
+      ...result
     });
   } catch (error) {
     next(error);
@@ -71,10 +89,10 @@ export const getSystemLogs = async (req, res, next) => {
 
 export const deleteSystemLogs = async (req, res, next) => {
   try {
-    clearRecentLogs();
+    await clearAllSystemLogs();
     res.status(200).json({
       success: true,
-      message: 'Đã xóa toàn bộ nhật ký gần đây.'
+      message: 'Đã xóa toàn bộ nhật ký máy chủ.'
     });
   } catch (error) {
     next(error);
