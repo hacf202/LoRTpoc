@@ -12,6 +12,7 @@ import { socialCrawlerMiddleware } from './middlewares/socialCrawler.middleware.
 import { notFoundHandler } from './middlewares/notFound.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { burstRateLimiter, apiRateLimiter } from './middlewares/rateLimit.middleware.js';
+import { wafMiddleware } from './middlewares/waf.middleware.js';
 import { ensureDatabaseConnected } from './config/dbDataLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +21,9 @@ const clientDistPath = path.join(__dirname, '../../client/dist');
 const rootDistPath = path.join(__dirname, '../../dist');
 
 const app = express();
+
+// Application WAF: Immediately reject common scanner probes (.env, wp-admin, xmlrpc, etc.)
+app.use(wafMiddleware);
 
 // Dynamic Multi-Origin CORS (supports Localhost, lortpoc.com, and Vercel preview domains)
 const allowedOrigins = [
