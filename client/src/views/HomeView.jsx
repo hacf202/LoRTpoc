@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import SearchBar from '../components/SearchBar';
 import SearchDropdown from '../components/SearchDropdown';
 import ScrollFab from '../components/ScrollFab';
@@ -31,6 +31,75 @@ export default function HomeView({
   const isEn = language === 'en';
   const [isFocused, setIsFocused] = useState(false);
   const [isScrolledDown, setIsScrolledDown] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  // Compute all navigable items currently visible in the dropdown
+  const navShortcuts = useMemo(() => {
+    return activeCategory === 'all' ? getMatchingNavShortcuts(searchTerm) : [];
+  }, [searchTerm, activeCategory]);
+
+  const currentCategoryItems = useMemo(() => {
+    if (activeCategory === 'all') {
+      return results?.flat || (Array.isArray(results) ? results : []);
+    }
+    return results?.categories?.[activeCategory] || [];
+  }, [results, activeCategory]);
+
+  const allNavigableItems = useMemo(() => {
+    return [...navShortcuts, ...currentCategoryItems];
+  }, [navShortcuts, currentCategoryItems]);
+
+  // Reset activeIndex when search query, activeCategory or results change
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [searchTerm, activeCategory, results]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        if (allNavigableItems.length > 0) {
+          setIsDropdownOpen(true);
+          setActiveIndex(0);
+        }
+        return;
+      }
+      if (allNavigableItems.length === 0) return;
+      setActiveIndex((prev) => (prev < allNavigableItems.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        if (allNavigableItems.length > 0) {
+          setIsDropdownOpen(true);
+          setActiveIndex(allNavigableItems.length - 1);
+        }
+        return;
+      }
+      if (allNavigableItems.length === 0) return;
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : allNavigableItems.length - 1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (allNavigableItems.length === 0) return;
+
+      const targetItem =
+        activeIndex >= 0 && activeIndex < allNavigableItems.length
+          ? allNavigableItems[activeIndex]
+          : allNavigableItems[0];
+
+      if (targetItem) {
+        onSelectChampion?.(targetItem);
+        setIsDropdownOpen(false);
+        setActiveIndex(-1);
+        if (searchInputRef?.current) {
+          searchInputRef.current.blur();
+        }
+      }
+    } else if (e.key === 'Escape') {
+      setIsDropdownOpen(false);
+      setActiveIndex(-1);
+    }
+  };
 
   // Chỉ nâng thanh tìm kiếm khi ở trên cùng (chưa cuộn xuống) và đang focus / mở dropdown
   const isLifted = !isScrolledDown && (isDropdownOpen || isFocused || Boolean(searchTerm && searchTerm.trim()));
@@ -255,20 +324,7 @@ export default function HomeView({
                     }
                   }, 200);
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const navShortcuts = getMatchingNavShortcuts(searchTerm);
-                    const firstItem = (navShortcuts.length > 0)
-                      ? navShortcuts[0]
-                      : ((results?.flat && results.flat.length > 0)
-                        ? results.flat[0]
-                        : (Array.isArray(results) && results.length > 0 ? results[0] : null));
-                    if (firstItem) {
-                      onSelectChampion?.(firstItem);
-                    }
-                  }
-                }}
+                onKeyDown={handleKeyDown}
                 placeholder={t('hero.searchPlaceholder')}
               />
 
@@ -279,6 +335,10 @@ export default function HomeView({
                 results={results}
                 searchTerm={searchTerm}
                 onSelect={onSelectChampion}
+                activeIndex={activeIndex}
+                setActiveIndex={setActiveIndex}
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
               />
             </div>
 

@@ -51,6 +51,11 @@ const isAllowedPagesPreview = (origin) => {
   return /^https:\/\/[a-z0-9-]+\.lortpoc\.pages\.dev$/.test(origin);
 };
 
+// Allow any localhost / 127.0.0.1 port in local development
+const isAllowedLocalhost = (origin) => {
+  return /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+};
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow Same-Origin, Server-to-Server, mobile apps, or cURL (origin is undefined)
@@ -58,12 +63,13 @@ app.use(cors({
 
     if (
       allowedOrigins.includes(origin) ||
+      isAllowedLocalhost(origin) ||
       origin.endsWith('.lortpoc.com') ||
       isAllowedPagesPreview(origin)
     ) {
       return callback(null, true);
     }
-    return callback(new Error('CORS origin not allowed by policy'), false);
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

@@ -110,7 +110,7 @@ export const httpCache = (durationSeconds = 60) => {
     const cacheKey = req.originalUrl || req.url;
     const redisKey = `poc:cache:${cacheKey}`;
 
-    // 3. Try L1 Memory Cache FIRST (Sub-millisecond local RAM hit)
+    // 3. Fast In-Memory Cache (Sub-millisecond local RAM hit)
     const memCached = memoryCache.get(cacheKey);
     const now = Date.now();
     if (memCached && memCached.expiresAt > now) {
@@ -118,40 +118,14 @@ export const httpCache = (durationSeconds = 60) => {
         'Content-Type': memCached.contentType || 'application/json; charset=utf-8',
         'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
         'Vary': 'Accept-Encoding, Authorization',
-        'X-Server-Cache': 'HIT (Memory L1)'
+        'X-Server-Cache': 'HIT (Memory)'
       });
       return res.status(memCached.statusCode).send(memCached.data);
     }
 
-    // 4. Try L2 Redis Cache (Distributed fallback across instances)
-    if (isRedisReady() && redisClient) {
-      try {
-        const cachedRaw = await redisClient.get(redisKey);
-        if (cachedRaw) {
-          const cached = JSON.parse(cachedRaw);
-          // Promote to L1 Memory cache for subsequent fast hits
-          if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
-            pruneMemoryCache();
-          }
-          memoryCache.set(cacheKey, {
-            ...cached,
-            expiresAt: Date.now() + durationSeconds * 1000
-          });
-
-          res.set({
-            'Content-Type': cached.contentType || 'application/json; charset=utf-8',
-            'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
-            'Vary': 'Accept-Encoding, Authorization',
-            'X-Server-Cache': 'HIT (Redis L2)'
-          });
-          return res.status(cached.statusCode || 200).send(cached.data);
-        }
-      } catch (err) {
-        // Redis read failure: fail-safe
-      }
-    }
-
-    // 5. Cache MISS: intercept response
+    // 4. Cache MISS: Proceed to in-memory controller immediately without blocking on remote Redis WAN.
+    // LoR PoC datasets are 100% resident in Node.js RAM (resolving in < 1ms).
+    // Awaiting remote Redis GET over WAN (200ms - 1300ms) for in-memory datasets is a major anti-pattern.
     res.set({
       'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
       'Vary': 'Accept-Encoding, Authorization',
@@ -177,9 +151,11 @@ export const httpCache = (durationSeconds = 60) => {
           expiresAt: Date.now() + durationSeconds * 1000
         });
 
-        // Save to L2 Redis asynchronously in background (non-blocking)
+        // Asynchronously persist to Redis in background (non-blocking fire-and-forget)
         if (isRedisReady() && redisClient) {
-          redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
+          setImmediate(() => {
+            redisClient.setex(redisKey, durationSeconds, JSON.stringify(payload)).catch(() => {});
+          });
         }
       }
       return originalSend(body);

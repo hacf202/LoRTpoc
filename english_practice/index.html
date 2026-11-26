@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Repetition Player</title>
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --bg-card-active: #1e3a5f;
+      --border-color: #334155;
+      --border-active: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 24px;
+      }
+    }
+
+    .container {
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header {
+      padding: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+    }
+
+    @media (min-width: 640px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: sticky;
+      top: 8px;
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (min-width: 640px) {
+      .controls-panel {
+        padding: 16px;
+        gap: 16px;
+      }
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background-color: #334155;
+      color: var(--text-main);
+      border-color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background-color: #475569;
+    }
+
+    .btn-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    @media (min-width: 640px) {
+      .settings-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .setting-item label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      background-color: #0f172a;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    .status-bar {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: #334155;
+      color: var(--text-main);
+    }
+
+    .status-badge.speaking {
+      background-color: rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+    }
+
+    /* Sentences List */
+    .sentence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sentence-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    @media (min-width: 640px) {
+      .sentence-card {
+        padding: 12px 14px;
+        gap: 14px;
+      }
+    }
+
+    .sentence-card:hover {
+      background-color: var(--bg-card-hover);
+      border-color: #475569;
+    }
+
+    .sentence-card.active {
+      background-color: var(--bg-card-active);
+      border-color: var(--border-active);
+      box-shadow: 0 0 0 1px var(--border-active);
+    }
+
+    .sentence-index {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 24px;
+      padding-top: 2px;
+    }
+
+    .sentence-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .sentence-card.active .sentence-text {
+      font-weight: 500;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>English Repetition Player</h1>
+      <p>Voice-assisted repetitive practice reader for English speaking and shadowing</p>
+    </div>
+
+    <div class="controls-panel">
+      <div class="control-row">
+        <button id="btnPlay" class="btn btn-primary" onclick="startPlay()">Play</button>
+        <button id="btnPause" class="btn btn-secondary" onclick="pausePlay()">Pause</button>
+        <button id="btnStop" class="btn btn-danger" onclick="stopPlay()">Stop</button>
+        <button id="btnPrev" class="btn btn-secondary" onclick="prevSentence()">Previous</button>
+        <button id="btnNext" class="btn btn-secondary" onclick="nextSentence()">Next</button>
+      </div>
+
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect">
+            <option value="loopAll" selected>Repeat All (Loop 1-14)</option>
+            <option value="loopCurrent">Repeat Current Sentence</option>
+            <option value="playOnce">Play Once</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label for="voiceSelect">Voice</label>
+          <select id="voiceSelect"></select>
+        </div>
+
+        <div class="setting-item">
+          <label for="rateSlider">Speed: <span id="rateVal">1.0x</span></label>
+          <input type="range" id="rateSlider" min="0.6" max="1.4" step="0.1" value="1.0" oninput="updateRateLabel()">
+        </div>
+
+        <div class="setting-item">
+          <label for="delaySlider">Pause Between: <span id="delayVal">1.5s</span></label>
+          <input type="range" id="delaySlider" min="0.5" max="4.0" step="0.5" value="1.5" oninput="updateDelayLabel()">
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <span id="progressText">Sentence 0 / 14</span>
+        <span id="statusBadge" class="status-badge">Idle</span>
+      </div>
+    </div>
+
+    <div id="sentenceList" class="sentence-list"></div>
+  </div>
+
+  <script>
+    const sentences = [
+      "It will make us waste money. The fee is very high, so it is not suitable for everyone. We must pay for a lot of unnecessary fees every month.",
+      "It will make us waste time. We will not have enough time to do important things for the study and family, so it will affect the life serious.",
+      "It will affect the job. We can not focus on completing the work, so we will not receive the high position in the company.",
+      "It will affect the family. We will not have time to take care of the family member so it will make the family member become.",
+      "It will affect the environment. It will release a lot of smoke, dust and toxic emission in the environment, so it will affect the living environment of everyone and animals.",
+      "It will affect the health. We will feel tired and not enough have energy to do many things in the life, so it will cause a lot of health problem.",
+      "It will affect the study. We will not have enough time to study lessons and do homework so we will receive the bad result in the exams.",
+      "It must depend on the internet. If it can not connect to the internet, we will not use it for the job and the life. As a result, it is very inconvenient.",
+      "It is very hard to do. It is very complicated so we will waste a lot of money and time to use it.",
+      "It is very hard to study. It is very complicated so we will waste a lot of money and time to study.",
+      "It must depend on the weather. If the weather is bad, we can no use it. As a result, it will affect the jobs and the life.",
+      "It can cause social evils. We can lose a lot of important things such as smartphone, laptop, money and so on. Besides, bad people can scam us, so it is very dangerous.",
+      "We can develop bad habit. We can copy bad point from many people, so it is affect the study and health such as drinking wines, playing games, gambling and so on.",
+      "We will lose information. Hackers can hack important personal information, so they can take advantages of our information to steal money and scam our family and friends."
+    ];
+
+    let currentIndex = 0;
+    let isPlaying = false;
+    let isPaused = false;
+    let synth = window.speechSynthesis;
+    let voices = [];
+    let delayTimer = null;
+
+    function renderList() {
+      const container = document.getElementById("sentenceList");
+      container.innerHTML = "";
+      sentences.forEach((text, i) => {
+        const card = document.createElement("div");
+        card.className = "sentence-card" + (i === currentIndex ? " active" : "");
+        card.id = `card-${i}`;
+        card.onclick = () => selectAndPlay(i);
+
+        const indexBadge = document.createElement("div");
+        indexBadge.className = "sentence-index";
+        indexBadge.textContent = String(i + 1).padStart(2, "0");
+
+        const textDiv = document.createElement("div");
+        textDiv.className = "sentence-text";
+        textDiv.textContent = text;
+
+        card.appendChild(indexBadge);
+        card.appendChild(textDiv);
+        container.appendChild(card);
+      });
+      updateStatus();
+    }
+
+    function populateVoices() {
+      voices = synth.getVoices().filter(v => v.lang.startsWith("en"));
+      if (voices.length === 0) {
+        voices = synth.getVoices();
+      }
+      const select = document.getElementById("voiceSelect");
+      select.innerHTML = "";
+      voices.forEach((voice, index) => {
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.default || voice.name.includes("Natural") || voice.name.includes("Google") || voice.name.includes("Zira")) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+    }
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    function updateRateLabel() {
+      document.getElementById("rateVal").textContent = document.getElementById("rateSlider").value + "x";
+    }
+
+    function updateDelayLabel() {
+      document.getElementById("delayVal").textContent = document.getElementById("delaySlider").value + "s";
+    }
+
+    function updateStatus() {
+      document.getElementById("progressText").textContent = `Sentence ${currentIndex + 1} / ${sentences.length}`;
+      const badge = document.getElementById("statusBadge");
+      if (isPlaying && !isPaused) {
+        badge.textContent = "Speaking";
+        badge.className = "status-badge speaking";
+      } else if (isPaused) {
+        badge.textContent = "Paused";
+        badge.className = "status-badge";
+      } else {
+        badge.textContent = "Idle";
+        badge.className = "status-badge";
+      }
+
+      document.querySelectorAll(".sentence-card").forEach((c, idx) => {
+        c.classList.toggle("active", idx === currentIndex);
+      });
+
+      const activeCard = document.getElementById(`card-${currentIndex}`);
+      if (activeCard) {
+        activeCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function speakCurrent() {
+      if (!isPlaying) return;
+      synth.cancel();
+      clearTimeout(delayTimer);
+
+      updateStatus();
+
+      const text = sentences[currentIndex];
+      const utter = new SpeechSynthesisUtterance(text);
+
+      const voiceIdx = document.getElementById("voiceSelect").value;
+      if (voices[voiceIdx]) {
+        utter.voice = voices[voiceIdx];
+      }
+
+      utter.rate = parseFloat(document.getElementById("rateSlider").value);
+
+      utter.onend = () => {
+        if (!isPlaying || isPaused) return;
+
+        const mode = document.getElementById("modeSelect").value;
+        const delayMs = parseFloat(document.getElementById("delaySlider").value) * 1000;
+
+        delayTimer = setTimeout(() => {
+          if (!isPlaying || isPaused) return;
+
+          if (mode === "loopCurrent") {
+            speakCurrent();
+          } else if (mode === "loopAll") {
+            currentIndex = (currentIndex + 1) % sentences.length;
+            speakCurrent();
+          } else if (mode === "playOnce") {
+            if (currentIndex + 1 < sentences.length) {
+              currentIndex++;
+              speakCurrent();
+            } else {
+              stopPlay();
+            }
+          }
+        }, delayMs);
+      };
+
+      utter.onerror = (e) => {
+        console.error("Speech error", e);
+        if (isPlaying && !isPaused) {
+          stopPlay();
+        }
+      };
+
+      synth.speak(utter);
+    }
+
+    function startPlay() {
+      if (isPaused) {
+        synth.resume();
+        isPaused = false;
+        isPlaying = true;
+        updateStatus();
+        return;
+      }
+      isPlaying = true;
+      isPaused = false;
+      speakCurrent();
+    }
+
+    function pausePlay() {
+      if (isPlaying) {
+        synth.pause();
+        isPaused = true;
+        clearTimeout(delayTimer);
+        updateStatus();
+      }
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      isPaused = false;
+      synth.cancel();
+      clearTimeout(delayTimer);
+      updateStatus();
+    }
+
+    function prevSentence() {
+      currentIndex = (currentIndex - 1 + sentences.length) % sentences.length;
+      updateStatus();
+      if (isPlaying && !isPaused) {
+        speakCurrent();
+      }
+    }
+
+    function nextSentence() {
+      currentIndex = (currentIndex + 1) % sentences.length;
+      updateStatus();
+      if (isPlaying && !isPaused) {
+        speakCurrent();
+      }
+    }
+
+    function selectAndPlay(index) {
+      currentIndex = index;
+      isPlaying = true;
+      isPaused = false;
+      speakCurrent();
+    }
+
+    // Init
+    populateVoices();
+    renderList();
+  </script>
+</body>
+</html>

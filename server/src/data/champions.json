@@ -8277,12 +8277,17 @@
       "freljord"
     ],
     "cost": 4,
+    "tier": "S Tier // Nhắm mắt chơi game",
     "maxStar": 6,
+    "optimalStars": "4 Sao",
+    "playStyle": "Kiểm soát / FTK",
     "tags": [
-      "OTK"
+      "OTK",
+      "Kiểm Soát",
+      "Midrange"
     ],
-    "description": "-Ashe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\\n-Có cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\\n-Ahse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh Cầm Chân Đối Thủ.\\n-Món Quà Của Avarosa tương tác cực kỳ tốt với Đòn Đánh Suy Nhược khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.\\n--EVIN--",
-    "descriptionRaw": "-Ashe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\\n-Có cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\\n-Ahse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh Cầm Chân Đối Thủ.\\n-Món Quà Của Avarosa tương tác cực kỳ tốt với Đòn Đánh Suy Nhược khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.\\n--EVIN--",
+    "description": "Tướng mạnh, dễ chơi, kiểm soát đối thủ cực tốt, sở hữu C6 giúp nâng tầm Ashe lên cực nhiều.\nAshe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\nCó cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\nAhse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh [p:P0107|Cầm Chân Đối Thủ] nhân đôi sự khó chịu, ngoài ra có thể chọn [p:P0327|Khổng Lồ Thức Tỉnh] hoặc [p:P0083|Đòn Đánh Suy Nhược] nếu có C6. [p:P0449|Món Quà Của Avarosa] tương tác cực kỳ tốt với [p:P0083|Đòn Đánh Suy Nhược] khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.",
+    "descriptionRaw": "-Ashe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\n-Có cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\n-Ahse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh Cầm Chân Đối Thủ.\n-Món Quà Của Avarosa tương tác cực kỳ tốt với Đòn Đánh Suy Nhược khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.\n--EVIN--",
     "assets": [
       {
         "avatar": "https://images.lortpoc.com/avatarChampions/Ashe.webp",
@@ -8290,89 +8295,92 @@
         "gameAbsolutePath": "https://dd.b.pvp.net/6_3_0/set1/vi_vn/img/cards/01FR038.png"
       }
     ],
-    "coreRelics": [
-      "R0038"
-    ],
+    "coreRelics": {
+      "mandatory": [
+        "R0038",
+        "R0038"
+      ],
+      "options": [
+        [
+          "R0038"
+        ],
+        [
+          "R0080"
+        ],
+        [
+          "R0061"
+        ]
+      ],
+      "description": "Ashe sẽ phát huy tối đa sức mạnh khi sở hữu C6 [p:P0449|Món Quà Của Avarosa] và đi kèm với đó là cổ vật không thể thiếu [r:R0038|Nhà Thông Thái Phá Thành] sẽ gây sát thương lên thẳng nhà chính kẻ địch bằng với lượng sức mạnh mà tướng có, và vì [p:P0449|Món Quà Của Avarosa] khi đóng băng thì phần sức mạnh của quân bị đóng băng sẽ được chia cho các bài quân trên tay của bạn nên nó sẽ cực kỳ hợp.\nNếu bạn tự tin là luôn rut được Ashe thì x3 [r:R0038|Nhà Thông Thái Phá Thành] sẽ là lựa chọn tốt nhất.\nĐi cùng [r:R0061|Linh Hồn Vang Vọng] nếu bạn sợ việc không rút được Ashe.\nDùng [r:R0080|Quái Thú Bên Trong] để bổ sung dmg áp đảo cho các bài quân cũng tốt khi có lượng sức mạnh lớn được buff từ C6.",
+      "translations": {
+        "en": {
+          "description": "Ashe reaches her full potential with her 6-Star power [p:P0449|Avarosa's Gift] paired with the essential relic [r:R0038|The Gatebreaker], which deals direct damage to the enemy Nexus equal to her Power—synergizing perfectly with [p:P0449|Avarosa's Gift] since Frostbiting enemies distributes their Power to the units in your hand.\nIf you are confident in consistently drawing Ashe, running triple [r:R0038|The Gatebreaker] is the best choice.\nPair it with [r:R0061|Echoing Spirit] if you are worried about not drawing Ashe.\nUsing [r:R0080|The Beast Within] to add Overwhelm damage to your units is also a solid option given the massive Power buffs from her 6-Star power."
+        }
+      }
+    },
     "relicSets": [
       {
-        "description": "Combo cho C6 [p:P0449|Món Quà Của Avarosa], Sát thương để xuất trận Ashe và thắng sẽ = Máu nhà chính kẻ địch / 3 đi là được.",
-        "descriptionRaw": "Combo cho C6 Món Quà Của Avarosa, Sát thương để xuất trận Ashe và thắng sẽ = Máu nhà chính kẻ địch / 3 đi là được.",
+        "recommendedStars": 4,
         "items": [
           "R0038",
           "R0038",
           "R0038"
         ],
+        "description": "Combo này đánh theo kiểu spam đóng băng hết kẻ địch và công lên, các bài quân có 0 sức mạnh sẽ không chặn đòn được nếu có Ashe lv2 trên bàn. [r:R0061|Linh Hồn Vang Vọng] giảm tiêu hao lá đóng băng, [r:R0020|Kế Đối Phó Của Đại Tướng] tạo lá đóng băng, [r:R0013|Quyền Trượng Thiên Thần] hồi lại năng lượng cho để dùng các lá phép khác.",
         "videoLink": ""
       },
       {
-        "description": "Combo này đánh theo kiểu spam đóng băng hết kẻ địch và công lên, các bài quân có 0 sức mạnh sẽ không chặn đòn được nếu có Ashe lv2 trên bàn. [r:R0061|Linh Hồn Vang Vọng] giảm tiêu hao lá đóng băng, [r:R0020|Kế Đối Phó Của Đại Tướng] tạo lá đóng băng, [r:R0013|Quyền Trượng Thiên Thần] hồi lại năng lượng cho để dùng các lá phép khác.",
-        "descriptionRaw": "Combo này đánh theo kiểu spam đóng băng hết kẻ địch và công lên, các bài quân có 0 sức mạnh sẽ không chặn đòn được nếu có Ashe lv2 trên bàn. Linh Hồn Vang Vọng giảm tiêu hao lá đóng băng, Kế Đối Phó Của Đại Tướng tạo lá đóng băng, Quyền Trượng Thiên Thần hồi lại năng lượng cho để dùng các lá phép khác.",
+        "recommendedStars": 4,
         "items": [
           "R0061",
           "R0020",
           "R0013"
         ],
-        "videoLink": ""
+        "description": "[r:R0048|Máy Sao Chép Hóa Kỹ] để nhân đôi bài phép, vì nếu đánh theo kiểu này thì xác định sẽ câu late, [r:R0020|Kế Đối Phó Của Đại Tướng] sẽ tạo lá đóng băng, ngoài ra lá đóng băng còn ban thêm vật phẩm hiếm, [r:R0013|Quyền Trượng Thiên Thần] cho thêm năng lượng để dùng phép.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "This combo focuses on spamming Frostbite on all enemies and swinging in, since units with 0 Power cannot block while level 2 Ashe is on the board. [r:R0061|Echoing Spirit] reduces the cost of her Frostbite spell, [r:R0020|The Grand General's Counterplan] consistently generates it, and [r:R0013|Archangel's Staff] refills your spell mana so you can cast other spells."
+          }
+        }
       },
       {
-        "description": "[r:R0048|Máy Sao Chép Hóa Kỹ] để nhân đôi bài phép, vì nếu đánh theo kiểu này thì xác định sẽ câu late, [r:R0020|Kế Đối Phó Của Đại Tướng] sẽ tạo lá đóng băng, ngoài ra lá đóng băng còn ban thêm vật phẩm hiếm, [r:R0013|Quyền Trượng Thiên Thần] cho thêm năng lượng để dùng phép.",
-        "descriptionRaw": "Máy Sao Chép Hóa Kỹ để nhân đôi bài phép, vì nếu đánh theo kiểu này thì xác định sẽ câu late, Kế Đối Phó Của Đại Tướng sẽ tạo lá đóng băng, ngoài ra lá đóng băng còn ban thêm vật phẩm hiếm, Quyền Trượng Thiên Thần cho thêm năng lượng để dùng phép.",
+        "recommendedStars": 5,
         "items": [
           "R0048",
           "R0020",
           "R0013"
         ],
-        "videoLink": ""
+        "description": "[r:R0080|Quái Thú Bên Trong] cho [k:Overwhelm|Áp Đảo], [r:R0116|Bộ Bài Đầy Ắp] thêm sát thương cho bài quân và sẽ mạnh hơn nếu có [p:P0449|Món Quà Của Avarosa] C6 của Ashe dmg sẽ cực kỳ nhiều, [r:R0114|Khiên Đen] ban [k:SpellShield|Khiên Phép] cho bài quân.",
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "[r:R0080|The Beast Within] grants [k:Overwhelm|Overwhelm], [r:R0116|Stacked Deck] boosts your units' damage—scaling even harder with Ashe's 6-Star power [p:P0449|Avarosa's Gift] for massive output—and [r:R0114|Black Shield] grants [k:SpellShield|SpellShield] to your units."
+          }
+        }
       },
       {
-        "description": "[r:R0080|Quái Thú Bên Trong] cho [k:Overwhelm|Áp Đảo], [r:R0116|Bộ Bài Đầy Ắp] thêm sát thương cho bài quân và sẽ mạnh hơn nếu có [p:P0449|Món Quà Của Avarosa] C6 của Ashe dmg sẽ cực kỳ nhiều, [r:R0114|Khiên Đen] ban [k:SpellShield|Khiên Phép] cho bài quân.",
-        "descriptionRaw": "Quái Thú Bên Trong cho Áp Đảo, Bộ Bài Đầy Ắp thêm sát thương cho bài quân và sẽ mạnh hơn nếu có Món Quà Của Avarosa C6 của Ashe dmg sẽ cực kỳ nhiều, Khiên Đen ban Khiên Phép cho bài quân.",
+        "recommendedStars": 4,
         "items": [
           "R0080",
           "R0116",
           "R0114"
         ],
-        "videoLink": ""
-      },
-      {
         "description": "[r:R0007|Thiên Thần Hộ Mệnh] đảm bảo Ashe không chết quá nhanh, [r:R0061|Linh Hồn Vang Vọng] và [r:R0020|Kế Đối Phó Của Đại Tướng] để tạo lá đóng băng và giảm tiêu hao của lá đó.",
-        "descriptionRaw": "Thiên Thần Hộ Mệnh đảm bảo Ashe không chết quá nhanh, Linh Hồn Vang Vọng và Kế Đối Phó Của Đại Tướng để tạo lá đóng băng và giảm tiêu hao của lá đó.",
-        "items": [
-          "R0061",
-          "R0020",
-          "R0007"
-        ],
-        "videoLink": ""
-      },
-      {
-        "description": "Bộ này sẽ ít sát thương hơn, khả năng dứt điểm chậm hơn, ngưỡng dứt điểm sẽ là Máu nhà chính kẻ địch / 2. Thay vào đó các bài quân sẽ có thể tối ưu sát thương nhờ [r:R0080|Quái Thú Bên Trong] cho [k:Overwhelm|Áp Đảo] vì C6 của Ashe sẽ cho các bài quân rất nhiều tấn công.",
-        "descriptionRaw": "Bộ này sẽ ít sát thương hơn, khả năng dứt điểm chậm hơn, ngưỡng dứt điểm sẽ là Máu nhà chính kẻ địch / 2. Thay vào đó các bài quân sẽ có thể tối ưu sát thương nhờ Quái Thú Bên Trong cho Áp Đảo vì C6 của Ashe sẽ cho các bài quân rất nhiều tấn công.",
-        "items": [
-          "R0080",
-          "R0038",
-          "R0038"
-        ],
-        "videoLink": ""
+        "videoLink": "",
+        "translations": {
+          "en": {
+            "description": "[r:R0007|Guardian Angel] ensures Ashe doesn't die too early, while [r:R0061|Echoing Spirit] and [r:R0020|The Grand General's Counterplan] generate her Frostbite spell and reduce its cost."
+          }
+        }
       }
     ],
-    "otherRelicOptions": [
-      "R0061",
-      "R0020",
-      "R0013",
-      "R0048",
-      "R0080",
-      "R0116",
-      "R0114",
-      "R0007"
-    ],
+    "otherRelicOptions": [],
     "ratings": {
-      "consistency": 5,
-      "damage": 5,
-      "defense": 5,
-      "independence": 5,
-      "playstyleNote": null,
-      "speed": 5,
-      "synergy": 5
+      "damage": 8.5,
+      "defense": 9,
+      "synergy": 7.5,
+      "difficulty": 4.5
     },
     "startingDeck": {
       "baseCards": [
@@ -8973,38 +8981,1103 @@
       "P0449"
     ],
     "itemIds": [
-      "I0070",
       "I0012",
-      "I0040",
-      "I0045",
-      "I0014",
       "I0118",
       "I0068",
       "I0050",
-      "I0041",
-      "I0133"
+      "I0133",
+      "I0075"
     ],
     "runeIds": [],
     "adventurePowerIds": [
       "P0111",
       "P0107",
-      "P0062",
       "P0327",
       "P0069",
       "P0113",
-      "P0379",
-      "P0083",
-      "P0223",
-      "P0056"
+      "P0083"
     ],
     "translations": {
       "en": {
-        "description": "-Ashe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\\n-Có cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\\n-Ahse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh Cầm Chân Đối Thủ.\\n-Món Quà Của Avarosa tương tác cực kỳ tốt với Đòn Đánh Suy Nhược khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.\\n--EVIN--",
+        "description": "A strong, easy-to-play champion with exceptional enemy control, whose 6-Star power elevates her to a whole new level.\nAshe features a classic control playstyle with continuous Frostbite, blocking prevention, card draw, and well-rounded stat buffs.\nHaving the ability to Frostbite the strongest enemy every round provides a massive advantage on both offense and defense.\nAshe becomes much stronger when paired with [p:P0107|Hold Them Off] to double down on the disruption; additionally, you can pick [p:P0327|Titanic Wake] or [p:P0083|Enfeebling Strike] if you have her 6-Star power. [p:P0449|Avarosa's Gift] synergizes extraordinarily well with [p:P0083|Enfeebling Strike], as reducing an enemy unit's Power directly buffs the Power of units in your hand.",
         "descriptionRaw": "-Ashe là vị tướng có lối chơi kiểm soát điển hình, khả năng đóng băng kiên tục, ngăn đối thủ chặn đòn, rút bài,  tăng chỉ số rất toàn diện.\\n-Có cho mình khả năng năng đóng băng 1 bài quân mạnh nhất của đối thủ mỗi vòng giúp mang lại lợi thế lớn trong cả tấn công lẫn phòng thủ.\\n-Ahse sẽ mạnh mẽ hơn nhiều nếu kết hợp cùng sức mạnh Cầm Chân Đối Thủ.\\n-Món Quà Của Avarosa tương tác cực kỳ tốt với Đòn Đánh Suy Nhược khi giảm sức mạnh của bài quân kẻ địch thì tăng sức mạnh của bài quân trên tay.\\n--EVIN--",
         "name": "Ashe",
         "regions": [
           "Freljord"
+        ],
+        "tier": "S Tier // Control and OTK",
+        "optimalStars": "4 Stars",
+        "playStyle": "Control / OTK",
+        "tags": [
+          "OTK",
+          "Control",
+          "Midrange"
         ]
+      }
+    },
+    "resolvedCards": {
+      "01fr022": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR022.png",
+        "cardCode": "01FR022",
+        "cost": 1,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "When I'm summoned, grant the top 2 allies in your deck +1|+1.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR022.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Omen Hawk",
+            "type": "Unit",
+            "descriptionRaw": "When I'm summoned, grant the top 2 allies in your deck +1|+1.",
+            "keywords": []
+          }
+        },
+        "rarity": "Common",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Khi ta được triệu hồi, ban +1|+1 cho 2 đồng minh gần nhất trên bộ bài.",
+        "description": "Khi ta được triệu hồi, ban +1|+1 cho 2 đồng minh gần nhất trên bộ bài.",
+        "cardName": "Diều Hâu Tiền Báo",
+        "type": "unit",
+        "keywords": [],
+        "subtypes": [
+          "BIRD"
+        ]
+      },
+      "02fr010": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set2/vi_vn/img/cards/02FR010.png",
+        "cardCode": "02FR010",
+        "cost": 2,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "Grant the top 3 units in your deck +1|+1.\n[k:Plunder|Plunder]: Draw 1 of them.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set2/en_us/img/cards/02FR010.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Shared Spoils",
+            "type": "Spell",
+            "descriptionRaw": "Grant the top 3 units in your deck +1|+1.\r\nPlunder: Draw 1 of them.",
+            "keywords": [
+              "Burst",
+              "Plunder"
+            ]
+          }
+        },
+        "rarity": "Rare",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Ban +1|+1 cho 3 đồng minh gần nhất trong bộ bài.\r\nCưỡng Đoạt: Rút 1 trong số 3 đồng minh đó.",
+        "description": "Ban +1|+1 cho 3 đồng minh gần nhất trong bộ bài.\n[k:Plunder|Cưỡng Đoạt]: Rút 1 trong số 3 đồng minh đó.",
+        "cardName": "Chiến Lợi Phẩm Của Chung",
+        "type": "spell",
+        "keywords": [
+          "Siêu Tốc",
+          "Cưỡng Đoạt"
+        ],
+        "subtypes": []
+      },
+      "01fr011": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR011.png",
+        "cardCode": "01FR011",
+        "cost": 2,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "[k:Play|Play]: [k:Frostbite|Frostbite] an enemy.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR011.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Icevale Archer",
+            "type": "Unit",
+            "descriptionRaw": "Play: Frostbite an enemy.",
+            "keywords": []
+          }
+        },
+        "rarity": "Common",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Xuất Trận: Đóng Băng 1 kẻ địch.",
+        "description": "[k:Play|Xuất Trận]: [k:Frostbite|Đóng Băng] 1 kẻ địch.",
+        "cardName": "Cung Thủ Băng Địa",
+        "type": "unit",
+        "keywords": [],
+        "subtypes": []
+      },
+      "01fr003": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR003.png",
+        "cardCode": "01FR003",
+        "cost": 2,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "[k:Last Breath|Last Breath]: Draw 1.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR003.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Avarosan Sentry",
+            "type": "Unit",
+            "descriptionRaw": "Last Breath: Draw 1.",
+            "keywords": [
+              "Last Breath"
+            ]
+          }
+        },
+        "rarity": "Common",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Trăng Trối: Rút 1 lá bài.",
+        "description": "[k:Last Breath|Trăng Trối]: Rút 1 lá bài.",
+        "cardName": "Lính Gác Avarosa",
+        "type": "unit",
+        "keywords": [
+          "Trăng Trối"
+        ],
+        "subtypes": []
+      },
+      "01fr001": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR001.png",
+        "cardCode": "01FR001",
+        "cost": 3,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "[k:Frostbite|Frostbite] an enemy.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR001.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Flash Freeze",
+            "type": "Spell",
+            "descriptionRaw": "Frostbite an enemy.",
+            "keywords": [
+              "Burst"
+            ]
+          }
+        },
+        "rarity": "Rare",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Đóng Băng 1 kẻ địch.",
+        "description": "[k:Frostbite|Đóng Băng] 1 kẻ địch.",
+        "cardName": "Đóng băng Siêu tốc",
+        "type": "spell",
+        "keywords": [
+          "Siêu Tốc"
+        ],
+        "subtypes": [
+          "ELEMENTAL"
+        ]
+      },
+      "01fr048": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR048.png",
+        "cardCode": "01FR048",
+        "cost": 3,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "When I'm summoned, create an [cd:01FR028|Enraged Yeti|icon,img-full] in the top 3 cards of your deck.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR048.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Avarosan Trapper",
+            "type": "Unit",
+            "descriptionRaw": "When I'm summoned, create an Enraged Yeti in the top 3 cards of your deck.",
+            "keywords": []
+          }
+        },
+        "rarity": "Common",
+        "associatedCardRefs": [
+          "01FR028"
+        ],
+        "descriptionRaw": "Khi ta được triệu hồi, tạo 1 lá Yeti Dữ Tợn trong 3 lá bài gần nhất trên bộ bài.",
+        "description": "Khi ta được triệu hồi, tạo 1 lá [cd:01FR028|Yeti Dữ Tợn|icon,img-full] trong 3 lá bài gần nhất trên bộ bài.",
+        "cardName": "Người Giăng Bẫy Avarosa",
+        "type": "unit",
+        "keywords": [],
+        "subtypes": []
+      },
+      "01fr018": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR018.png",
+        "cardCode": "01FR018",
+        "cost": 3,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "[k:Strike|Strike]: If I struck a unit with 0 Power, kill it.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR018.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Rimefang Wolf",
+            "type": "Unit",
+            "descriptionRaw": "Strike: If I struck a unit with 0 Power, kill it.",
+            "keywords": [
+              "Challenger"
+            ]
+          }
+        },
+        "rarity": "Rare",
+        "associatedCardRefs": [],
+        "descriptionRaw": "Ra Đòn: Nếu ta ra đòn lên bài quân có 0 Sức mạnh, tiêu diệt bài quân đó.",
+        "description": "[k:Strike|Ra Đòn]: Nếu ta ra đòn lên bài quân có 0 Sức mạnh, tiêu diệt bài quân đó.",
+        "cardName": "Sói Nanh Trắng",
+        "type": "unit",
+        "keywords": [
+          "Thách Đấu"
+        ],
+        "subtypes": [
+          "DOG"
+        ]
+      },
+      "01fr038": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR038.png",
+        "cardCode": "01FR038",
+        "cost": 4,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": "[k:Attack|Attack]: [k:Frostbite|Frostbite] the [k:Strongest|strongest] enemy.",
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR038.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Ashe",
+            "type": "Unit",
+            "descriptionRaw": "Attack: Frostbite the strongest enemy.",
+            "keywords": []
+          }
+        },
+        "rarity": "Champion",
+        "associatedCardRefs": [
+          "01FR038T2",
+          "01FR038T1",
+          "01FR038T3"
+        ],
+        "descriptionRaw": "Tấn Công: Đóng Băng kẻ địch Mạnh Nhất.",
+        "description": "[k:Attack|Tấn Công]: [k:Frostbite|Đóng Băng] kẻ địch [k:Strongest|Mạnh Nhất].",
+        "cardName": "Ashe",
+        "type": "unit",
+        "keywords": [],
+        "subtypes": []
+      },
+      "01fr026": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR026.png",
+        "cardCode": "01FR026",
+        "cost": 6,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": null,
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR026.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Alpha Wildclaw",
+            "type": "Unit",
+            "descriptionRaw": null,
+            "keywords": [
+              "Overwhelm"
+            ]
+          }
+        },
+        "rarity": "Common",
+        "associatedCardRefs": [],
+        "descriptionRaw": null,
+        "description": null,
+        "cardName": "Móng Sắc Đầu Đàn",
+        "type": "unit",
+        "keywords": [
+          "Áp Đảo"
+        ],
+        "subtypes": [
+          "CAT"
+        ]
+      },
+      "01fr028": {
+        "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/vi_vn/img/cards/01FR028.png",
+        "cardCode": "01FR028",
+        "cost": 1,
+        "regions": [
+          "Freljord"
+        ],
+        "translations": {
+          "en": {
+            "description": null,
+            "gameAbsolutePath": "https://dd.b.pvp.net/7_3_0/set1/en_us/img/cards/01FR028.png",
+            "regions": [
+              "Freljord"
+            ],
+            "cardName": "Enraged Yeti",
+            "type": "Unit",
+            "descriptionRaw": null,
+            "keywords": []
+          }
+        },
+        "rarity": "None",
+        "associatedCardRefs": [],
+        "descriptionRaw": null,
+        "description": null,
+        "cardName": "Yeti Dữ Tợn",
+        "type": "unit",
+        "keywords": [],
+        "subtypes": [
+          "YETI"
+        ]
+      }
+    },
+    "resolvedItems": {
+      "I0012": {
+        "itemCode": "I0012",
+        "name": "Vật Tổ Bóng Đêm",
+        "rarity": "Hiếm",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0012.png",
+        "description": "[k:Play|Xuất Trận]: Triệu hồi 1 bản sao [k:Ephemeral|Cảm Tử] y hệt của ta.",
+        "descriptionRaw": "[k:PlaySkillMark|Xuất Trận]: Triệu hồi 1 bản sao [k:Ephemeral|Cảm Tử] y hệt của ta.",
+        "translations": {
+          "en": {
+            "requirements": "Card cannot have any of the keywords: [k:Ephemeral|Ephemeral] .",
+            "descriptionRaw": "[k:PlaySkillMark|Play]: Summon an exact [k:Ephemeral|Ephemeral] copy of me.",
+            "name": "Shadow Totem",
+            "requirementsRaw": "Card cannot have any of the keywords: [k:Ephemeral|Ephemeral] .",
+            "description": "[k:PlaySkillMark|Play]: Summon an exact [k:Ephemeral|Ephemeral] copy of me.",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Rare"
+          }
+        }
+      },
+      "I0118": {
+        "itemCode": "I0118",
+        "name": "Hợp Âm Sức Mạnh",
+        "rarity": "Sử Thi",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0118.png",
+        "description": "Giảm 1 [k:Cost|tiêu hao] với mỗi lá bài ngươi đã rút trong vòng này.",
+        "descriptionRaw": "Giảm 1 [k:Cost|tiêu hao] với mỗi lá bài ngươi đã rút trong vòng này.",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 2+ base [k:Cost|cost].",
+            "descriptionRaw": "[k:Cost|Cost]s 1 less for each card you've drawn this round.",
+            "name": "Power Riff",
+            "requirementsRaw": "Card must be 2+ base [k:Cost|cost].",
+            "description": "[k:Cost|Cost]s 1 less for each card you've drawn this round.",
+            "type": [
+              "General Items"
+            ],
+            "rarity": "Epic"
+          }
+        }
+      },
+      "I0068": {
+        "itemCode": "I0068",
+        "name": "Găng Tay Băng Giá",
+        "rarity": "Sử Thi",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0068.png",
+        "description": "Khi ta được triệu hồi, ta sẽ [cd:03NX018|Bắt Giữ|icon,img-full] kẻ địch [k:Strongest|mạnh nhất].",
+        "descriptionRaw": "Khi ta được triệu hồi, ta sẽ [k:Capture|Bắt Giữ] kẻ địch [k:Strongest|mạnh nhất].",
+        "translations": {
+          "en": {
+            "requirements": "Card cannot have any of the keywords: [k:LastBreath|Last Breath] , [k:Ephemeral|Ephemeral] .",
+            "descriptionRaw": "When I'm summoned, I [k:Capture|Capture] the [k:Strongest|strongest] enemy.",
+            "name": "Iceborn Gauntlet",
+            "requirementsRaw": "Card cannot have any of the keywords: [k:LastBreath|Last Breath] , [k:Ephemeral|Ephemeral] .",
+            "description": "When I'm summoned, I [k:Capture|Capture] the [k:Strongest|strongest] enemy.",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Epic"
+          }
+        }
+      },
+      "I0050": {
+        "itemCode": "I0050",
+        "name": "Rựa Thợ Săn",
+        "rarity": "Sử Thi",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0050.png",
+        "description": "[k:Scout|Trinh Sát]",
+        "descriptionRaw": "[k:Scout|Trinh Sát]",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 3+ base [k:Cost|cost]. Cannot have any of the keywords: [k:Scout|Scout] , [k:Ephemeral|Ephemeral] , [k:Immobile|Immobile] .",
+            "descriptionRaw": "[k:Scout|Scout]",
+            "name": "Hunter's Machete",
+            "requirementsRaw": "Card must be 3+ base [k:Cost|cost]. Cannot have any of the keywords: [k:Scout|Scout] , [k:Ephemeral|Ephemeral] , [k:Immobile|Immobile] .",
+            "description": "[k:Scout|Scout]",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Epic"
+          }
+        }
+      },
+      "I0133": {
+        "itemCode": "I0133",
+        "name": "Giận Phát Cuồng",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0133.png",
+        "description": "+4|+0 và [k:CantBlock|Không Thể Chặn Đòn]",
+        "descriptionRaw": "+4|+0 và [k:CantBlock|Không Thể Chặn Đòn]",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 2+ base [k:Cost|cost]. Cannot have any of the keywords: [k:Immobile|Immobile] .",
+            "descriptionRaw": "+4|+0 and [k:CantBlock|Can't Block].",
+            "name": "Consuming Wrath",
+            "requirementsRaw": "Card must be 2+ base [k:Cost|cost]. Cannot have any of the keywords: [k:Immobile|Immobile] .",
+            "description": "+4|+0 and [k:CantBlock|Can't Block].",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0075": {
+        "itemCode": "I0075",
+        "name": "Đồng Xu Cổ Đại",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0075.png",
+        "description": "Giảm 1 [k:Cost|tiêu hao]",
+        "descriptionRaw": "Giảm 1 [k:Cost|tiêu hao]",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 3+ base [k:Cost|cost].",
+            "descriptionRaw": "-1 [k:Cost|cost]",
+            "name": "Ancient Coin",
+            "requirementsRaw": "Card must be 3+ base [k:Cost|cost].",
+            "description": "-1 [k:Cost|cost]",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0037": {
+        "itemCode": "I0037",
+        "name": "Áo Da Tán Đinh",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0037.png",
+        "description": "+1|+1",
+        "descriptionRaw": "+1|+1",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 2-5 base [k:Cost|cost].",
+            "descriptionRaw": "+1|+1",
+            "name": "Studded Leather",
+            "requirementsRaw": "Card must be 2-5 base [k:Cost|cost].",
+            "description": "+1|+1",
+            "type": [
+              "Equipment Items",
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0006": {
+        "itemCode": "I0006",
+        "name": "Thấu Kính Viễn Thị",
+        "rarity": "Hiếm",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0006.png",
+        "description": "Bắt Đầu Trận Đấu: Rút ta lên nếu chưa có ta trên tay.",
+        "descriptionRaw": "Bắt Đầu Trận Đấu: Rút ta lên nếu chưa có ta trên tay.",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 5 base [k:Cost|cost] or less.",
+            "descriptionRaw": "Game Start: Draw me if I'm not in your hand.",
+            "name": "Farsight Alteration",
+            "requirementsRaw": "Card must be 5 base [k:Cost|cost] or less.",
+            "description": "Game Start: Draw me if I'm not in your hand.",
+            "type": [
+              "General Items"
+            ],
+            "rarity": "Rare"
+          }
+        }
+      },
+      "I0085": {
+        "itemCode": "I0085",
+        "name": "Lư Hương Cầm Tay",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0085.png",
+        "description": "Ban +1|+1 cho đồng minh gần nhất trong bộ bài.",
+        "descriptionRaw": "Ban +1|+1 cho đồng minh gần nhất trong bộ bài.",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 4 base [k:Cost|cost] or less.",
+            "descriptionRaw": "Grant the top ally in your deck +1|+1.",
+            "name": "Hand Censer",
+            "requirementsRaw": "Card must be 4 base [k:Cost|cost] or less.",
+            "description": "Grant the top ally in your deck +1|+1.",
+            "type": [
+              "Spell Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0042": {
+        "itemCode": "I0042",
+        "name": "Khiên Hoang Dại",
+        "rarity": "Hiếm",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0042.png",
+        "description": "+1|+3",
+        "descriptionRaw": "+1|+3",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 3-5 base [k:Cost|cost].",
+            "descriptionRaw": "+1|+3",
+            "name": "Savage Shield",
+            "requirementsRaw": "Card must be 3-5 base [k:Cost|cost].",
+            "description": "+1|+3",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Rare"
+          }
+        }
+      },
+      "I0007": {
+        "itemCode": "I0007",
+        "name": "Đao Đụng Độ",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0007.png",
+        "description": "[k:Challenger|Thách Đấu]",
+        "descriptionRaw": "[k:Challenger|Thách Đấu]",
+        "translations": {
+          "en": {
+            "requirements": "Card cannot have any of the keywords: [k:Challenger|Challenger] , [k:Immobile|Immobile] .",
+            "descriptionRaw": "[k:Challenger|Challenger]",
+            "name": "Skirmisher's Sabre",
+            "requirementsRaw": "Card cannot have any of the keywords: [k:Challenger|Challenger] , [k:Immobile|Immobile] .",
+            "description": "[k:Challenger|Challenger]",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0086": {
+        "itemCode": "I0086",
+        "name": "Chế Phẩm Hextech II",
+        "rarity": "Hiếm",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0086.png",
+        "description": "Ban 1 vật phẩm Hiếm cho đồng minh [k:Strongest|mạnh nhất] trong trận đấu này.",
+        "descriptionRaw": "Ban 1 vật phẩm Hiếm cho đồng minh [k:Strongest|mạnh nhất] trong trận đấu này.",
+        "translations": {
+          "en": {
+            "requirements": "No specific requirements.",
+            "descriptionRaw": "Grant your [k:Strongest|strongest] ally a random Rare item this game.",
+            "name": "Hextech Fabricator II",
+            "requirementsRaw": "No specific requirements.",
+            "description": "Grant your [k:Strongest|strongest] ally a random Rare item this game.",
+            "type": [
+              "Spell Items"
+            ],
+            "rarity": "Rare"
+          }
+        }
+      },
+      "I0078": {
+        "itemCode": "I0078",
+        "name": "Đá Hiền Triết",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0078.png",
+        "description": "Khi ta được triệu hồi, rút 1 lá bài.",
+        "descriptionRaw": "Khi ta được triệu hồi, rút 1 lá bài.",
+        "translations": {
+          "en": {
+            "requirements": "No specific requirements.",
+            "descriptionRaw": "When I'm summoned, draw 1.",
+            "name": "Philosopher's Stone",
+            "requirementsRaw": "No specific requirements.",
+            "description": "When I'm summoned, draw 1.",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0038": {
+        "itemCode": "I0038",
+        "name": "Đai Khổng Lồ",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0038.png",
+        "description": "+0|+2",
+        "descriptionRaw": "+0|+2",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 5 base [k:Cost|cost] or less.",
+            "descriptionRaw": "+0|+2",
+            "name": "Giant's Belt",
+            "requirementsRaw": "Card must be 5 base [k:Cost|cost] or less.",
+            "description": "+0|+2",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0076": {
+        "itemCode": "I0076",
+        "name": "Giáp Lưới",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0076.png",
+        "description": "[k:Tough|Kiên Cường]",
+        "descriptionRaw": "[k:Tough|Kiên Cường]",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 5 base [k:Cost|cost] or less. Cannot have any of the keywords: [k:Tough|Tough] , [k:Ephemeral|Ephemeral] .",
+            "descriptionRaw": "[k:Tough|Tough]",
+            "name": "Chain Vest",
+            "requirementsRaw": "Card must be 5 base [k:Cost|cost] or less. Cannot have any of the keywords: [k:Tough|Tough] , [k:Ephemeral|Ephemeral] .",
+            "description": "[k:Tough|Tough]",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0045": {
+        "itemCode": "I0045",
+        "name": "Búa Vệ Thần",
+        "rarity": "Hiếm",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0045.png",
+        "description": "+3|+1",
+        "descriptionRaw": "+3|+1",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 3-5 base [k:Cost|cost]. Cannot have any of the keywords: [k:Immobile|Immobile] , [k:Formidable|Formidable] .",
+            "descriptionRaw": "+3|+1",
+            "name": "Colossal Hammer",
+            "requirementsRaw": "Card must be 3-5 base [k:Cost|cost]. Cannot have any of the keywords: [k:Immobile|Immobile] , [k:Formidable|Formidable] .",
+            "description": "+3|+1",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Rare"
+          }
+        }
+      },
+      "I0039": {
+        "itemCode": "I0039",
+        "name": "Đại Trượng",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0039.png",
+        "description": "[k:Overwhelm|Áp Đảo]",
+        "descriptionRaw": "[k:Overwhelm|Áp Đảo]",
+        "translations": {
+          "en": {
+            "requirements": "Card cannot have any of the keywords: [k:Overwhelm|Overwhelm] , [k:Immobile|Immobile] .",
+            "descriptionRaw": "[k:Overwhelm|Overwhelm]",
+            "name": "Greatclub",
+            "requirementsRaw": "Card cannot have any of the keywords: [k:Overwhelm|Overwhelm] , [k:Immobile|Immobile] .",
+            "description": "[k:Overwhelm|Overwhelm]",
+            "type": [
+              "Unit Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      },
+      "I0055": {
+        "itemCode": "I0055",
+        "name": "Bình Năng Lượng",
+        "rarity": "Thường",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_11_0/adventure/vi_vn/img/items/I0055.png",
+        "description": "Giảm 1 [k:Cost|tiêu hao]",
+        "descriptionRaw": "Giảm 1 [k:Cost|tiêu hao]",
+        "translations": {
+          "en": {
+            "requirements": "Card must be 1+ base [k:Cost|cost].",
+            "descriptionRaw": "-1 [k:Cost|cost]",
+            "name": "Mana Potion",
+            "requirementsRaw": "Card must be 1+ base [k:Cost|cost].",
+            "description": "-1 [k:Cost|cost]",
+            "type": [
+              "Equipment Items",
+              "Landmark Items",
+              "Spell Items"
+            ],
+            "rarity": "Common"
+          }
+        }
+      }
+    },
+    "resolvedPowers": {
+      "P0111": {
+        "powerCode": "P0111",
+        "name": "Pháp Thuật",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0111.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: Hồi lại năng lượng bài phép.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Hồi lại năng lượng bài phép.",
+        "translations": {
+          "en": {
+            "name": "Sorcery",
+            "description": "[k:RoundStart|Round Start]: Refill your spell mana.",
+            "descriptionRaw": "Round Start: Refill your spell mana.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0107": {
+        "powerCode": "P0107",
+        "name": "Cầm Chân Đối Thủ",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0107.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: [k:Frostbite|Đóng Băng] kẻ địch [k:Strongest|mạnh nhất] trong vòng này.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Đóng Băng kẻ địch mạnh nhất trong vòng này.",
+        "translations": {
+          "en": {
+            "name": "Hold Them Off",
+            "description": "[k:RoundStart|Round Start]: [k:Frostbite|Frostbite] the [k:Strongest|strongest] enemy this round.",
+            "descriptionRaw": "Round Start: Frostbite the strongest enemy this round.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0327": {
+        "powerCode": "P0327",
+        "name": "Khổng Lồ Thức Tỉnh",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0327.png",
+        "description": "Khi ngươi triệu hồi 1 bài quân có 8 [k:Power|sức mạnh], [k:Health|máu] hoặc [k:Cost|tiêu hao], ban cho bài quân đó +8|+8.",
+        "descriptionRaw": "Khi ngươi triệu hồi 1 bài quân có 8 sức mạnh, máu hoặc tiêu hao, ban cho bài quân đó +8|+8.",
+        "translations": {
+          "en": {
+            "name": "Titanic Wake",
+            "description": "When you summon a unit with 8 [k:AttackSkillMark|attack], [k:Health|health], or [k:Cost|cost], grant it +8|+8.",
+            "descriptionRaw": "When you summon a unit with 8 attack, health, or cost, grant it +8|+8.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0069": {
+        "powerCode": "P0069",
+        "name": "Sức Mạnh Trifarix",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0069.png",
+        "description": "Khi triệu hồi 1 đồng minh 5+ [k:Power|Sức Mạnh], đồng minh đó sẽ [k:Strike|ra đòn] lên kẻ địch [k:Weakest|yếu nhất].",
+        "descriptionRaw": "Khi triệu hồi 1 đồng minh 5+ Sức Mạnh, đồng minh đó sẽ ra đòn lên kẻ địch yếu nhất.",
+        "translations": {
+          "en": {
+            "name": "Trifarian Might",
+            "description": "When you summon a 5+ [k:Power|Power] ally, it strikes the [k:Weakest|weakest] enemy.",
+            "descriptionRaw": "When you summon a 5+ Power ally, it strikes the weakest enemy.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0113": {
+        "powerCode": "P0113",
+        "name": "Xả Phép Hàng Loạt",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0113.png",
+        "description": "Giảm 1 [k:Cost|tiêu hao] cho các bài phép của ngươi.",
+        "descriptionRaw": "Giảm 1 tiêu hao cho các bài phép của ngươi.",
+        "translations": {
+          "en": {
+            "name": "Spellslinger",
+            "description": "Your spells [k:Cost|cost] 1 less.",
+            "descriptionRaw": "Your spells cost 1 less.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0083": {
+        "powerCode": "P0083",
+        "name": "Đòn Đánh Suy Nhược",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0083.png",
+        "description": "Khi ngươi gây sát thương cho 1 kẻ địch, lượng sát thương gánh chịu sẽ giảm cả [k:Power|Sức Mạnh] của kẻ địch đó.",
+        "descriptionRaw": "Khi ngươi gây sát thương cho 1 kẻ địch, lượng sát thương gánh chịu sẽ giảm cả Sức Mạnh của kẻ địch đó.",
+        "translations": {
+          "en": {
+            "name": "Enfeebling Strike",
+            "description": "When you damage an enemy, reduce its [k:Power|Power] by the damage dealt.",
+            "descriptionRaw": "When you damage an enemy, reduce its Power by the damage dealt.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0135": {
+        "powerCode": "P0135",
+        "name": "Băng Tiễn",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0135.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: Nếu ngươi có lượt [k:AttackSkillMark|tấn công], [k:Frostbite|Đóng Băng] kẻ địch [k:Strongest|mạnh nhất] và trao [k:Vulnerable|Kích Động] cho lá bài đó trong vòng này.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Nếu ngươi có lượt tấn công, Đóng Băng kẻ địch mạnh nhất và trao Kích Động cho lá bài đó trong vòng này.",
+        "translations": {
+          "en": {
+            "name": "Frost Shot",
+            "description": "[k:RoundStart|Round Start]: If you have the [k:AttackSkillMark|attack] token, [k:Frostbite|Frostbite] the [k:Strongest|strongest] enemy and give it [k:Vulnerable|Vulnerable] this round.",
+            "descriptionRaw": "Round Start: If you have the attack token, Frostbite the strongest enemy and give it Vulnerable this round.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0136": {
+        "powerCode": "P0136",
+        "name": "Thần Avarosa",
+        "rarity": "epic",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0136.png",
+        "description": "+1 Năng Lượng Khởi Đầu.Khi 1 đồng minh tiêu diệt 1 bài quân có 0 [k:Power|sức mạnh], ban +1|+1 cho đồng minh đó.",
+        "descriptionRaw": "+1 Năng Lượng Khởi Đầu.Khi 1 đồng minh tiêu diệt 1 bài quân có 0 sức mạnh, ban +1|+1 cho đồng minh đó.",
+        "translations": {
+          "en": {
+            "name": "Avarosan Spirit",
+            "description": "+1 Starting Mana.When an ally kills a unit with 0 [k:Power|power], grant your ally +1|+1.",
+            "descriptionRaw": "+1 Starting Mana.When an ally kills a unit with 0 power, grant your ally +1|+1.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "P0137": {
+        "powerCode": "P0137",
+        "name": "Băng Tiễn II",
+        "rarity": "epic",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0137.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: [k:Frostbite|Đóng Băng] kẻ địch [k:Strongest|mạnh nhất] và trao [k:Vulnerable|Kích Động] cho lá bài đó trong vòng này.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Đóng Băng kẻ địch mạnh nhất và trao Kích Động cho lá bài đó trong vòng này.",
+        "translations": {
+          "en": {
+            "name": "Frost Shot II",
+            "description": "[k:RoundStart|Round Start]: [k:Frostbite|Frostbite] the [k:Strongest|strongest] enemy and give it [k:Vulnerable|Vulnerable] this round.",
+            "descriptionRaw": "Round Start: Frostbite the strongest enemy and give it Vulnerable this round.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "P0475": {
+        "powerCode": "P0475",
+        "name": "Địa Hình Hiểm Trở",
+        "rarity": "rare",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0475.png",
+        "description": "Mỗi vòng đấu, lần đầu tiên [k:Foe|Địch Thủ] triệu hồi 1 bài quân, [k:Frostbite|Đóng Băng] bài quân đó.",
+        "descriptionRaw": "Mỗi vòng đấu, lần đầu tiên Địch Thủ triệu hồi 1 bài quân, Đóng Băng bài quân đó.",
+        "translations": {
+          "en": {
+            "name": "Treacherous Terrain",
+            "description": "Each round, the first time the [k:Foe|Foe] summons a unit, [k:Frostbite|Frostbite] it.",
+            "descriptionRaw": "Each round, the first time the Foe summons a unit, Frostbite it.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "P0067": {
+        "powerCode": "P0067",
+        "name": "Dòng Chảy Năng Lượng",
+        "rarity": "epic",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0067.png",
+        "description": "Bắt Đầu Trận Đấu: Nhận 1 ngọc năng lượng.",
+        "descriptionRaw": "Bắt Đầu Trận Đấu: Nhận 1 ngọc năng lượng.",
+        "translations": {
+          "en": {
+            "name": "Manaflow",
+            "description": "Game Start: Get a mana gem.",
+            "descriptionRaw": "Game Start: Get a mana gem.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "P0449": {
+        "powerCode": "P0449",
+        "name": "Món Quà Của Avarosa",
+        "rarity": "legendary",
+        "assetAbsolutePath": "https://dd.b.pvp.net/6_9_0/adventure/vi_vn/img/powers/P0449.png",
+        "description": "Khi ngươi làm giảm [k:Power|sức mạnh] của 1 kẻ địch, ngẫu nhiên chia lượng [k:Power|sức mạnh] đó cho các đồng minh trên tay.",
+        "descriptionRaw": "Khi ngươi làm giảm sức mạnh của 1 kẻ địch, ngẫu nhiên chia lượng sức mạnh đó cho các đồng minh trên tay.",
+        "translations": {
+          "en": {
+            "name": "Gift of Avarosa",
+            "description": "When you decrease an enemy's [k:Power|power], randomly distribute that much [k:Power|power] among allies in hand.",
+            "descriptionRaw": "When you decrease an enemy's power, randomly distribute that much power among allies in hand.",
+            "rarity": "Legendary"
+          }
+        }
+      }
+    },
+    "resolvedRelics": {
+      "R0038": {
+        "relicCode": "R0038",
+        "name": "Nhà Thông Thái Phá Thành",
+        "rarity": "HIẾM",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0038.png",
+        "description": "-1|-0\n[k:Play|Xuất Trận]: Ta [k:Strike|ra đòn] lên Nhà Chính của đối thủ.",
+        "descriptionRaw": "-1|-0Xuất Trận: Ta ra đòn lên Nhà Chính của đối thủ.",
+        "translations": {
+          "en": {
+            "name": "The Curator's Gatebreaker",
+            "description": "-1|-0\n[k:Play|Play]: I [k:Strike|strike] the enemy Nexus.",
+            "descriptionRaw": "-1|-0Play: I strike the enemy Nexus.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "R0080": {
+        "relicCode": "R0080",
+        "name": "Quái Thú Bên Trong",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://images.lortpoc.com/relics/R0080.webp",
+        "description": "[k:Power|Sức Mạnh:] Đồng minh nhận [k:Overwhelm|Áp Đảo], và nếu có nhóm phụ, nhận thêm +1|+1.",
+        "descriptionRaw": "Sức Mạnh: Đồng minh nhận Áp Đảo, và nếu có nhóm phụ, nhận thêm +1|+1.",
+        "translations": {
+          "en": {
+            "name": "The Beast Within",
+            "description": "[k:Power|Power]: Allies have [k:Overwhelm|Overwhelm], and if they have a subtype, +1|+1.",
+            "descriptionRaw": "Power: Allies have Overwhelm, and if they have a subtype, +1|+1.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "R0061": {
+        "relicCode": "R0061",
+        "name": "Linh Hồn Vang Vọng",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0061.png",
+        "description": "[k:GameStart|Bắt Đầu Trận Đấu]: Tạo 7 bản sao của ta trong bộ bài. Giảm 1 tiêu hao cho Bài Phép Anh Hùng.",
+        "descriptionRaw": "Bắt Đầu Trận Đấu: Tạo 7 bản sao của ta trong bộ bài. Giảm 1 tiêu hao cho Bài Phép Anh Hùng.",
+        "translations": {
+          "en": {
+            "name": "Echoing Spirit",
+            "description": "[k:GameStart|Game Start]: Create 7 copies of me in deck. Champion Spells cost 1 less.",
+            "descriptionRaw": "Game Start: Create 7 copies of me in deck. Champion Spells cost 1 less.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "R0020": {
+        "relicCode": "R0020",
+        "name": "Kế Đối Phó Của Đại Tướng",
+        "rarity": "HIẾM",
+        "type": [
+          "Chung",
+          "Chiến Dịch"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0020.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: Tạo trên tay 1 bản sao [k:Fleeting|Phù Du] của ta.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Tạo trên tay 1 bản sao Phù Du của ta.",
+        "translations": {
+          "en": {
+            "name": "The Grand General's Counterplan",
+            "description": "[k:RoundStart|Round Start]: Create a [k:Fleeting|Fleeting] copy of me in hand.",
+            "descriptionRaw": "Round Start: Create a Fleeting copy of me in hand.",
+            "rarity": "Rare",
+            "source": "Reward from Vi's 2* Campaign"
+          }
+        }
+      },
+      "R0013": {
+        "relicCode": "R0013",
+        "name": "Quyền Trượng Thiên Thần",
+        "rarity": "HIẾM",
+        "type": [
+          "Chung",
+          "Chiến Dịch"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0013.png",
+        "description": "[k:RoundStart|Bắt Đầu Vòng Đấu]: Hồi lại năng lượng bài phép.",
+        "descriptionRaw": "Bắt Đầu Vòng Đấu: Hồi lại năng lượng bài phép.",
+        "translations": {
+          "en": {
+            "name": "Archangel's Staff",
+            "description": "[k:RoundStart|Round Start]: Refill your spell mana.",
+            "descriptionRaw": "Round Start: Refill your spell mana.",
+            "rarity": "Rare",
+            "source": "Reward from Jhin's 2* Campaign"
+          }
+        }
+      },
+      "R0048": {
+        "relicCode": "R0048",
+        "name": "Máy Sao Chép Hóa Kỹ",
+        "rarity": "HIẾM",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0048.png",
+        "description": "Khi ngươi sử dụng 1 bài phép, nếu ngươi có 6+ ngọc năng lượng, sao chép hiệu ứng bài phép đó lên cùng mục tiêu.",
+        "descriptionRaw": "Khi ngươi sử dụng 1 bài phép, nếu ngươi có 6+ ngọc năng lượng, sao chép hiệu ứng bài phép đó lên cùng mục tiêu.",
+        "translations": {
+          "en": {
+            "name": "Chemtech Duplicator",
+            "description": "When you play a spell, if you have 6+ mana gems, copy it with the same targets.",
+            "descriptionRaw": "When you play a spell, if you have 6+ mana gems, copy it with the same targets.",
+            "rarity": "Rare"
+          }
+        }
+      },
+      "R0116": {
+        "relicCode": "R0116",
+        "name": "Bộ Bài Đầy Ắp",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0116.png",
+        "description": "+200 [k:Gold|Vàng] Khởi Điểm.\n[k:Power|Sức Mạnh]: Đồng minh nhận +1|+1 với mỗi 12 lá bài vượt quá lá thứ 18 trong bộ bài của ngươi khi bắt đầu trận đấu.",
+        "descriptionRaw": "+200 Vàng Khởi Điểm.Sức Mạnh: Đồng minh nhận +1|+1 với mỗi 12 lá bài vượt quá lá thứ 18 trong bộ bài của ngươi khi bắt đầu trận đấu.",
+        "translations": {
+          "en": {
+            "name": "Stacked Deck",
+            "description": "+200 Starting [k:Gold|Gold].\n[k:Power|Power]: Allies have +1|+1 for every 12 cards in your deck past 18 at game start.",
+            "descriptionRaw": "+200 Starting Gold.Power: Allies have +1|+1 for every 12 cards in your deck past 18 at game start.",
+            "rarity": "Epic"
+          }
+        }
+      },
+      "R0114": {
+        "relicCode": "R0114",
+        "name": "Khiên Đen",
+        "rarity": "SỬ THI",
+        "type": [
+          "Chung"
+        ],
+        "assetAbsolutePath": "https://dd.b.pvp.net/7_3_0/adventure/vi_vn/img/relics/R0114.png",
+        "description": "[k:Power|Sức Mạnh]: Khi triệu hồi 1 đồng minh, ban [k:SpellShield|Khiên Phép] cho đồng minh đó.",
+        "descriptionRaw": "Sức Mạnh: Khi triệu hồi 1 đồng minh, ban Khiên Phép cho đồng minh đó.",
+        "translations": {
+          "en": {
+            "name": "Black Shield",
+            "description": "[k:Power|Power]: When you summon an ally, grant it [k:SpellShield|SpellShield].",
+            "descriptionRaw": "Power: When you summon an ally, grant it SpellShield.",
+            "rarity": "Epic"
+          }
+        }
       }
     }
   },

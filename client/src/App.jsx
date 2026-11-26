@@ -841,7 +841,11 @@ export default function App() {
 
           {/* 3.8 Dedicated Tier List Page */}
           {activeTab === 'tierlist' && (
-            <TierListView onSelectChampion={handleSelectChampion} />
+            <TierListView
+              onSelectChampion={handleSelectChampion}
+              filters={filters}
+              updateFilters={updateFilters}
+            />
           )}
 
           {/* 3.9 Dedicated Admin CMS Panel */}

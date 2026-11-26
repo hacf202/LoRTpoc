@@ -81,6 +81,7 @@ export function parseCurrentLocation() {
     const itemMatch = pathname.match(/^\/(?:item|items)\/([^/]+)$/i);
     const cardMatch = pathname.match(/^\/(?:card|cards)\/([^/]+)$/i);
     const mapMatch = pathname.match(/^\/(?:map|maps|adventure|adventures)\/([^/]+)$/i);
+    const tierMatch = pathname.match(/^\/tierlist(?:\/(champions|relics))?$/i);
 
     if (champMatch) {
       parsed.tab = 'champions';
@@ -100,6 +101,11 @@ export function parseCurrentLocation() {
     } else if (mapMatch) {
       parsed.tab = 'maps';
       parsed.map = decodeURIComponent(mapMatch[1]).trim();
+    } else if (tierMatch) {
+      parsed.tab = 'tierlist';
+      if (tierMatch[1]?.toLowerCase() === 'relics' || params.get('type') === 'relics') {
+        parsed.tierType = 'relics';
+      }
     } else {
       // 3. Check top-level catalog paths
       const cleanRoute = pathname.slice(1).toLowerCase();
@@ -282,6 +288,8 @@ export function buildHierarchicalUrl(state) {
     targetPath = `/map/${encodeURIComponent(state.map.trim())}`;
   } else if (state.tab === '404') {
     targetPath = state.notFoundPath || '/404';
+  } else if (state.tab === 'tierlist') {
+    targetPath = state.tierType === 'relics' ? '/tierlist/relics' : '/tierlist';
   } else if (state.tab && state.tab !== 'home') {
     targetPath = `/${state.tab}`;
   }
