@@ -172,5 +172,5 @@ export const COLOR_OPTIONS = [
   "#555555",
 ];
 
-export const LOCAL_STORAGE_KEY = "poc-custom-tierlist-v4";
+export const LOCAL_STORAGE_KEY = "poc-custom-tierlist-v5";
 export const RELIC_STORAGE_KEY = "poc-relic-tierlist-v4";

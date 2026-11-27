@@ -336,18 +336,22 @@ export default function TierListChampions() {
         mappingItems.forEach((mapping) => {
           const isObj = typeof mapping === 'object';
           const targetId = isObj ? mapping.id : mapping;
-          const found = rawData.find((c) => c.id === targetId);
+          const baseId = String(targetId).split('-copy-')[0];
+          const found = rawData.find((c) => c.id === baseId || c.id === targetId);
           if (found) {
             let equippedRelics = [null, null, null];
-            if (isObj && mapping.relics) {
-              equippedRelics = mapping.relics.map((rId) =>
+            if (isObj && (mapping.relics || mapping.equippedRelics)) {
+              const relList = mapping.relics || (mapping.equippedRelics || []).map((r) =>
+                r ? (typeof r === 'object' ? r.id : r) : null
+              );
+              equippedRelics = relList.map((rId) =>
                 rId ? relicsData.find((r) => r.id === rId) || null : null
               );
               while (equippedRelics.length < 3) equippedRelics.push(null);
               equippedRelics = equippedRelics.slice(0, 3);
             }
-            items.push({ ...found, equippedRelics });
-            usedIds.add(found.id);
+            items.push({ ...found, id: targetId, equippedRelics });
+            usedIds.add(baseId);
           }
         });
         return { ...tier, items };
@@ -406,10 +410,13 @@ export default function TierListChampions() {
         setAllChampionsRaw(formattedChamps);
         setAllRelicsRaw(formattedRelics);
 
-        // Xóa sạch key cũ v3 để tránh nạp dữ liệu rỗng/lỗi từ phiên bản trước
+        // Xóa sạch key cũ v3/v4 để nạp dữ liệu mẫu mới v5
         try {
           if (localStorage.getItem('poc-custom-tierlist-v3')) {
             localStorage.removeItem('poc-custom-tierlist-v3');
+          }
+          if (localStorage.getItem('poc-custom-tierlist-v4')) {
+            localStorage.removeItem('poc-custom-tierlist-v4');
           }
         } catch {
           // Bỏ qua nếu môi trường chặn localStorage

@@ -1260,6 +1260,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
 
       const payload = {
         ...editingChampion,
+        maxStar: Number(editingChampion.maxStar) || 3,
         regions: regions.length > 0 ? regions : editingChampion.regions || ['Runeterra'],
         tags,
         coreRelics: finalCoreRelics,
@@ -1898,7 +1899,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1.5">Giá Mana (Cost)</label>
                   <input
@@ -1908,6 +1909,18 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                     value={editingChampion.cost ?? 1}
                     onChange={(e) => setEditingChampion({ ...editingChampion, cost: Number(e.target.value) || 0 })}
                     className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-sky-400 font-semibold font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Sao Tối Đa (Max Stars)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={editingChampion.maxStar ?? 6}
+                    onChange={(e) => setEditingChampion({ ...editingChampion, maxStar: Number(e.target.value) || 3 })}
+                    className="w-full px-3 py-2 rounded-lg bg-[#1d212b] border border-white/10 text-amber-400 font-semibold font-mono text-xs focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/20 transition-colors"
                   />
                 </div>
 
@@ -3605,7 +3618,10 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
                               {Array.isArray(c.regions) ? c.regions.join(', ') : c.region || 'Runeterra'}
                             </td>
 
-                            <td className="py-2.5 px-3 font-mono text-sky-400 font-medium text-xs">{c.cost ?? 0} Mana</td>
+                            <td className="py-2.5 px-3 font-mono text-xs">
+                              <span className="text-sky-400 font-medium block">{c.cost ?? 0} Mana</span>
+                              <span className="text-amber-400/90 text-[10px] block font-mono">{c.maxStar || 3}★ tối đa</span>
+                            </td>
 
                             <td className="py-2.5 px-3">
                               <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20">
