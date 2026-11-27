@@ -104,28 +104,40 @@ export default function HomeView({
   // Chỉ nâng thanh tìm kiếm khi ở trên cùng (chưa cuộn xuống) và đang focus / mở dropdown
   const isLifted = !isScrolledDown && (isDropdownOpen || isFocused || Boolean(searchTerm && searchTerm.trim()));
 
-  // Quản lý trạng thái cuộn: tự động đóng dropdown và trả thanh tìm kiếm về bình thường khi cuộn xuống
+  // Ref giữ trạng thái dropdown để tránh tạo vòng lặp vô tận (Infinite Re-render / React Error #185)
+  const isDropdownOpenRef = useRef(isDropdownOpen);
+  isDropdownOpenRef.current = isDropdownOpen;
+
+  // Quản lý trạng thái cuộn: tự động đóng dropdown khi người dùng cuộn trang đi một khoảng đáng kể
   useEffect(() => {
+    let lastY = typeof window !== 'undefined' ? window.scrollY : 0;
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const isDown = scrollY > 60;
       setIsScrolledDown(isDown);
 
-      if (isDown) {
-        if (isDropdownOpen) {
+      // Chỉ đóng dropdown khi người dùng thực sự cuộn trang di chuyển > 20px
+      if (Math.abs(scrollY - lastY) > 20) {
+        lastY = scrollY;
+        if (isDropdownOpenRef.current) {
           setIsDropdownOpen(false);
-        }
-        setIsFocused(false);
-        if (searchInputRef?.current && document.activeElement === searchInputRef.current) {
-          searchInputRef.current.blur();
+          setIsFocused(false);
+          if (searchInputRef?.current && document.activeElement === searchInputRef.current) {
+            searchInputRef.current.blur();
+          }
         }
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    // Thiết lập trạng thái cuộn ban đầu mà không gọi logic đóng dropdown
+    if (typeof window !== 'undefined') {
+      setIsScrolledDown(window.scrollY > 60);
+    }
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isDropdownOpen, setIsDropdownOpen, searchInputRef]);
+  }, [setIsDropdownOpen, searchInputRef]);
 
   // 4 Structured Categories covering all data collections from backup_rework_full_archive
   const EXPLORE_GROUPS = [

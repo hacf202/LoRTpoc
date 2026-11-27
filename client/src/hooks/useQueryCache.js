@@ -140,13 +140,10 @@ export function useQueryCache({
       };
     }
 
-    // Cache MISS: If currently empty, set loading state
-    setData((curr) => {
-      if (!curr || (Array.isArray(curr) && curr.length === 0)) {
-        setLoading(true);
-      }
-      return curr;
-    });
+    // Cache MISS: If currently empty, set loading state cleanly outside updater
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      setLoading(true);
+    }
     setIsCached(false);
 
     // 2. Cache MISS path (Fetch on demand with guaranteed subtle transition timing)

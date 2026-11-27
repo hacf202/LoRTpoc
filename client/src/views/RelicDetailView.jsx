@@ -142,7 +142,10 @@ export default function RelicDetailView({
     ? relic?.translations?.en?.descriptionRaw || relic?.translations?.en?.description || relic?.descriptionRaw
     : relic?.descriptionRaw || relic?.description;
 
-  const compatibleChamps = relic?.compatibleChampions || [];
+  const compatibleChamps = useMemo(
+    () => relic?.compatibleChampions || [],
+    [relic?.compatibleChampions]
+  );
   const companionRelicsMap = relic?.companionRelicsMap || {};
 
   // Helper to find champion in compatible list by clean slug, name, id or translation
@@ -164,7 +167,9 @@ export default function RelicDetailView({
   // Synchronize selection with URL hash or auto-select first core
   useEffect(() => {
     if (!compatibleChamps.length) {
-      setSelectedChampKey(null);
+      if (selectedChampKey !== null) {
+        setSelectedChampKey(null);
+      }
       return;
     }
 
@@ -179,7 +184,9 @@ export default function RelicDetailView({
     const hashMatch = findChampion(rawHash, compatibleChamps);
     if (hashMatch) {
       const matchKey = toChampionSlug(hashMatch);
-      setSelectedChampKey(matchKey);
+      if (matchKey !== selectedChampKey) {
+        setSelectedChampKey(matchKey);
+      }
       return;
     }
 
@@ -195,7 +202,9 @@ export default function RelicDetailView({
     const chosenKey = chosen ? toChampionSlug(chosen) : null;
 
     if (chosenKey) {
-      setSelectedChampKey(chosenKey);
+      if (chosenKey !== selectedChampKey) {
+        setSelectedChampKey(chosenKey);
+      }
 
       // Sync default champion to URL hash outside of setState updater
       if (onHashChange) {

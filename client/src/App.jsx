@@ -360,6 +360,11 @@ export default function App() {
     }
   }, [updateFilters]);
 
+  // Memoized hash synchronization to prevent infinite re-render cycles in sub-views
+  const handleHashChange = useCallback((newHash) => {
+    updateFilters({ hash: newHash }, { push: false });
+  }, [updateFilters]);
+
   // Clean Tab Navigation (Rule 4 & Strict Token Discipline: drops foreign filters when switching tabs)
   const handleNavigateTab = useCallback((targetTab) => {
     updateFilters((prev) => ({
@@ -687,7 +692,7 @@ export default function App() {
           onSelectRelic={(code) => updateFilters({ relic: code, hash: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
           currentHash={filters.hash}
-          onHashChange={(newHash) => updateFilters({ hash: newHash }, { push: false })}
+          onHashChange={handleHashChange}
         />
       ) : filters.power ? (
         <PowerDetailView
@@ -702,7 +707,7 @@ export default function App() {
           onNavigateChampion={(champKey, targetHash) => updateFilters({ champion: toChampionSlug(champKey), hash: targetHash || 'constellation', power: '', relic: '', item: '', card: '' }, { push: true })}
           onNavigateTab={handleNavigateTab}
           currentHash={filters.hash}
-          onHashChange={(newHash) => updateFilters({ hash: newHash }, { push: false })}
+          onHashChange={handleHashChange}
         />
       ) : filters.item ? (
         <ItemDetailView
@@ -751,7 +756,7 @@ export default function App() {
           onBack={handleCloseModal}
           onNavigate={handleNavigateTab}
           currentHash={filters.hash}
-          onHashChange={(newHash) => updateFilters({ hash: newHash }, { push: false })}
+          onHashChange={handleHashChange}
           onSelectRelic={(code) => updateFilters({ relic: code, champion: '', hash: '' }, { push: true })}
           onSelectPower={(powerCode) => updateFilters({ power: powerCode, champion: '', hash: '' }, { push: true })}
           onSelectItem={(itemCode) => updateFilters({ item: itemCode, champion: '', hash: '' }, { push: true })}
