@@ -53,6 +53,7 @@ export default function App() {
   const searchInputRef = useRef(null);
   const dropdownRef = useRef(null);
   const championDetailsCache = useRef(new Map());
+  const searchResultsCache = useRef(new Map());
 
   // Fetch compact champions list for the roster (reduces payload by 94%)
   const fetchAllChampions = useCallback(async (isBypassCache = false) => {
@@ -262,7 +263,7 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Debounced search query for instant omnisearch dropdown with abort controller
+  // Debounced search query for instant omnisearch dropdown with in-memory cache (Rule 9 & Rule 10)
   useEffect(() => {
     const cleanQuery = searchTerm.trim();
     // Khi rỗng thì xóa kết quả và đóng dropdown
@@ -273,9 +274,19 @@ export default function App() {
       return;
     }
 
+    const cacheKey = cleanQuery.toLowerCase();
+
+    // Cache-First (Rule 10): If query was already fetched, return instantly with 0ms latency
+    if (searchResultsCache.current.has(cacheKey)) {
+      setResults(searchResultsCache.current.get(cacheKey));
+      setIsDropdownOpen(true);
+      setLoading(false);
+      return;
+    }
+
     const abortController = new AbortController();
 
-    // Debounce 300ms để người dùng nhập liên tục không bị spam request
+    // Debounce 350ms (Rule 9) để người dùng gõ liên tục không bị spam request
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
@@ -285,7 +296,15 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
-            setResults(data.data || { total: 0, flat: [], categories: {} });
+            const finalData = data.data || { total: 0, flat: [], categories: {} };
+            // Save to memory cache (limit to 100 entries to prevent memory bloat)
+            if (searchResultsCache.current.size >= 100) {
+              const firstKey = searchResultsCache.current.keys().next().value;
+              searchResultsCache.current.delete(firstKey);
+            }
+            searchResultsCache.current.set(cacheKey, finalData);
+
+            setResults(finalData);
             setIsDropdownOpen(true);
           }
         }
@@ -296,7 +315,7 @@ export default function App() {
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 350);
 
     return () => {
       clearTimeout(timer);
@@ -391,7 +410,8 @@ export default function App() {
       map: '',
       hash: '',
       adminModule: targetTab === 'admin' ? (prev.adminModule || 'overview') : 'overview',
-      adminChampion: ''
+      adminChampion: '',
+      adminFolder: ''
     }), { push: true });
   }, [updateFilters]);
 

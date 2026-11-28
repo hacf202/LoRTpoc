@@ -13,6 +13,7 @@ import tierlistRoutes from './tierlist.route.js';
 import searchRoutes from './search.route.js';
 import seoRoutes from './seo.route.js';
 import presenceRoutes from './presence.route.js';
+import imageRoutes from './image.route.js';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.get('/health', (req, res) => {
 });
 router.use('/auth', authRoutes);
 router.use('/presence', presenceRoutes);
+router.use('/images', imageRoutes);
 
 // 2. SEO routes under API namespace
 router.use('/seo', seoRoutes);

@@ -43,7 +43,7 @@ export const presenceService = {
     // 1. In-memory update
     IN_MEMORY_PRESENCE.set(cleanSid, payload);
 
-    // 2. Redis update if available
+    // 2. Redis update if available (non-blocking fire-and-forget, instant sub-millisecond response)
     if (isRedisConnected && redisClient) {
       try {
         const pipeline = redisClient.pipeline();
@@ -54,7 +54,7 @@ export const presenceService = {
           JSON.stringify(payload)
         );
         pipeline.zremrangebyscore(REDIS_SET_KEY, 0, now - PRESENCE_TTL_SECONDS * 1000);
-        await pipeline.exec();
+        pipeline.exec().catch(() => {});
       } catch (err) {
         // Fail-safe fallback to memory
       }
@@ -72,10 +72,10 @@ export const presenceService = {
 
     if (isRedisConnected && redisClient) {
       try {
-        await Promise.all([
+        Promise.all([
           redisClient.zrem(REDIS_SET_KEY, cleanSid),
           redisClient.del(`${REDIS_KEY_PREFIX}${cleanSid}`)
-        ]);
+        ]).catch(() => {});
       } catch (err) {
         // Ignore redis cleanup error
       }

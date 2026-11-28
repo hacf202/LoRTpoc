@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import DropDragSidePanel from '../components/admin/DropDragSidePanel';
 import RichMarkupTextarea from '../components/admin/RichMarkupTextarea';
 import ConstellationEditor from '../components/admin/ConstellationEditor';
+import ImageManager from '../components/admin/ImageManager';
 import { rankSearchResults } from '../utils/searchUtils';
 import { VALID_ADMIN_MODULES, ADMIN_ROUTE_PREFIX } from '../hooks/useUrlFilters';
 import { handleImageError } from '../utils/imageFallback';
@@ -94,6 +95,13 @@ const AdminIcons = {
       <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
       <line x1="8" y1="2" x2="8" y2="18" />
       <line x1="16" y1="6" x2="16" y2="22" />
+    </svg>
+  ),
+  Images: ({ className = 'w-4 h-4' }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
     </svg>
   ),
   Logs: ({ className = 'w-4 h-4' }) => (
@@ -653,7 +661,8 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     updateFilters?.({
       tab: 'admin',
       adminModule: mod,
-      adminChampion: ''
+      adminChampion: '',
+      adminFolder: ''
     });
   }, [updateFilters]);
 
@@ -1540,6 +1549,7 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
     { id: 'items', icon: <AdminIcons.Items />, label: isEn ? 'Items' : 'Quản lý vật phẩm' },
     { id: 'cards', icon: <AdminIcons.Cards />, label: isEn ? 'Cards' : 'Quản lý thẻ bài' },
     { id: 'maps', icon: <AdminIcons.Maps />, label: isEn ? 'Maps' : 'Bản đồ phiêu lưu' },
+    { id: 'images', icon: <AdminIcons.Images />, label: isEn ? 'Media & Assets' : 'Quản lý ảnh' },
     { id: 'logs', icon: <AdminIcons.Logs />, label: isEn ? 'Server Logs' : 'Nhật ký máy chủ' }
   ];
 
@@ -3291,6 +3301,21 @@ export default function AdminView({ onNavigate, filters = {}, updateFilters }) {
             </aside>
           )}
         </div>
+      </div>
+    ) : activeModule === 'images' ? (
+      <div className="flex-1 h-full min-w-0 overflow-hidden flex flex-col">
+        <ImageManager
+          adminFolder={filters?.adminFolder || ''}
+          onSelectFolder={(folder) => {
+            updateFilters?.({
+              tab: 'admin',
+              adminModule: 'images',
+              adminFolder: folder || ''
+            });
+          }}
+          adminFetch={adminFetch}
+          isEn={isEn}
+        />
       </div>
     ) : (
           /* ============================================================ */

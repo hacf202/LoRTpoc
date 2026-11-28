@@ -375,6 +375,14 @@ export const championService = {
             }
           : undefined
       }));
+    } else if (filter.full !== 'true' && filter.full !== true) {
+      // List optimization: Strip heavy constellation trees (1.25MB) from list responses.
+      // Individual champion constellation is served on demand via /champions/:id
+      result = result.map((c) => {
+        if (!c.constellation) return c;
+        const { constellation, ...cleanChamp } = c;
+        return cleanChamp;
+      });
     }
 
     // Standard pagination (default 24 per page if page/limit queried, or full if unconstrained)

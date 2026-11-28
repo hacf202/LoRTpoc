@@ -27,6 +27,7 @@ const DEFAULT_FILTERS = {
   hash: '',
   adminModule: 'overview',
   adminChampion: '',
+  adminFolder: '',
   notFoundPath: ''
 };
 
@@ -40,7 +41,8 @@ export const VALID_ADMIN_MODULES = [
   'items',
   'cards',
   'maps',
-  'logs'
+  'logs',
+  'images'
 ];
 
 const VALID_TABS = ['home', 'champions', 'relics', 'powers', 'items', 'cards', 'maps', 'tierlist'];
@@ -56,12 +58,20 @@ export function parseCurrentLocation() {
   const parsed = { ...DEFAULT_FILTERS };
 
   // 1. Check hierarchical secret admin paths (/admin/admin/admin):
+  //    - /admin/admin/admin/images/:folder or /admin/admin/admin/image/:folder
+  const adminImageMatch = pathname.match(/^\/admin\/admin\/admin\/(?:image|images)\/([^/]+)$/i);
   //    - /admin/admin/admin/champion/:name or /admin/admin/admin/champions/:name
   const adminChampMatch = pathname.match(/^\/admin\/admin\/admin\/(?:champion|champions)\/([^/]+)$/i);
-  if (adminChampMatch) {
+  if (adminImageMatch) {
+    parsed.tab = 'admin';
+    parsed.adminModule = 'images';
+    parsed.adminFolder = decodeURIComponent(adminImageMatch[1]).trim();
+    parsed.adminChampion = '';
+  } else if (adminChampMatch) {
     parsed.tab = 'admin';
     parsed.adminModule = 'champions';
     parsed.adminChampion = decodeURIComponent(adminChampMatch[1]).trim();
+    parsed.adminFolder = '';
   } else if (pathname === ADMIN_ROUTE_PREFIX || pathname.startsWith(ADMIN_ROUTE_PREFIX + '/')) {
     //    - /admin/admin/admin or /admin/admin/admin/:module
     parsed.tab = 'admin';
@@ -73,6 +83,7 @@ export function parseCurrentLocation() {
       parsed.adminModule = 'overview';
     }
     parsed.adminChampion = '';
+    parsed.adminFolder = '';
   } else {
     // 2. Check hierarchical user-facing paths:
     const champMatch = pathname.match(/^\/(?:champion|champions)\/([^/]+)$/i);
@@ -161,6 +172,9 @@ export function parseCurrentLocation() {
   }
   if (params.has('adminChampion')) {
     parsed.adminChampion = params.get('adminChampion')?.trim() || '';
+  }
+  if (params.has('adminFolder')) {
+    parsed.adminFolder = params.get('adminFolder')?.trim() || '';
   }
 
   // 5. Query string filters (catalog & vaults)
@@ -269,6 +283,8 @@ export function buildHierarchicalUrl(state) {
   if (state.tab === 'admin') {
     if (state.adminChampion && state.adminChampion.trim()) {
       targetPath = `${ADMIN_ROUTE_PREFIX}/champion/${state.adminChampion.trim() === 'new' ? 'new' : toChampionSlug(state.adminChampion.trim())}`;
+    } else if (state.adminModule === 'images' && state.adminFolder && state.adminFolder.trim()) {
+      targetPath = `${ADMIN_ROUTE_PREFIX}/images/${encodeURIComponent(state.adminFolder.trim())}`;
     } else if (state.adminModule && state.adminModule !== 'overview' && VALID_ADMIN_MODULES.includes(state.adminModule)) {
       targetPath = `${ADMIN_ROUTE_PREFIX}/${state.adminModule.trim().toLowerCase()}`;
     } else {
@@ -406,7 +422,8 @@ export function useUrlFilters() {
               (next.map && prev.map && next.map !== prev.map) ||
               (next.tab === 'admin' && (
                 next.adminModule !== prev.adminModule ||
-                next.adminChampion !== prev.adminChampion
+                next.adminChampion !== prev.adminChampion ||
+                next.adminFolder !== prev.adminFolder
               ));
 
         const historyState = {

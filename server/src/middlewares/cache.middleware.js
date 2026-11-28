@@ -117,6 +117,8 @@ export const httpCache = (durationSeconds = 60) => {
       res.set({
         'Content-Type': memCached.contentType || 'application/json; charset=utf-8',
         'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
+        'CDN-Cache-Control': `public, max-age=${Math.min(durationSeconds, 900)}, stale-while-revalidate=60`,
+        'Cloudflare-CDN-Cache-Control': `max-age=${Math.min(durationSeconds, 900)}`,
         'Vary': 'Accept-Encoding, Authorization',
         'X-Server-Cache': 'HIT (Memory)'
       });
@@ -128,6 +130,8 @@ export const httpCache = (durationSeconds = 60) => {
     // Awaiting remote Redis GET over WAN (200ms - 1300ms) for in-memory datasets is a major anti-pattern.
     res.set({
       'Cache-Control': `public, max-age=${durationSeconds}, stale-while-revalidate=30`,
+      'CDN-Cache-Control': `public, max-age=${Math.min(durationSeconds, 900)}, stale-while-revalidate=60`,
+      'Cloudflare-CDN-Cache-Control': `max-age=${Math.min(durationSeconds, 900)}`,
       'Vary': 'Accept-Encoding, Authorization',
       'X-Server-Cache': 'MISS'
     });

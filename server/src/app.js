@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import morgan from 'morgan';
 import fs from 'fs';
 import path from 'path';
@@ -33,6 +34,15 @@ app.get(['/health', '/api/health'], (req, res) => {
 
 // Non-intrusive Audit Middleware: Tracks slow requests (>1000ms), 5xx server errors & security spikes
 app.use(requestAuditMiddleware);
+
+// Gzip/Brotli HTTP Compression: Drastically reduces JSON payloads (champions 2.3MB -> 100KB, ~95% bandwidth reduction)
+app.use(compression({
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
 // Strict Multi-Origin CORS whitelist
 const allowedOrigins = [

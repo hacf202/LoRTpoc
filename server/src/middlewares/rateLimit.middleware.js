@@ -82,8 +82,10 @@ export function createRateLimiter(options = {}) {
     const now = Date.now();
     const windowSeconds = Math.ceil(windowMs / 1000);
 
-    // 2. Try Redis Sliding Window (Distributed across Vercel instances)
-    if (isRedisReady() && redisClient) {
+    // 2. Try Redis Sliding Window for sensitive scopes (auth) and state-mutating requests (POST, PUT, DELETE)
+    // For high-frequency public GET requests, In-Memory Sliding Window executes in < 0.01ms without WAN roundtrip latency.
+    const shouldCheckRedis = (scope === 'auth' || req.method !== 'GET') && isRedisReady() && redisClient;
+    if (shouldCheckRedis) {
       try {
         const redisKey = `poc:ratelimit:${scope}:${clientIp}`;
         const minScore = now - windowMs;

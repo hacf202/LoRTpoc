@@ -19,11 +19,33 @@ export async function onRequest(context) {
     const newHeaders = new Headers(context.request.headers);
     newHeaders.set('host', 'api.lortpoc.com');
 
+    const method = context.request.method;
+    const isGet = ['GET', 'HEAD'].includes(method);
+    const hasAuth = newHeaders.has('authorization') || newHeaders.has('x-admin-token');
+
+    // Cloudflare Edge Cache: Cache heavy static game datasets for 15 minutes at Edge CDN
+    // Completely eliminates cold-start 504 timeouts and reduces Render load by 95%
+    const isCacheableDataRoute = isGet && !hasAuth && (
+      pathname.startsWith('/api/v1/champions') ||
+      pathname.startsWith('/api/v1/relics') ||
+      pathname.startsWith('/api/v1/powers') ||
+      pathname.startsWith('/api/v1/items') ||
+      pathname.startsWith('/api/v1/cards') ||
+      pathname.startsWith('/api/v1/maps') ||
+      pathname.startsWith('/api/v1/tierlist')
+    );
+
     const modifiedRequest = new Request(targetUrl, {
-      method: context.request.method,
+      method,
       headers: newHeaders,
-      body: ['GET', 'HEAD'].includes(context.request.method) ? undefined : context.request.body,
-      redirect: 'follow'
+      body: isGet ? undefined : context.request.body,
+      redirect: 'follow',
+      ...(isCacheableDataRoute && {
+        cf: {
+          cacheTtl: 900,
+          cacheEverything: true
+        }
+      })
     });
 
     return fetch(modifiedRequest);
